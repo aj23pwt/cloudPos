@@ -1,0 +1,329 @@
+package com.greencloud.facade.impl;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.commons.lang.math.RandomUtils;
+
+import com.aua.util.Container;
+import com.greencloud.constant.BizExceptionConstant;
+import com.greencloud.dto.CateringBatchUpdateDto;
+import com.greencloud.dto.CateringDto;
+import com.greencloud.dto.CateringSearchDto;
+import com.greencloud.dto.CateringTimeItem;
+import com.greencloud.entity.CateringMessage;
+import com.greencloud.entity.CateringPlace;
+import com.greencloud.entity.CateringResource;
+import com.greencloud.entity.CateringResourceMap;
+import com.greencloud.entity.CodeBase;
+import com.greencloud.exception.BizException;
+import com.greencloud.facade.ICateringFacadeService;
+import com.greencloud.service.ICateringService;
+import com.greencloud.service.ICodeBaseService;
+import com.greencloud.service.ICommonService;
+import com.greencloud.util.StringUtil;
+import com.springsource.util.common.CollectionUtils;
+
+/**
+ * 
+ * @author yangchao
+ * @email yangchao@ipms.cn
+ *
+ */
+public class CateringFacadeServiceImpl extends AbstractFacadeServiceImpl implements ICateringFacadeService {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -712269817042048152L;
+
+	private ICommonService commonService;
+	private ICateringService cateringService;
+	private ICodeBaseService codeBaseService;
+	
+	public void setCommonService(ICommonService commonService) {
+		this.commonService = commonService;
+	}
+	public void setCateringService(ICateringService cateringService) {
+		this.cateringService = cateringService;
+	}
+	public void setCodeBaseService(ICodeBaseService codeBaseService) {
+		this.codeBaseService = codeBaseService;
+	}
+	/**
+	 * 
+	 */
+	@Override
+	@SuppressWarnings("rawtypes")
+	public List listCateringPlace(Long hotelGroupId,Long hotelId){
+		hotelGroupId = checkHotelGroupId(hotelGroupId);
+		hotelId = checkHotelId(hotelId);
+		return cateringService.listCateringPlace(hotelGroupId, hotelId);
+	}
+	
+	@Override
+	public CateringPlace saveOrUpdateCateringPlace(Long hotelGroupId,Long hotelId,CateringPlace cp){
+		hotelGroupId = checkHotelGroupId(hotelGroupId);
+		hotelId = checkHotelId(hotelId);
+		
+		if(cp == null)
+			throw new BizException("需要保存或更新的场地信息为空异常.",BizExceptionConstant.INVALID_PARAM);
+		
+		return cateringService.saveOrUpdateCateringPlace(hotelGroupId,hotelId,cp);
+	}
+	
+	@Override
+	public void deleteCateringPlace(Long hotelGroupId,Long hotelId,CateringPlace cp){
+		hotelGroupId = checkHotelGroupId(hotelGroupId);
+		hotelId = checkHotelId(hotelId);
+		
+		if(cp == null)
+			throw new BizException("需要删除的场地信息为空异常.",BizExceptionConstant.INVALID_PARAM);
+		
+		cateringService.deleteCateringPlace(hotelGroupId,hotelId,cp);
+	}
+	
+	@Override
+	public CateringPlace findCateringPlaceByCode(Long hotelGroupId,Long hotelId,String code){
+		hotelGroupId = checkHotelGroupId(hotelGroupId);
+		hotelId = checkHotelId(hotelId);
+		
+		if(StringUtil.isEmpty(code))
+			return null;
+		return cateringService.findCateringPlaceByCode(hotelGroupId, hotelId, code);
+	}
+	
+	@Override
+	public List<CodeBase> listResrouceCategory(Long hotelGroupId,Long hotelId){
+		hotelGroupId = checkHotelGroupId(hotelGroupId);
+		hotelId = checkHotelId(hotelId);
+		
+		CodeBase codeBase = new CodeBase();
+		codeBase.setHotelGroupId(hotelGroupId);
+		codeBase.setHotelId(hotelId);
+		codeBase.setParentCode("resource_category");
+		
+		List<CodeBase> list = codeBaseService.listCodeBase(codeBase);
+		
+		return list;
+	}
+	
+	@Override
+	public List<CateringResource> listResrouceByCategory(Long hotelGroupId,Long hotelId,String category){
+		hotelGroupId = checkHotelGroupId(hotelGroupId);
+		hotelId = checkHotelId(hotelId);
+		
+		return cateringService.listResrouceByCategory(hotelGroupId,hotelId,category);
+	}
+	
+	@Override
+	public CateringResource saveOrUpdateCateringResource(Long hotelGroupId,Long hotelId,CateringResource cr){
+		hotelGroupId = checkHotelGroupId(hotelGroupId);
+		hotelId = checkHotelId(hotelId);
+		
+		if(cr == null)
+			throw new BizException("需要保存或更新的场地资源为空异常.",BizExceptionConstant.INVALID_PARAM);
+		
+		CateringResource oldCr = findCateringResourceByCode(hotelGroupId, hotelId, cr.getCode());
+		
+		if(cr.getId() == null){
+			if(oldCr != null)
+				throw new BizException("代码["+cr.getCode()+"]已经被使用.",BizExceptionConstant.CODE_ALREADY_USED);
+			
+			commonService.saveData(cr);
+		}else{
+			cr.setCode(oldCr.getCode());
+			commonService.updateData(cr);
+		}
+		return (CateringResource) commonService.loadData(cr);
+	}
+	
+	@Override
+	public void deleteCateringResource(Long hotelGroupId,Long hotelId,CateringResource cr){
+		hotelGroupId = checkHotelGroupId(hotelGroupId);
+		hotelId = checkHotelId(hotelId);
+		
+		if(cr == null)
+			throw new BizException("需要删除的资源信息为空异常.",BizExceptionConstant.INVALID_PARAM);
+		
+		cateringService.deleteCateringResource(hotelGroupId,hotelId,cr);
+	}
+	
+	@Override
+	public Long saveOrUpdateCateringDto(Long hotelGroupId,Long hotelId,CateringDto ctDto){
+		hotelGroupId = checkHotelGroupId(hotelGroupId);
+		hotelId = checkHotelId(hotelId);
+		
+		if(ctDto == null || ctDto.getCatering() == null)
+			throw new BizException("需要保存或更新的宴会信息为空异常.",BizExceptionConstant.INVALID_PARAM);
+		
+		prepareCateringDto(hotelGroupId,hotelId,ctDto);
+		validateCateringDto(hotelGroupId,hotelId,ctDto);
+		
+		cateringService.saveOrUpdateCateringDto(hotelGroupId,hotelId,ctDto);
+		
+		return ctDto.getCatering().getRsvId();
+	}
+
+	private CateringResource findCateringResourceByCode(Long hotelGroupId,Long hotelId, String code) {
+		CateringResource cr = new CateringResource();
+		cr.setHotelGroupId(hotelGroupId);
+		cr.setHotelId(hotelId);
+		cr.setCode(code);
+		return (CateringResource) commonService.loadData(cr);
+	}
+	
+	private void prepareCateringDto(Long hotelGroupId, Long hotelId,CateringDto ctDto){
+		if(ctDto.getCatering().getRsvId() == null){
+			ctDto.getCatering().setRsvId(new Long(-RandomUtils.nextInt()));
+		}
+		if(StringUtil.isBlank(ctDto.getCatering().getRsvName()))
+			ctDto.getCatering().setRsvName("NoName");
+		if(StringUtil.isBlank(ctDto.getCatering().getRsvType()))
+			ctDto.getCatering().setRsvType("F");
+	}
+	
+	private void validateCateringDto(Long hotelGroupId, Long hotelId,CateringDto ctDto){
+		
+		if(ctDto.getCatering() == null)
+			throw new BizException("需要保存或更新的宴会信息为空异常.",BizExceptionConstant.INVALID_PARAM);
+		if(ctDto.getCatering().getDateBegin() == null)
+			throw new BizException("开始日期为空异常.",BizExceptionConstant.INVALID_PARAM);
+		
+		if(ctDto.getCatering().getDateEnd() == null)
+			throw new BizException("结束日期为空异常.",BizExceptionConstant.INVALID_PARAM);
+		
+		if(ctDto.getCatering().getDateBegin().after(ctDto.getCatering().getDateEnd()))
+			throw new BizException("日期不正确.",BizExceptionConstant.INVALID_PARAM);
+		
+	}
+
+	@Override
+	public CateringResourceMap saveOrUpdateCateringResourceMap(Long hotelGroupId,Long hotelId,CateringResourceMap crm){
+		hotelGroupId = checkHotelGroupId(hotelGroupId);
+		hotelId = checkHotelId(hotelId);
+		
+		if(crm == null)
+			throw new BizException("需要保存或更新的信息为空异常.",BizExceptionConstant.INVALID_PARAM);
+		
+		return cateringService.saveOrUpdateCateringResourceMap(hotelGroupId,hotelId,crm);
+	}
+	
+	public List<CateringResourceMap> listResourceMapByCateringId(Long hotelGroupId,Long hotelId,Long cateringId){
+		hotelGroupId = checkHotelGroupId(hotelGroupId);
+		hotelId = checkHotelId(hotelId);
+		return cateringService.listResourceMapByCateringId(hotelGroupId,hotelId,cateringId);
+	}
+	
+	@Override
+	public void deleteCateringResourceMap(Long hotelGroupId,Long hotelId,CateringResourceMap crm){
+		hotelGroupId = checkHotelGroupId(hotelGroupId);
+		hotelId = checkHotelId(hotelId);
+		
+		if(crm == null)
+			throw new BizException("需要删除的信息为空异常.",BizExceptionConstant.INVALID_PARAM);
+		
+		cateringService.deleteCateringResourceMap(hotelGroupId,hotelId,crm);
+	}
+	
+	@Override
+	public void cancelCatering(Long hotelGroupId,Long hotelId,List<String> ids){
+		hotelGroupId = checkHotelGroupId(hotelGroupId);
+		hotelId = checkHotelId(hotelId);
+		
+		if(CollectionUtils.isEmpty(ids))
+			return ;
+		
+		List<Long> idslong = new ArrayList<Long>();
+		
+		
+		for(String idstr : ids){
+			if(StringUtil.isNotBlank(idstr)){
+				for(String id : idstr.split(",")){
+					if(id.matches("[0-9]+")){
+						idslong.add(Long.parseLong(id));
+					}
+				}
+			}
+		}
+		
+		cateringService.updateCancelCatering(hotelGroupId,hotelId,idslong);
+	}
+	
+	@Override
+	public List<CateringMessage> listCateringMessage(Long hotelGroupId,Long hotelId,Long catering){
+		return cateringService.listCateringMessage(hotelGroupId,hotelId,catering);
+	}
+	
+	@Override
+	public void deleteCateringMessages(Long hotelGroupId, Long hotelId,List<CateringMessage> cms){
+		if(cms != null){
+			for(CateringMessage cm : cms){
+				cateringService.deleteCateringMessage(hotelGroupId,hotelId,cm);
+			}
+		}
+	}
+	
+	@Override
+	public void saveOrUpdateCateringMessage(Long hotelGroupId, Long hotelId,List<CateringMessage> msgs){
+		cateringService.saveOrUpdateCateringMessage(hotelGroupId, hotelId,msgs);
+	}
+	
+	@Override
+	public void deleteCatering(Long hotelGroupId,Long hotelId,Long catering){
+		cateringService.deleteCatering(hotelGroupId,hotelId,catering);
+	}
+	
+	@Override
+	public List<CateringDto> findCateringDtoByIds(Long hotelGroupId,Long hotelId,List<String> ids){
+		hotelGroupId = checkHotelGroupId(hotelGroupId);
+		hotelId = checkHotelId(hotelId);
+		
+		return cateringService.listCateringDtoByIds(hotelGroupId,hotelId,ids);
+	}
+	
+	@Override
+	public void fixCateringPlace(Long hotelGroupId, Long hotelId,int type,String remark,List<CateringTimeItem> items,Integer interval){
+		hotelGroupId = checkHotelGroupId(hotelGroupId);
+		hotelId = checkHotelId(hotelId);
+		if(CollectionUtils.isEmpty(items))
+			return ;
+		
+		cateringService.updateFixCateringPlace(hotelGroupId,hotelId,type,remark,items,interval);
+	}
+
+	@Override
+	public void updateExtraFlag(Long hotelGroupId, Long hotelId,Long cateringId, Integer index, int number) {
+		hotelGroupId = checkHotelGroupId(hotelGroupId);
+		hotelId = checkHotelId(hotelId);
+		if(index == null)
+			throw new BizException("需要更新的位置不正确.",BizExceptionConstant.INVALID_PARAM);
+		
+		cateringService.updateExtraFlag(hotelGroupId, hotelId,cateringId, index, number);
+	}
+
+	@Override
+	public Container<CateringDto> listDtoBySearchDto(Long hotelGroupId,Long hotelId, CateringSearchDto csdto) {
+		hotelGroupId = checkHotelGroupId(hotelGroupId);
+		hotelId = checkHotelId(hotelId);
+		Container<CateringDto> container = cateringService.listDtoBySearchDto(hotelGroupId,hotelId, csdto);
+		
+		return container;
+	}
+
+	@SuppressWarnings("rawtypes")
+	@Override
+	public List listItemsBySearchDto(Long hotelGroupId, Long hotelId,CateringSearchDto csdto) {
+		hotelGroupId = checkHotelGroupId(hotelGroupId);
+		hotelId = checkHotelId(hotelId);
+		return cateringService.listItemsBySearchDto(hotelGroupId, hotelId,csdto);
+	}
+
+	@Override
+	public void batchUpdate(Long hotelGroupId, Long hotelId,CateringBatchUpdateDto updateDto, List<String> ids) {
+		hotelGroupId = checkHotelGroupId(hotelGroupId);
+		hotelId = checkHotelId(hotelId);
+		cateringService.updateBatch(hotelGroupId, hotelId,updateDto,ids);
+	}
+	
+}

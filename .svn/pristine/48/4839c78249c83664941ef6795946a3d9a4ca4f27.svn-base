@@ -1,0 +1,112 @@
+ALTER table pos_res modify column type1 varchar(100) ;
+ALTER table pos_res modify column type2 varchar(100) ;
+ALTER table pos_res modify column type3 varchar(100) ;
+ALTER table pos_res modify column type4 varchar(100) ;
+ALTER table pos_res modify column type5 varchar(100) ;
+ALTER table pos_res modify column market varchar(10) ;
+ALTER table pos_res modify column source varchar(10) ;
+ALTER table pos_pay modify column foliono varchar(60) ;
+ALTER table pos_master modify column type1 varchar(100) ;
+ALTER table pos_master modify column type2 varchar(100) ;
+ALTER table pos_master modify column type3 varchar(100) ;
+ALTER table pos_master modify column type4 varchar(100) ;
+ALTER table pos_master modify column type5 varchar(100) ;
+ALTER table pos_master modify column market varchar(10) ;
+ALTER table pos_master modify column source varchar(10) ;
+ALTER table pos_master modify column empid varchar(100) ;
+ALTER table pos_master_history modify column type1 varchar(100) ;
+ALTER table pos_master_history modify column type2 varchar(100) ;
+ALTER table pos_master_history modify column type3 varchar(100) ;
+ALTER table pos_master_history modify column type4 varchar(100) ;
+ALTER table pos_master_history modify column type5 varchar(100) ;
+ALTER table pos_master_history modify column market varchar(10) ;
+ALTER table pos_master_history modify column source varchar(10) ;
+ALTER table pos_master_history modify column empid varchar(100) ;
+ALTER table pos_account modify column empid varchar(100) ;
+ALTER table pos_account_history modify column empid varchar(100) ;
+ALTER table pos_detail modify column empid varchar(100) ;
+ALTER table pos_detail_history modify column empid varchar(100) ;
+
+-- 修改账号 长度
+ALTER table pos_accnt_sync modify column accnt varchar(20) ;
+ALTER table pos_account modify column accnt varchar(20) ;
+ALTER table pos_account modify column billno varchar(20) ;
+ALTER table pos_account_history modify column accnt varchar(20) ;
+ALTER table pos_account_history modify column billno varchar(20) ;
+ALTER table pos_audit_master modify column accnt varchar(20) ;
+ALTER table pos_audit_report modify column accnt varchar(20) ;
+ALTER table pos_detail modify column accnt varchar(20) ;
+ALTER table pos_detail modify column billno varchar(20) ;
+ALTER table pos_detail_history modify column accnt varchar(20) ;
+ALTER table pos_detail_history modify column billno varchar(20) ;
+ALTER table pos_detail_dai modify column accnt varchar(20) ;
+ALTER table pos_detail_jie modify column accnt varchar(20) ;
+
+ALTER table pos_dishcard modify column accnt varchar(20) ;
+ALTER table pos_dishcard modify column foliono varchar(20) ;
+ALTER table pos_dishcard_history modify column accnt varchar(20) ;
+ALTER table pos_dishcard_history modify column foliono varchar(20) ;
+ALTER table pos_drinks_consume_history modify column accnt varchar(20) ;
+
+ALTER table pos_master modify column accnt varchar(20) ;
+ALTER table pos_master modify column billno varchar(20) ;
+ALTER table pos_master modify column pcrec varchar(20) ;
+ALTER table pos_master modify column resno varchar(20) ;
+ALTER table pos_master modify column toaccnt varchar(20) ;
+ALTER table pos_master_history modify column accnt varchar(20) ;
+ALTER table pos_master_history modify column billno varchar(20) ;
+ALTER table pos_master_history modify column pcrec varchar(20) ;
+ALTER table pos_master_history modify column resno varchar(20) ;
+ALTER table pos_master_history modify column toaccnt varchar(20) ;
+
+ALTER table pos_order modify column accnt varchar(20) ;
+ALTER table pos_pay modify column accnt varchar(20) ;
+ALTER table pos_pay modify column billno varchar(20) ;
+ALTER table pos_res modify column accnt varchar(20) ;
+ALTER table pos_res modify column toaccnt varchar(20) ;
+ALTER table pos_res_order modify column accnt varchar(20) ;
+
+ALTER table pos_table_map modify column accnt varchar(20) ;
+ALTER table pos_table_map modify column pcrec varchar(20) ;
+
+
+
+
+-- 新加吧台关联比例，默认为1
+ALTER table pos_store_plu_article add column rate DECIMAL(10,2) DEFAULT 1 AFTER art_name; 
+-- 修改work_station中mac字段长度
+ALTER TABLE work_station CHANGE mac mac VARCHAR(255) CHARSET utf8 COLLATE utf8_general_ci DEFAULT '' NOT NULL;
+-- ALTER TABLE hotel ADD COLUMN server_name VARCHAR(50) NULL AFTER client_type, ADD COLUMN area1 VARCHAR(50) NULL AFTER server_name, ADD COLUMN area2 VARCHAR(50) NULL AFTER area1;
+-- ALTER table hotel ADD COLUMN client_version varchar(10) DEFAULT ''; 
+ALTER TABLE pos_account MODIFY COLUMN bank VARCHAR(10);
+ALTER TABLE pos_account_history MODIFY COLUMN bank VARCHAR(10);
+-- 新增站点管辖营业点关账记录表
+DROP TABLE IF EXISTS `pos_pccode_audit_flag`;
+CREATE TABLE `pos_pccode_audit_flag` (
+  `hotel_group_id` bigint(16) NOT NULL,
+  `hotel_id` bigint(16) NOT NULL,
+  `id` bigint(16) NOT NULL AUTO_INCREMENT,
+  `pos_pccode` varchar(20) NOT NULL DEFAULT '',
+  `pos_pccode_descript` varchar(60) DEFAULT '',
+  `biz_date` datetime NOT NULL,
+  `biz_date1` datetime NOT NULL,
+  `is_audit` char(2) NOT NULL DEFAULT 'F' COMMENT 'T/F',
+  `audit_user` varchar(20) NOT NULL DEFAULT '',
+  `station_audit` varchar(20) NOT NULL DEFAULT '',
+  `is_rmposted` char(2) DEFAULT 'F' COMMENT 'T/F',
+  `station_rmcheck` varchar(20) DEFAULT '',
+  `station_rmpost` varchar(20) DEFAULT '',
+  `is_exclude_part` char(2) DEFAULT 'F' COMMENT 'T/F',
+  `station_exclude_part` varchar(20) DEFAULT '',
+  `is_can_checkout` char(2) DEFAULT 'T' COMMENT 'T/F',
+  `is_keypart` char(2) DEFAULT 'F' COMMENT 'T/F',
+  `is_year_first_day` char(2) DEFAULT 'F' COMMENT 'T/F',
+  `is_month_first_day` char(2) DEFAULT 'F' COMMENT 'T/F',
+  `is_report_done` char(2) DEFAULT 'T' COMMENT 'T/F',
+  `create_user` varchar(20) DEFAULT NULL,
+  `create_datetime` datetime NOT NULL,
+  `modify_user` varchar(20) NOT NULL,
+  `modify_datetime` datetime NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `hotel_group_id` (`hotel_group_id`,`hotel_id`,`pos_pccode`,`biz_date`)
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8;

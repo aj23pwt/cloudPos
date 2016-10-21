@@ -1,0 +1,171 @@
+package com.greencloud.facade.impl;
+
+import java.io.FileNotFoundException;
+import java.io.UnsupportedEncodingException;
+import java.util.List;
+
+import com.greencloud.dto.CondstDto;
+import com.greencloud.entity.CodeBase;
+import com.greencloud.entity.Hotel;
+import com.greencloud.entity.ReportCenter;
+import com.greencloud.entity.SysListMeta;
+import com.greencloud.facade.IPosSystemFacade;
+import com.greencloud.service.IHotelService;
+import com.greencloud.service.IPosConddtlService;
+import com.greencloud.service.IPosSubService;
+import com.greencloud.service.ISysListMetaService;
+import com.greencloud.util.Assert;
+import com.greencloud.util.StringUtil;
+import com.greencloud.util.UserManager;
+import com.greencloud.utils.PropertiesUtil4Sync;
+import com.greencloud.utils.XmlUtil4SpringQuartz;
+
+public class PosSystemFacadeImpl implements IPosSystemFacade {
+	private IPosSubService  posSubService;
+	private IHotelService hotelService;
+	private IPosConddtlService posConddtlService;
+	private ISysListMetaService sysListMetaService;
+	
+	public void setSysListMetaService(ISysListMetaService sysListMetaService) {
+		this.sysListMetaService = sysListMetaService;
+	}
+
+	public void setPosConddtlService(IPosConddtlService posConddtlService) {
+		this.posConddtlService = posConddtlService;
+	}
+
+	public void setHotelService(IHotelService hotelService) {
+		this.hotelService = hotelService;
+	}
+
+	public void setPosSubService(IPosSubService posSubService) {
+		this.posSubService = posSubService;
+	}
+
+	@Override
+	public List<Object> getDataBySql(String sql) {
+		return posSubService.getDataBySql(sql);
+	}
+
+	@Override
+	public void updateDataBySql(String sql) {
+		posSubService.updateDataBySql(sql);
+	}
+
+	@Override
+	public List<CodeBase> getCodeBaseByParentCode(String parentCode) {
+		return posSubService.getCodeBaseByParentCode(UserManager.getHotelGroupId(),UserManager.getHotelId(),parentCode);
+	}
+
+	@Override
+	public Object getCodeDetail(Object object) {
+		Object codeDetail = null;
+		try
+		{
+			codeDetail =  posSubService.getCodeDetail(object);
+		}
+		catch(Exception e)
+		{
+				e.printStackTrace();				
+		}
+		return codeDetail;
+	}
+
+	@Override
+	public List<Object> getCodeList(String ename,Object object) {
+		return posSubService.getCodeList(ename,object);
+	}
+
+	@Override
+	public String getHotelTree(Boolean filterR) {
+		Hotel hotel= new Hotel();
+		hotel.setHotelGroupId(UserManager.getHotelGroupId());
+		return hotelService.getHotelTree(UserManager.getHotelGroupId(), hotel);
+	}
+
+	@Override
+	public List<CondstDto> getCondstDto(String pccode, String sortCode) {
+		return posConddtlService.getCondstDto(UserManager.getHotelGroupId(), UserManager.getHotelId(), pccode, sortCode);
+	}
+
+	@Override
+	public List<Object> getHotelAnalysis(String biz_date) {
+		return posSubService.getHotelAnalysis(UserManager.getHotelGroupId(), UserManager.getHotelId(), biz_date);
+	}
+
+	@Override
+	public Object getCodeDetailHistory(String ename,Object object) {
+		return posSubService.getCodeDetailHistory(ename, object);
+	}
+
+	@Override
+	public String updatePosAuditProcess() {
+		return posSubService.updatePosAuditProcess(UserManager.getHotelGroupId(), UserManager.getHotelId());
+	}
+
+	@Override
+	public List<ReportCenter> getReportCenterByCategory(String category) {
+		return posSubService.getReportCenterByCategory(UserManager.getHotelGroupId(), UserManager.getHotelId(), category);
+	}
+
+	@Override
+	public String getsysListMetaId(String code,String type) {
+		if("HOTELGROUP".equalsIgnoreCase(type)){
+			 SysListMeta sysListMeta = sysListMetaService.findSysListMetaByCode(code, UserManager.getHotelGroupId(), (long) 0);
+		     Assert.notNull(sysListMeta);
+		     return sysListMeta.getId().toString();
+		}else{
+			 SysListMeta sysListMeta = sysListMetaService.findSysListMetaByCode(code, UserManager.getHotelGroupId(), UserManager.getHotelId());
+		     Assert.notNull(sysListMeta);
+		     return sysListMeta.getId().toString();
+		}
+		
+	}
+
+	@Override
+	public String getSyncProperties() {
+		// TODO Auto-generated method stub
+		StringBuilder s = new StringBuilder();
+		String url = PropertiesUtil4Sync.getProperty("SycHttpUrl");
+		if(StringUtil.isNotEmpty(url)){
+			s.append(url.substring(7,url.indexOf("/pos")));
+		}
+		s.append(",");
+		s.append(PropertiesUtil4Sync.getProperty("hotelGroupId"));
+		s.append(",");
+		s.append(PropertiesUtil4Sync.getProperty("hotelId"));
+		return s.toString();
+	}
+
+	@Override
+	public void saveSyncProperties(String properties) {
+		// TODO Auto-generated method stub
+		String [] properArr=  properties.split(",");
+		try {
+			PropertiesUtil4Sync.setProper("SycHttpUrl","http://"+ properArr[0]+"/pos");
+			PropertiesUtil4Sync.setProper("hotelGroupId", properArr[1]);
+			PropertiesUtil4Sync.setProper("hotelId", properArr[2]);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	@Override
+	public String saveSyncSpringQuartz(String tasks) {
+		// TODO Auto-generated method stub
+		XmlUtil4SpringQuartz xmlUtil4SpringQuartz = new XmlUtil4SpringQuartz();
+		String msg = "error";
+		try {
+			msg = xmlUtil4SpringQuartz.updateSpringQuartz(tasks);
+		} catch (UnsupportedEncodingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return msg;
+	}
+
+}

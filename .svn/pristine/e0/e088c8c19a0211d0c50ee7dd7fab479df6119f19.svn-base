@@ -1,0 +1,7 @@
+package com.greencloud.facade;
+
+import java.util.List;
+
+public interface IPosBusinessFacade {
+	List<Object> search(String sql);
+}

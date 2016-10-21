@@ -1,0 +1,28 @@
+
+
+
+package com.greencloud.facade;
+
+import java.io.Serializable;
+import java.util.List;
+
+import com.greencloud.dto.POSDiscountMode;
+import com.greencloud.dto.POSInterfaceArDto;
+import com.greencloud.dto.POSInterfaceCardDto;
+import com.greencloud.dto.POSInterfaceFoDto;
+import com.greencloud.dto.POSInterfaceGuestDto;
+import com.greencloud.dto.PosPayDto;
+import com.greencloud.dto.PosUserDto;
+import com.greencloud.dto.SearchInfoQianHengDto;
+
+public interface  IPmsPosFacadeService{
+	
+	public List<POSInterfaceFoDto> getPosFoDto(long hotelGroupId,long hotelId,String key,String rsvClass);
+	public List<POSInterfaceArDto> getPosArDto(long hotelGroupId,long hotelId,String key);
+	public List<POSInterfaceCardDto> listDiscountModeOfVIP(PosUserDto posUserDto, String info);
+	public List<POSInterfaceGuestDto> listDiscountModeOfGuest(PosUserDto posUserDto, String info);
+	public List<POSInterfaceGuestDto> listDiscountModeOfCompany(PosUserDto posUserDto, String info);
+	
+	public String updatePosAccntIn(PosUserDto posUserDto,String menuNo,String tableNo,List<PosPayDto> posPayDto,String remark);
+	public String getPosToPmsCredit(long hotelGroupId,long hotelId,String biz_date);
+}

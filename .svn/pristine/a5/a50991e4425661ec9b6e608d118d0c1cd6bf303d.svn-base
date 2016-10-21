@@ -1,0 +1,188 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+    <class name="com.greencloud.entity.PosDetail" table="pos_detail">
+        <id name="id" type="java.lang.Long">
+            <column name="id" />
+            <generator class="identity" />
+        </id>
+        <property name="hotelGroupId" type="java.lang.Long">
+            <column name="hotel_group_id" />
+        </property>
+        <property name="hotelId" type="java.lang.Long">
+            <column name="hotel_id" />
+        </property>
+        <property name="accnt" type="string">
+            <column name="accnt" length="14" />
+        </property>
+        <property name="inumber" type="java.lang.Integer">
+            <column name="inumber"/>
+        </property>
+        <property name="tnumber" type="java.lang.Integer">
+            <column name="tnumber"/>
+        </property>
+        <property name="anumber" type="java.lang.Integer">
+            <column name="anumber"/>
+        </property>
+        <property name="mnumber" type="java.lang.Integer">
+            <column name="mnumber"/>
+        </property>
+        <property name="type" type="string">
+            <column name="type" length="1" />
+        </property>
+        <property name="orderno" type="string">
+            <column name="orderno" length="10" />
+        </property>
+          <property name="billno" type="string">
+            <column name="billno" length="13" />
+        </property>
+        <property name="sta" type="string">
+            <column name="sta" length="1" />
+        </property>
+        <property name="shift" type="string">
+            <column name="shift" length="1" />
+        </property>
+        <property name="empid" type="string">
+            <column name="empid" length="100" />
+        </property>
+        <property name="bizDate" type="timestamp">
+            <column name="biz_date" length="0" />
+        </property>
+        <property name="noteCode" type="string">
+            <column name="note_code" length="10" />
+        </property>
+        <property name="sortCode" type="string">
+            <column name="sort_code" length="10" />
+        </property>
+        <property name="code" type="string">
+            <column name="code" length="10" />
+        </property>
+        <property name="condCode" type="string">
+            <column name="cond_code" length="11"/>
+        </property>
+         <property name="cook" type="string">
+            <column name="cook" length="200" />
+        </property>
+        <property name="printid" type="java.lang.Integer">
+            <column name="printid"/>
+        </property>
+        <property name="descript" type="string">
+            <column name="descript" length="80" />
+        </property>
+        <property name="descriptEn" type="string">
+            <column name="descript_en" length="80" />
+        </property>
+        <property name="unit" type="string">
+            <column name="unit" length="4" />
+        </property>
+        <property name="number" type="big_decimal">
+            <column name="number" precision="12"/>
+        </property>
+        <property name="pinumber" type="java.lang.Integer">
+            <column name="pinumber"/>
+        </property>
+        <property name="price" type="big_decimal">
+            <column name="price" precision="12"/>
+        </property>
+          <property name="amount" type="big_decimal">
+            <column name="amount" precision="12"/>
+        </property>
+        <property name="amount1" type="big_decimal">
+            <column name="amount1" precision="12"/>
+        </property>
+        <property name="amount2" type="big_decimal">
+            <column name="amount2" precision="12"/>
+        </property>
+        <property name="amount3" type="big_decimal">
+            <column name="amount3" precision="12"/>
+        </property>
+        <property name="amount4" type="big_decimal">
+            <column name="amount4" precision="12"/>
+        </property>
+        <property name="amount5" type="big_decimal">
+            <column name="amount5" precision="12"/>
+        </property> 
+        <property name="cost" type="big_decimal">
+            <column name="cost" precision="12"/>
+        </property>
+        <property name="flag" type="string">
+            <column name="flag" length="30" />
+        </property>
+        <property name="flag1" type="string">
+            <column name="flag1" length="30" />
+        </property>
+        <property name="reason" type="string">
+            <column name="reason" length="3" />
+        </property>
+        <property name="dsc" type="big_decimal">
+            <column name="dsc" precision="12"/>
+        </property>
+        <property name="srv" type="big_decimal">
+            <column name="srv" precision="12"/>
+        </property>
+           <property name="srv0" type="big_decimal">
+            <column name="srv0" precision="12"/>
+        </property>
+           <property name="srvDsc" type="big_decimal">
+            <column name="srv_dsc" precision="12"/>
+        </property>
+        <property name="tax" type="big_decimal">
+            <column name="tax" precision="12"/>
+        </property>
+         <property name="tax0" type="big_decimal">
+            <column name="tax0" precision="12"/>
+        </property>
+         <property name="taxDsc" type="big_decimal">
+            <column name="tax_dsc" precision="12"/>
+        </property>
+         <property name="tableno" type="string">
+            <column name="tableno" length="10" />
+        </property>
+        <property name="siteno" type="string">
+            <column name="siteno" length="5" />
+        </property>
+        <property name="info" type="string">
+            <column name="info" length="50" />
+        </property>
+        <property name="cardno" type="string">
+            <column name="cardno" length="20" />
+        </property>
+        <property name="cardinfo" type="string">
+            <column name="cardinfo" length="50" />
+        </property>
+        <property name="tocode" type="string">
+            <column name="tocode" length="3" />
+        </property>
+        <property name="kitchen" type="string">
+            <column name="kitchen" length="40" />
+        </property>
+        <property name="pcid" type="string">
+            <column name="pcid" length="20" />
+        </property>
+        <property name="empid1" type="string">
+            <column name="empid1" length="10" />
+        </property>
+        <property name="empid2" type="string">
+            <column name="empid2" length="10" />
+        </property>
+        <property name="empid3" type="string">
+            <column name="empid3" length="10" />
+        </property>
+        <property name="drawDate" type="timestamp">
+            <column name="draw_date" length="0" />
+        </property>
+        <property name="createUser" type="string">
+            <column name="create_user" length="20" />
+        </property>
+        <property name="createDatetime" type="timestamp">
+            <column name="create_datetime" length="0" />
+        </property>
+        <property name="modifyUser" type="string">
+            <column name="modify_user" length="20" />
+        </property>
+        <property name="modifyDatetime" type="timestamp">
+            <column name="modify_datetime" length="0" />
+        </property>
+    </class>
+</hibernate-mapping>

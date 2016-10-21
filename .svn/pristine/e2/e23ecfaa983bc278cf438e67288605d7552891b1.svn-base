@@ -1,0 +1,333 @@
+package com.greencloud.dao.impl;
+import com.aua.util.SQLHelper;
+import com.aua.dao.impl.BaseDaoImpl;
+
+import static com.aua.util.StringHelper.*;
+
+import java.sql.CallableStatement;
+import java.sql.SQLException;
+import java.util.List;
+
+import com.greencloud.entity.PosDishcard;
+import com.greencloud.entity.PosRes;
+import com.greencloud.dao.IPosDishcardDao;
+
+import org.springframework.dao.DataAccessException;
+import org.springframework.jdbc.core.CallableStatementCallback;
+
+   /**
+   * operate PosDishcard into db
+   *@author 
+   *@version 1.0
+   *@date 2015-11-19 14:56
+   */
+  public class PosDishcardDaoImpl extends BaseDaoImpl implements IPosDishcardDao{
+
+  /**
+   *save posDishcard object  method
+   *@param posDishcard PosDishcard 
+   *@throws DataAccessException 
+   *@author  
+   *@version 1.0
+   *@date 2015-11-19 14:56
+   */
+  public void save(PosDishcard posDishcard) throws DataAccessException {
+       super.save(posDishcard);
+  }
+  
+  /**
+   *update posDishcard method
+   *@param posDishcard PosDishcard
+   *@throws DataAccessException 
+   *@author 
+   *@version 1.0
+   *@date 2015-11-19 14:56
+   */
+  public void update(PosDishcard posDishcard) throws DataAccessException{
+     super.update(posDishcard);
+  }
+  
+   /**
+   *save or update posDishcard object method
+   *@param posDishcard PosDishcard
+   *@throws DataAccessException
+   *@author  
+   *@version 1.0
+   *@date 2015-11-19 14:56
+   */
+  public void saveOrUpdate(PosDishcard posDishcard) throws DataAccessException{
+     super.saveOrUpdate(posDishcard);
+  }
+  
+   /**
+   *query posDishcard collection method
+   *@param posDishcard PosDishcard send query vo 
+   *@param firstResult 
+   *@param maxResults 
+   *@throws DataAccessException 
+   *@author 
+   *@version 1.0
+   *@date 2015-11-19  14:56
+   */
+  public List<PosDishcard> list(PosDishcard posDishcard,int firstResult ,int maxResults)throws DataAccessException{
+  	 SQLHelper sh = new SQLHelper("SELECT obj FROM PosDishcard obj WHERE 1=1 ");
+  	 spellSQL(sh,posDishcard);
+  	 sh.appendSql(" ORDER BY obj.id DESC");
+  	 sh.setFirstResult(firstResult);
+  	 sh.setMaxResults(maxResults);
+  	 return find(sh);
+  }
+  
+   /**
+   *query collection method  
+   *@param posDishcard PosDishcard send query vo 
+   *@throws DataAccessException
+   *@author 
+   *@version 1.0
+   *@date 2015-11-19 14:56
+   */
+  public List<PosDishcard> list(PosDishcard posDishcard)throws DataAccessException{
+  	 SQLHelper sh = new SQLHelper("SELECT obj FROM PosDishcard obj WHERE 1=1 ");
+  	 spellSQL(sh,posDishcard);
+  	 sh.appendSql(" ORDER BY obj.id DESC");
+  	 return find(sh);
+  }
+  
+  /**
+   *count obj amount
+   *@param posDishcard PosDishcard query vo
+   *@throws DataAccessException
+   *@author 
+   *@date 2015-11-19 14:56
+   */
+  public int count(PosDishcard posDishcard)throws DataAccessException
+  {
+    SQLHelper sh = new SQLHelper("SELECT count(obj) FROM PosDishcard obj WHERE 1=1 ");
+    spellSQL(sh,posDishcard);
+    return count(sh);
+  }
+  
+   /**
+   *query a posDishcard by id 
+   *@param id 
+   *@throws DataAccessException 
+   *@author 
+   *@date 2015-11-19 14:56
+   */
+  public PosDishcard load(Long id)throws DataAccessException
+  {
+    return load(PosDishcard.class ,id);
+  }
+  
+  /*
+   *basic spell SQL method 
+   *@param posDishcard query vo
+   *@throws DataAccessException 
+   *@author weihuawon
+   *@date 2015-11-19 14:56
+   */
+  private void spellSQL(SQLHelper sh,PosDishcard posDishcard)
+  {
+    if(posDishcard != null){
+    	if(posDishcard.getId()!= null){
+            sh.appendSql(" AND obj.id = ? ");
+            sh.insertValue(posDishcard.getId());
+         }
+         if(posDishcard.getHotelGroupId()!= null){
+            sh.appendSql(" AND obj.hotelGroupId = ? ");
+            sh.insertValue(posDishcard.getHotelGroupId());
+         }
+         if(posDishcard.getHotelId()!= null){
+            sh.appendSql(" AND obj.hotelId = ? ");
+            sh.insertValue(posDishcard.getHotelId());
+         }
+        if(isNotNull(posDishcard.getAccnt())){
+           sh.appendSql(" AND obj.accnt = ? ");
+           sh.insertValue(posDishcard.getAccnt().trim());
+        }
+       if(posDishcard.getInumber()!= null){
+           sh.appendSql(" AND obj.inumber = ? ");
+           sh.insertValue(posDishcard.getInumber());
+        }
+       if(posDishcard.getTnumber()!= null){
+           sh.appendSql(" AND obj.tnumber = ? ");
+           sh.insertValue(posDishcard.getTnumber());
+        }
+       if(posDishcard.getMnumber()!= null){
+           sh.appendSql(" AND obj.mnumber = ? ");
+           sh.insertValue(posDishcard.getMnumber());
+        }
+       if(posDishcard.getBizDate()!= null){
+           sh.appendSql(" AND obj.bizDate = ? ");
+           sh.insertValue(posDishcard.getBizDate());
+        }
+        if(isNotNull(posDishcard.getPccode())){
+           sh.appendSql(" AND obj.pccode = ? ");
+           sh.insertValue(posDishcard.getPccode().trim());
+        }
+        if(isNotNull(posDishcard.getPccodeName())){
+           sh.appendSql(" AND obj.pccodeName = ? ");
+           sh.insertValue(posDishcard.getPccodeName().trim());
+        }
+        if(isNotNull(posDishcard.getTableCode())){
+           sh.appendSql(" AND obj.tableCode = ? ");
+           sh.insertValue(posDishcard.getTableCode().trim());
+        }
+        if(isNotNull(posDishcard.getTableName())){
+           sh.appendSql(" AND obj.tableName = ? ");
+           sh.insertValue(posDishcard.getTableName().trim());
+        }
+       if(posDishcard.getGsts()!= null){
+           sh.appendSql(" AND obj.gsts = ? ");
+           sh.insertValue(posDishcard.getGsts());
+        }
+       if(posDishcard.getPrintid()!= null){
+           sh.appendSql(" AND obj.printid = ? ");
+           sh.insertValue(posDishcard.getPrintid());
+        }
+        if(isNotNull(posDishcard.getType())){
+           sh.appendSql(" AND obj.type = ? ");
+           sh.insertValue(posDishcard.getType().trim());
+        }
+        if(isNotNull(posDishcard.getSta())){
+           sh.appendSql(" AND obj.sta = ? ");
+           sh.insertValue(posDishcard.getSta().trim());
+        }
+        if(isNotNull(posDishcard.getCode())){
+           sh.appendSql(" AND obj.code = ? ");
+           sh.insertValue(posDishcard.getCode().trim());
+        }
+        if(isNotNull(posDishcard.getDescript())){
+           sh.appendSql(" AND obj.descript = ? ");
+           sh.insertValue(posDishcard.getDescript().trim());
+        }
+        if(isNotNull(posDishcard.getDescriptEn())){
+           sh.appendSql(" AND obj.descriptEn = ? ");
+           sh.insertValue(posDishcard.getDescriptEn().trim());
+        }
+        if(isNotNull(posDishcard.getUnit())){
+           sh.appendSql(" AND obj.unit = ? ");
+           sh.insertValue(posDishcard.getUnit().trim());
+        }
+       if(posDishcard.getPrice()!= null){
+           sh.appendSql(" AND obj.price = ? ");
+           sh.insertValue(posDishcard.getPrice());
+        }
+       if(posDishcard.getNumber()!= null){
+           sh.appendSql(" AND obj.number = ? ");
+           sh.insertValue(posDishcard.getNumber());
+        }
+       if(posDishcard.getAmount()!= null){
+           sh.appendSql(" AND obj.amount = ? ");
+           sh.insertValue(posDishcard.getAmount());
+        }
+        if(isNotNull(posDishcard.getCookAll())){
+           sh.appendSql(" AND obj.cookAll = ? ");
+           sh.insertValue(posDishcard.getCookAll().trim());
+        }
+        if(isNotNull(posDishcard.getCook())){
+           sh.appendSql(" AND obj.cook = ? ");
+           sh.insertValue(posDishcard.getCook().trim());
+        }
+        if(isNotNull(posDishcard.getPrinter())){
+           sh.appendSql(" AND obj.printer = ? ");
+           sh.insertValue(posDishcard.getPrinter().trim());
+        }
+        if(isNotNull(posDishcard.getPrinter1())){
+           sh.appendSql(" AND obj.printer1 = ? ");
+           sh.insertValue(posDishcard.getPrinter1().trim());
+        }
+       if(posDishcard.getPnumber()!= null){
+           sh.appendSql(" AND obj.pnumber = ? ");
+           sh.insertValue(posDishcard.getPnumber());
+        }
+       if(posDishcard.getPnumber1()!= null){
+           sh.appendSql(" AND obj.pnumber1 = ? ");
+           sh.insertValue(posDishcard.getPnumber1());
+        }
+        if(isNotNull(posDishcard.getChanged())){
+           sh.appendSql(" AND obj.changed = ? ");
+           sh.insertValue(posDishcard.getChanged().trim());
+        }
+       if(posDishcard.getTimes()!= null){
+           sh.appendSql(" AND obj.times = ? ");
+           sh.insertValue(posDishcard.getTimes());
+        }
+        if(isNotNull(posDishcard.getIsprint())){
+           sh.appendSql(" AND obj.isprint = ? ");
+           sh.insertValue(posDishcard.getIsprint().trim());
+        }
+        if(isNotNull(posDishcard.getStation())){
+           sh.appendSql(" AND obj.station = ? ");
+           sh.insertValue(posDishcard.getStation().trim());
+        }
+        if(isNotNull(posDishcard.getClass1())){
+           sh.appendSql(" AND obj.class1 = ? ");
+           sh.insertValue(posDishcard.getClass1().trim());
+        }
+        if(isNotNull(posDishcard.getPsort())){
+           sh.appendSql(" AND obj.psort = ? ");
+           sh.insertValue(posDishcard.getPsort().trim());
+        }
+        if(isNotNull(posDishcard.getFoliono())){
+           sh.appendSql(" AND obj.foliono = ? ");
+           sh.insertValue(posDishcard.getFoliono().trim());
+        }
+        if(isNotNull(posDishcard.getSiteno())){
+           sh.appendSql(" AND obj.siteno = ? ");
+           sh.insertValue(posDishcard.getSiteno().trim());
+        }
+        if(isNotNull(posDishcard.getCreateUser())){
+            sh.appendSql(" AND obj.createUser = ? ");
+            sh.insertValue(posDishcard.getCreateUser().trim());
+         }
+        if(posDishcard.getCreateDatetime()!= null){
+            sh.appendSql(" AND obj.createDatetime = ? ");
+            sh.insertValue(posDishcard.getCreateDatetime());
+         }
+         if(isNotNull(posDishcard.getModifyUser())){
+            sh.appendSql(" AND obj.modifyUser = ? ");
+            sh.insertValue(posDishcard.getModifyUser().trim());
+         }
+        if(posDishcard.getModifyDatetime()!= null){
+            sh.appendSql(" AND obj.modifyDatetime = ? ");
+            sh.insertValue(posDishcard.getModifyDatetime());
+         }
+    }
+  }
+
+@Override
+public List<PosDishcard> getPosDishcardListBysql(String sql) {
+	// TODO Auto-generated method stub
+	SQLHelper sh = new SQLHelper(sql);
+	 //findByNativeSQL(sh, PosDishcard.class);
+	return find(sh);
+}
+@Override
+public String updateKitchenMsg(final Long hotelId, final Long hotelGroupId, final String accnt,final String type,final String mode,final Integer id,final String oldTableNo,final String newTableNo,final String station,final String empno,final String kitmsg){
+	String sql = "{CALL up_pos_input_dishcard_kitmsg(?,?,?,?,?,?,?,?,?,?,?,?,?)}";	
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	Object object = getJdbcTemplate().execute(sql,new CallableStatementCallback(){
+		public Object doInCallableStatement(CallableStatement cs) throws SQLException, DataAccessException 
+		{
+			cs.setLong(1, hotelGroupId);
+			cs.setLong(2, hotelId);
+			cs.setString(3, accnt);
+			cs.setString(4, type);
+			cs.setString(5, mode);
+			cs.setInt(6, id);
+			cs.setString(7, oldTableNo);
+			cs.setString(8, newTableNo);
+			cs.setString(9, station);
+			cs.setString(10, empno);
+			cs.setString(11, kitmsg);
+			cs.registerOutParameter(12,java.sql.Types.VARCHAR);
+			cs.registerOutParameter(13,java.sql.Types.VARCHAR);
+		    cs.execute();
+		    return cs.getString(13);
+		}
+	});		
+	return object.toString().trim();
+}
+
+}

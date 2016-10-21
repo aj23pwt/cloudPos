@@ -1,0 +1,313 @@
+package com.greencloud.dao.impl;
+import com.aua.util.SQLHelper;
+import com.aua.dao.impl.BaseDaoImpl;
+
+import static com.aua.util.StringHelper.*;
+
+import java.util.List;
+
+import com.greencloud.entity.PosPay;
+import com.greencloud.dao.IPosPayDao;
+
+import org.springframework.dao.DataAccessException;
+
+   /**
+   * operate PosPay into db
+   *@author 
+   *@version 1.0
+   *@date 2015-04-01 13:44
+   */
+  public class PosPayDaoImpl extends BaseDaoImpl implements IPosPayDao{
+
+  /**
+   *save posPay object  method
+   *@param posPay PosPay 
+   *@throws DataAccessException 
+   *@author  
+   *@version 1.0
+   *@date 2015-04-01 13:44
+   */
+  public void save(PosPay posPay) throws DataAccessException {
+       super.save(posPay);
+  }
+  
+  /**
+   *update posPay method
+   *@param posPay PosPay
+   *@throws DataAccessException 
+   *@author 
+   *@version 1.0
+   *@date 2015-04-01 13:44
+   */
+  public void update(PosPay posPay) throws DataAccessException{
+     super.update(posPay);
+  }
+  
+   /**
+   *save or update posPay object method
+   *@param posPay PosPay
+   *@throws DataAccessException
+   *@author  
+   *@version 1.0
+   *@date 2015-04-01 13:44
+   */
+  public void saveOrUpdate(PosPay posPay) throws DataAccessException{
+     super.saveOrUpdate(posPay);
+  }
+  
+   /**
+   *query posPay collection method
+   *@param posPay PosPay send query vo 
+   *@param firstResult 
+   *@param maxResults 
+   *@throws DataAccessException 
+   *@author 
+   *@version 1.0
+   *@date 2015-04-01  13:44
+   */
+  public List<PosPay> list(PosPay posPay,int firstResult ,int maxResults)throws DataAccessException{
+  	 SQLHelper sh = new SQLHelper("SELECT obj FROM PosPay obj WHERE 1=1 ");
+  	 spellSQL(sh,posPay);
+  	 sh.appendSql(" ORDER BY obj.id DESC");
+  	 sh.setFirstResult(firstResult);
+  	 sh.setMaxResults(maxResults);
+  	 return find(sh);
+  }
+  
+   /**
+   *query collection method  
+   *@param posPay PosPay send query vo 
+   *@throws DataAccessException
+   *@author 
+   *@version 1.0
+   *@date 2015-04-01 13:44
+   */
+  public List<PosPay> list(PosPay posPay)throws DataAccessException{
+	  SQLHelper sh = new SQLHelper("SELECT obj FROM PosPay obj WHERE 1=1 ");
+	  spellSQL(sh,posPay);
+	  sh.appendSql(" ORDER BY obj.id DESC");
+	  return find(sh);
+  }
+  
+  /**
+   *count obj amount
+   *@param posPay PosPay query vo
+   *@throws DataAccessException
+   *@author 
+   *@date 2015-04-01 13:44
+   */
+  public int count(PosPay posPay)throws DataAccessException
+  {
+    SQLHelper sh = new SQLHelper("SELECT count(obj) FROM PosPay obj WHERE 1=1 ");
+    spellSQL(sh,posPay);
+    return count(sh);
+  }
+  
+   /**
+   *query a posPay by id 
+   *@param id 
+   *@throws DataAccessException 
+   *@author 
+   *@date 2015-04-01 13:44
+   */
+  public PosPay load(Long id)throws DataAccessException
+  {
+    return load(PosPay.class ,id);
+  }
+  
+  /*
+   *basic spell SQL method 
+   *@param posPay query vo
+   *@throws DataAccessException 
+   *@author weihuawon
+   *@date 2015-04-01 13:44
+   */
+  private void spellSQL(SQLHelper sh,PosPay posPay)
+  {
+    if(posPay != null){
+    	if(posPay.getId()!= null){
+            sh.appendSql(" AND obj.id = ? ");
+            sh.insertValue(posPay.getId());
+         }
+         if(posPay.getHotelGroupId()!= null){
+            sh.appendSql(" AND obj.hotelGroupId = ? ");
+            sh.insertValue(posPay.getHotelGroupId());
+         }
+         if(posPay.getHotelId()!= null){
+            sh.appendSql(" AND obj.hotelId = ? ");
+            sh.insertValue(posPay.getHotelId());
+         }
+        if(isNotNull(posPay.getAccnt())){
+           sh.appendSql(" AND obj.accnt = ? ");
+           sh.insertValue(posPay.getAccnt().trim());
+        }
+       if(posPay.getInumber()!= null){
+           sh.appendSql(" AND obj.inumber = ? ");
+           sh.insertValue(posPay.getInumber());
+        }
+       if(posPay.getAnumber()!= null){
+           sh.appendSql(" AND obj.anumber = ? ");
+           sh.insertValue(posPay.getAnumber());
+        }
+       if(posPay.getSubid()!= null){
+           sh.appendSql(" AND obj.subid = ? ");
+           sh.insertValue(posPay.getSubid());
+        }
+        if(isNotNull(posPay.getTrand())){
+           sh.appendSql(" AND obj.trand = ? ");
+           sh.insertValue(posPay.getTrand().trim());
+        }
+        if(isNotNull(posPay.getTaccnt())){
+           sh.appendSql(" AND obj.taccnt = ? ");
+           sh.insertValue(posPay.getTaccnt().trim());
+        }
+       if(posPay.getTnumber()!= null){
+           sh.appendSql(" AND obj.tnumber = ? ");
+           sh.insertValue(posPay.getTnumber());
+        }
+       if(posPay.getTsubid()!= null){
+           sh.appendSql(" AND obj.tsubid = ? ");
+           sh.insertValue(posPay.getTsubid());
+        }
+        if(isNotNull(posPay.getShift())){
+           sh.appendSql(" AND obj.shift = ? ");
+           sh.insertValue(posPay.getShift().trim());
+        }
+        if(isNotNull(posPay.getEmpid())){
+           sh.appendSql(" AND obj.empid = ? ");
+           sh.insertValue(posPay.getEmpid().trim());
+        }
+        if(isNotNull(posPay.getTshift())){
+           sh.appendSql(" AND obj.tshift = ? ");
+           sh.insertValue(posPay.getTshift().trim());
+        }
+        if(isNotNull(posPay.getTempid())){
+           sh.appendSql(" AND obj.tempid = ? ");
+           sh.insertValue(posPay.getTempid().trim());
+        }
+       if(posPay.getBizDate()!= null){
+           sh.appendSql(" AND obj.bizDate = ? ");
+           sh.insertValue(posPay.getBizDate());
+        }
+       if(posPay.getLogdate()!= null){
+           sh.appendSql(" AND obj.logdate = ? ");
+           sh.insertValue(posPay.getLogdate());
+        }
+       if(posPay.getTbdate()!= null){
+           sh.appendSql(" AND obj.tbdate = ? ");
+           sh.insertValue(posPay.getTbdate());
+        }
+       if(posPay.getOldate()!= null){
+           sh.appendSql(" AND obj.oldate = ? ");
+           sh.insertValue(posPay.getOldate());
+        }
+        if(isNotNull(posPay.getOpccode())){
+           sh.appendSql(" AND obj.opccode = ? ");
+           sh.insertValue(posPay.getOpccode().trim());
+        }
+        if(isNotNull(posPay.getPccode())){
+           sh.appendSql(" AND obj.pccode = ? ");
+           sh.insertValue(posPay.getPccode().trim());
+        }
+        if(isNotNull(posPay.getDescript())){
+           sh.appendSql(" AND obj.descript = ? ");
+           sh.insertValue(posPay.getDescript().trim());
+        }
+        if(isNotNull(posPay.getDescriptEn())){
+           sh.appendSql(" AND obj.descriptEn = ? ");
+           sh.insertValue(posPay.getDescriptEn().trim());
+        }
+        if(isNotNull(posPay.getPaytype())){
+           sh.appendSql(" AND obj.paytype = ? ");
+           sh.insertValue(posPay.getPaytype().trim());
+        }
+       if(posPay.getNumb()!= null){
+           sh.appendSql(" AND obj.numb = ? ");
+           sh.insertValue(posPay.getNumb());
+        }
+       if(posPay.getCharge()!= null){
+           sh.appendSql(" AND obj.charge = ? ");
+           sh.insertValue(posPay.getCharge());
+        }
+       if(posPay.getCredit()!= null){
+           sh.appendSql(" AND obj.credit = ? ");
+           sh.insertValue(posPay.getCredit());
+        }
+       if(posPay.getBal()!= null){
+           sh.appendSql(" AND obj.bal = ? ");
+           sh.insertValue(posPay.getBal());
+        }
+        if(isNotNull(posPay.getBillno())){
+           sh.appendSql(" AND obj.billno = ? ");
+           sh.insertValue(posPay.getBillno().trim());
+        }
+        if(isNotNull(posPay.getFoliono())){
+           sh.appendSql(" AND obj.foliono = ? ");
+           sh.insertValue(posPay.getFoliono().trim());
+        }
+        if(isNotNull(posPay.getOrderno())){
+           sh.appendSql(" AND obj.orderno = ? ");
+           sh.insertValue(posPay.getOrderno().trim());
+        }
+        if(isNotNull(posPay.getSign())){
+           sh.appendSql(" AND obj.sign = ? ");
+           sh.insertValue(posPay.getSign().trim());
+        }
+        if(isNotNull(posPay.getFlag())){
+           sh.appendSql(" AND obj.flag = ? ");
+           sh.insertValue(posPay.getFlag().trim());
+        }
+        if(isNotNull(posPay.getSta())){
+           sh.appendSql(" AND obj.sta = ? ");
+           sh.insertValue(posPay.getSta().trim());
+        }
+        if(isNotNull(posPay.getReason())){
+           sh.appendSql(" AND obj.reason = ? ");
+           sh.insertValue(posPay.getReason().trim());
+        }
+        if(isNotNull(posPay.getInfo1())){
+           sh.appendSql(" AND obj.info1 = ? ");
+           sh.insertValue(posPay.getInfo1().trim());
+        }
+        if(isNotNull(posPay.getInfo2())){
+           sh.appendSql(" AND obj.info2 = ? ");
+           sh.insertValue(posPay.getInfo2().trim());
+        }
+        if(isNotNull(posPay.getBank())){
+           sh.appendSql(" AND obj.bank = ? ");
+           sh.insertValue(posPay.getBank().trim());
+        }
+        if(isNotNull(posPay.getCardcode())){
+           sh.appendSql(" AND obj.cardcode = ? ");
+           sh.insertValue(posPay.getCardcode().trim());
+        }
+        if(isNotNull(posPay.getDtlAccnt())){
+           sh.appendSql(" AND obj.dtlAccnt = ? ");
+           sh.insertValue(posPay.getDtlAccnt().trim());
+        }
+        if(isNotNull(posPay.getCreateUser())){
+            sh.appendSql(" AND obj.createUser = ? ");
+            sh.insertValue(posPay.getCreateUser().trim());
+         }
+        if(posPay.getCreateDatetime()!= null){
+            sh.appendSql(" AND obj.createDatetime = ? ");
+            sh.insertValue(posPay.getCreateDatetime());
+         }
+         if(isNotNull(posPay.getModifyUser())){
+            sh.appendSql(" AND obj.modifyUser = ? ");
+            sh.insertValue(posPay.getModifyUser().trim());
+         }
+        if(posPay.getModifyDatetime()!= null){
+            sh.appendSql(" AND obj.modifyDatetime = ? ");
+            sh.insertValue(posPay.getModifyDatetime());
+         }
+    }
+  }
+
+@Override
+public List<PosPay> getPosPayList(String sql) throws DataAccessException {
+	// TODO Auto-generated method stub
+	 SQLHelper sh = new SQLHelper(sql);
+		return findByNativeSQL(sh,PosPay.class);
+}
+}

@@ -1,0 +1,198 @@
+package com.greencloud.dao.impl;
+import com.aua.util.SQLHelper;
+import com.aua.dao.impl.BaseDaoImpl;
+
+import static com.aua.util.StringHelper.*;
+
+import java.util.List;
+
+import com.greencloud.entity.PosAccntSync;
+import com.greencloud.dao.IPosAccntSyncDao;
+
+import org.springframework.dao.DataAccessException;
+
+   /**
+   * operate PosAccntSync into db
+   *@author 
+   *@version 1.0
+   *@date 2015-07-04 22:31
+   */
+  public class PosAccntSyncDaoImpl extends BaseDaoImpl implements IPosAccntSyncDao{
+
+  /**
+   *save posAccntSync object  method
+   *@param posAccntSync PosAccntSync 
+   *@throws DataAccessException 
+   *@author  
+   *@version 1.0
+   *@date 2015-07-04 22:31
+   */
+  public void save(PosAccntSync posAccntSync) throws DataAccessException {
+       super.save(posAccntSync);
+  }
+  
+  /**
+   *update posAccntSync method
+   *@param posAccntSync PosAccntSync
+   *@throws DataAccessException 
+   *@author 
+   *@version 1.0
+   *@date 2015-07-04 22:31
+   */
+  public void update(PosAccntSync posAccntSync) throws DataAccessException{
+     super.update(posAccntSync);
+  }
+  
+   /**
+   *save or update posAccntSync object method
+   *@param posAccntSync PosAccntSync
+   *@throws DataAccessException
+   *@author  
+   *@version 1.0
+   *@date 2015-07-04 22:31
+   */
+  public void saveOrUpdate(PosAccntSync posAccntSync) throws DataAccessException{
+     super.saveOrUpdate(posAccntSync);
+  }
+  
+   /**
+   *query posAccntSync collection method
+   *@param posAccntSync PosAccntSync send query vo 
+   *@param firstResult 
+   *@param maxResults 
+   *@throws DataAccessException 
+   *@author 
+   *@version 1.0
+   *@date 2015-07-04  22:31
+   */
+  public List<PosAccntSync> list(PosAccntSync posAccntSync,int firstResult ,int maxResults)throws DataAccessException{
+  	 SQLHelper sh = new SQLHelper("SELECT obj FROM PosAccntSync obj WHERE 1=1 ");
+  	 spellSQL(sh,posAccntSync);
+  	 sh.appendSql(" ORDER BY obj.id DESC");
+  	 sh.setFirstResult(firstResult);
+  	 sh.setMaxResults(maxResults);
+  	 return find(sh);
+  }
+  
+   /**
+   *query collection method  
+   *@param posAccntSync PosAccntSync send query vo 
+   *@throws DataAccessException
+   *@author 
+   *@version 1.0
+   *@date 2015-07-04 22:31
+   */
+  public List<PosAccntSync> list(PosAccntSync posAccntSync)throws DataAccessException{
+  	 SQLHelper sh = new SQLHelper("SELECT obj FROM PosAccntSync obj WHERE 1=1 ");
+  	 spellSQL(sh,posAccntSync);
+  	 sh.appendSql(" ORDER BY obj.id DESC");
+  	 return find(sh);
+  }
+  
+  /**
+   *count obj amount
+   *@param posAccntSync PosAccntSync query vo
+   *@throws DataAccessException
+   *@author 
+   *@date 2015-07-04 22:31
+   */
+  public int count(PosAccntSync posAccntSync)throws DataAccessException
+  {
+    SQLHelper sh = new SQLHelper("SELECT count(obj) FROM PosAccntSync obj WHERE 1=1 ");
+    spellSQL(sh,posAccntSync);
+    return count(sh);
+  }
+  
+   /**
+   *query a posAccntSync by id 
+   *@param id 
+   *@throws DataAccessException 
+   *@author 
+   *@date 2015-07-04 22:31
+   */
+  public PosAccntSync load(Long id)throws DataAccessException
+  {
+    return load(PosAccntSync.class ,id);
+  }
+  
+  /*
+   *basic spell SQL method 
+   *@param posAccntSync query vo
+   *@throws DataAccessException 
+   *@author weihuawon
+   *@date 2015-07-04 22:31
+   */
+  private void spellSQL(SQLHelper sh,PosAccntSync posAccntSync)
+  {
+    if(posAccntSync != null){
+    	if(posAccntSync.getId()!= null){
+            sh.appendSql(" AND obj.id = ? ");
+            sh.insertValue(posAccntSync.getId());
+         }
+         if(posAccntSync.getHotelGroupId()!= null){
+            sh.appendSql(" AND obj.hotelGroupId = ? ");
+            sh.insertValue(posAccntSync.getHotelGroupId());
+         }
+         if(posAccntSync.getHotelId()!= null){
+            sh.appendSql(" AND obj.hotelId = ? ");
+            sh.insertValue(posAccntSync.getHotelId());
+         }
+        if(isNotNull(posAccntSync.getEntityName())){
+           sh.appendSql(" AND obj.entityName = ? ");
+           sh.insertValue(posAccntSync.getEntityName().trim());
+        }
+        if(isNotNull(posAccntSync.getAccnt())){
+           sh.appendSql(" AND obj.accnt = ? ");
+           sh.insertValue(posAccntSync.getAccnt().trim());
+        }
+        if(isNotNull(posAccntSync.getResAccnt())){
+           sh.appendSql(" AND obj.resAccnt = ? ");
+           sh.insertValue(posAccntSync.getResAccnt().trim());
+        }
+        if(isNotNull(posAccntSync.getType())){
+           sh.appendSql(" AND obj.type = ? ");
+           sh.insertValue(posAccntSync.getType().trim());
+        }
+        if(isNotNull(posAccntSync.getIsSync())){
+            sh.appendSql(" AND obj.isSync = ? ");
+            sh.insertValue(posAccntSync.getIsSync().trim());
+         }
+        if(isNotNull(posAccntSync.getIsHalt())){
+           sh.appendSql(" AND obj.isHalt = ? ");
+           sh.insertValue(posAccntSync.getIsHalt().trim());
+        }
+        if(isNotNull(posAccntSync.getCreateUser())){
+            sh.appendSql(" AND obj.createUser = ? ");
+            sh.insertValue(posAccntSync.getCreateUser().trim());
+         }
+        if(posAccntSync.getCreateDatetime()!= null){
+            sh.appendSql(" AND obj.createDatetime = ? ");
+            sh.insertValue(posAccntSync.getCreateDatetime());
+         }
+         if(isNotNull(posAccntSync.getModifyUser())){
+            sh.appendSql(" AND obj.modifyUser = ? ");
+            sh.insertValue(posAccntSync.getModifyUser().trim());
+         }
+        if(posAccntSync.getModifyDatetime()!= null){
+            sh.appendSql(" AND obj.modifyDatetime = ? ");
+            sh.insertValue(posAccntSync.getModifyDatetime());
+         }
+    }
+  }
+
+@Override
+public void updateByInsterSql(long hotelGroupId, long hotelId, String accnt) throws DataAccessException 
+{
+	SQLHelper sh = new SQLHelper();	
+	sh.appendSql("   INSERT pos_accnt_sync  (hotel_group_id,hotel_id,entity_name,accnt,res_accnt,TYPE,is_sync,is_halt,create_user,create_datetime,modify_user,modify_datetime) "
+	+ "SELECT hotel_group_id,hotel_id,'com.greencloud.entity.PosMaster',accnt,resno,'UPMASTER','F','F',modify_user,NOW(),modify_user,NOW()  "
+	+ "FROM pos_master WHERE  hotel_group_id = ?                                                   ");
+	sh.insertValue(hotelGroupId);
+	sh.appendSql("  and    hotel_id = ?                                                                 ");
+	sh.insertValue(hotelId);
+	sh.appendSql("  and    accnt = ?                                                                    ");
+	sh.insertValue(accnt);
+	bulkUpdateByNativeSQL(sh);
+}
+
+}

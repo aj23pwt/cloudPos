@@ -1,0 +1,1036 @@
+package com.greencloud.service.impl;
+
+import static com.greencloud.util.StringUtil.isNotBlank;
+
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.lang.math.RandomUtils;
+import org.springframework.dao.DataAccessException;
+
+import com.aua.dao.IBaseDao;
+import com.aua.service.impl.BaseServiceImpl;
+import com.aua.util.BeanUtils;
+import com.aua.util.Container;
+import com.greencloud.constant.BizExceptionConstant;
+import com.greencloud.dao.ICateringDao;
+import com.greencloud.dao.ICommonDao;
+import com.greencloud.dao.IMasterBaseDao;
+import com.greencloud.dao.IPosSubDao;
+import com.greencloud.dao.ISysOptionDao;
+import com.greencloud.dto.CateringBatchUpdateDto;
+import com.greencloud.dto.CateringDto;
+import com.greencloud.dto.CateringSearchDto;
+import com.greencloud.dto.CateringTimeItem;
+import com.greencloud.entity.Catering;
+import com.greencloud.entity.CateringHistory;
+import com.greencloud.entity.CateringMessage;
+import com.greencloud.entity.CateringMessageHistory;
+import com.greencloud.entity.CateringPlace;
+import com.greencloud.entity.CateringResource;
+import com.greencloud.entity.CateringResourceMap;
+import com.greencloud.entity.CateringResourceMapHistory;
+import com.greencloud.entity.CodeRentalShowPeriod;
+import com.greencloud.entity.MasterBase;
+import com.greencloud.entity.SalesMan;
+import com.greencloud.exception.BizException;
+import com.greencloud.service.ICateringService;
+import com.greencloud.util.DateUtil;
+import com.greencloud.util.StringUtil;
+import com.greencloud.util.UserManager;
+import com.springsource.util.common.CollectionUtils;
+
+/**
+ * 
+ * @author yangchao
+ * @email yangchao@ipms.cn
+ *
+ */
+public class CateringServiceImpl extends BaseServiceImpl implements ICateringService {
+
+	private ICateringDao cateringDao;
+	private ICommonDao commonDao;
+	private ISysOptionDao sysOptionDao;
+	private IMasterBaseDao masterBaseDao;
+	private IPosSubDao posSubDao ;
+	
+	public void setPosSubDao(IPosSubDao posSubDao)
+	{
+		this.posSubDao = posSubDao;
+	}
+
+	protected IBaseDao getDao() {
+		return cateringDao;
+	}
+	
+	public void setCateringDao(ICateringDao cateringDao) {
+		this.cateringDao = cateringDao;
+	}
+	public void setCommonDao(ICommonDao commonDao) {
+		this.commonDao = commonDao;
+	}
+	public void setSysOptionDao(ISysOptionDao sysOptionDao) {
+		this.sysOptionDao = sysOptionDao;
+	}
+	public void setMasterBaseDao(IMasterBaseDao masterBaseDao) {
+		this.masterBaseDao = masterBaseDao;
+	}
+	/**
+	 * 修改或新建会议场地
+	 */
+	@Override
+	public CateringPlace saveOrUpdateCateringPlace(Long hotelGroupId,Long hotelId, CateringPlace cp) {
+		CateringPlace oldCp = findCateringPlaceByCode(hotelGroupId, hotelId,cp.getCode());
+
+		if (cp.getId() == null) {
+			if (oldCp != null)
+				throw new BizException("代码[" + cp.getCode() + "]已经被使用.",BizExceptionConstant.CODE_ALREADY_USED);
+
+			cateringDao.save(cp);
+		} else {
+			cp.setCode(oldCp.getCode());
+			cateringDao.merge(cp);
+		}
+		return cateringDao.get(CateringPlace.class, cp.getId());
+	}
+	
+	/**
+	 * 删除会议场地
+	 */
+	@Override
+	public void deleteCateringPlace(Long hotelGroupId, Long hotelId,CateringPlace cp) {
+		if(isPlaceInUse(hotelGroupId, hotelId, cp.getCode())){
+			throw new BizException("场地[code="+cp.getCode()+"]已经被使用，不能删除",BizExceptionConstant.CODE_ALREADY_USED);
+		}
+		
+		commonDao.deleteData(cp);
+	}
+	
+	/**
+	 * 会议场地是否在使用,过滤有效的宴会单状态
+	 * @param hotelGroupId
+	 * @param hotelId
+	 * @param placeCode
+	 * @return
+	 */
+	private boolean isPlaceInUse(Long hotelGroupId,Long hotelId,String placeCode){
+		String filterSql = "and cateringPlace = '"+placeCode+"'";
+		String staFilter = " and sta in (";
+		String[] staArray = Catering.effectStaArray();
+
+		for (int i = 0; i < staArray.length; i++) {
+			staFilter += "'" + staArray[i] + "'";
+			if (i < staArray.length - 1)
+				staFilter += ",";
+		}
+		
+		filterSql += staFilter + ")";
+		
+		List<Catering> list = commonDao.listDataWithClazz(hotelGroupId,hotelId,Catering.class, filterSql,null);
+		return list != null && list.size() > 0;
+	}
+	
+
+	/**
+	 * 根据资源分类查找资源
+	 */
+	@Override
+	public List<CateringResource> listResrouceByCategory(Long hotelGroupId,Long hotelId, String category) {
+		String sqlFilter = "and category = '"+StringUtil.trimToEmpty(category)+"'";
+		List<CateringResource> list = commonDao.listDataWithClazz(hotelGroupId,hotelId,CateringResource.class, sqlFilter,null);
+		return list;
+	}
+
+	/**
+	 * 删除资源
+	 */
+	@Override
+	public void deleteCateringResource(Long hotelGroupId, Long hotelId,CateringResource cr) {
+		if(cateringDao.isResourceInUse(hotelGroupId,hotelId,cr.getCode())){
+			throw new BizException("资源[code="+cr.getCode()+"]已经被使用，不能删除",BizExceptionConstant.CODE_ALREADY_USED);
+		}
+		
+		cateringDao.delete(cr);
+	}
+	
+	/**
+	 * 将宴会列表转换为Dto列表
+	 * @param caterings
+	 * @return
+	 */
+	private Map<String,String> placeMap;
+	private Map<String,String> resourceMap;
+	private Map<String,String> salesmanMap;
+	
+	private synchronized List<CateringDto> transferToCateringDto(List<Catering> caterings){
+		placeMap = null;
+		resourceMap = null;
+		salesmanMap = null;
+		List<CateringDto> list = new ArrayList<CateringDto>();
+		for(Catering catering : caterings){
+			CateringDto ctDto = new CateringDto();
+			ctDto.setCatering(catering);
+			
+			List<CateringResourceMap> cmlist = listCateringResourceMapByCateringId(catering.getHotelGroupId(),catering.getHotelId(),catering.getId());
+			ctDto.setCateringResourceMaps(cmlist);
+			
+			translateCateringDto(ctDto);
+			
+			list.add(ctDto);
+		}
+		
+		return list;
+	}
+	
+	/**
+	 * 翻译宴会Dto
+	 * @param ctDto
+	 */
+	private void translateCateringDto(CateringDto ctDto){
+		translatePlace(ctDto);
+		translateResourceDes(ctDto);
+		translateSalesmanDes(ctDto);
+	}
+	
+	private void translateSalesmanDes(CateringDto ctDto) {
+		if(StringUtil.isNotBlank(ctDto.getCatering().getSalesman())){
+			if(salesmanMap == null){
+				salesmanMap = new HashMap<String, String>();
+				if(StringUtil.isNotBlank(ctDto.getCatering().getSalesman())){
+					List<SalesMan> list = commonDao.listDataWithClazz(ctDto.getCatering().getHotelGroupId(), 0L, SalesMan.class);
+					
+					for(SalesMan sm : list){
+						salesmanMap.put(sm.getCode(), sm.getName());
+					}
+				}
+			}
+			
+			ctDto.setSalesmanDescript(salesmanMap.get(ctDto.getCatering().getSalesman()));
+		}
+	}
+
+	/**
+	 * 翻译宴会资源描述
+	 * @param ctDto
+	 */
+	private void translateResourceDes(CateringDto ctDto) {
+		if(resourceMap == null){
+			List<CateringResource> list = commonDao.listDataWithClazz(ctDto.getCatering().getHotelGroupId(), ctDto.getCatering().getHotelId(), CateringResource.class);
+			resourceMap = new HashMap<String, String>();
+			
+			for(CateringResource cr : list){
+				resourceMap.put(cr.getCode(), cr.getName());
+			}
+		}
+		
+		ctDto.setResourceDesMap(resourceMap);
+	}
+
+	/**
+	 * 翻译宴会场地
+	 * @param ctDto
+	 */
+	private void translatePlace(CateringDto ctDto){
+		if(placeMap == null){
+			placeMap = new HashMap<String, String>();
+			List<CateringPlace> list = commonDao.listDataWithClazz(ctDto.getCatering().getHotelGroupId(),ctDto.getCatering().getHotelId(),CateringPlace.class);
+			
+			for(CateringPlace e : list){
+				placeMap.put(e.getCode(), e.getName());
+			}
+		}
+		
+		ctDto.setCateringPlaceDescript(placeMap.get(ctDto.getCatering().getCateringPlace()));
+	}
+	
+	/**
+	 * 判断日期是否重复
+	 * @param ct1
+	 * @param ct2
+	 * @return
+	 */
+	private boolean isDateConflict(Catering ct1,Catering ct2){
+		if(!ct1.getDateEnd().after(ct2.getDateBegin()) || !ct1.getDateBegin().before(ct2.getDateEnd())){
+			return false;
+		}else{
+			return true;
+		}
+	}
+
+	@Override
+	public void saveOrUpdateCateringDto(Long hotelGroupId, Long hotelId,CateringDto ctDto) {
+		CateringSearchDto csdto = new CateringSearchDto();
+		csdto.setStas(Catering.effectSta());
+		csdto.setCateringPlaces(ctDto.getCatering().getCateringPlace());
+		
+		Container<Catering> result = cateringDao.listCateringBySearchDto(hotelGroupId, hotelId, csdto);
+		List<Catering> existCaterings = result.getResults();
+		
+		if(ctDto.getCatering().getId() == null){
+			if(CollectionUtils.isEmpty(ctDto.getSelectedTimeItems())){
+				for(Catering existCatering : existCaterings){
+					if(!existCatering.getId().equals(ctDto.getCatering().getId())){
+						if(ctDto.getCatering().isEffectSta() && isDateConflict(ctDto.getCatering(), existCatering)){
+							throw new BizException("与宴会["+existCatering.getTheme()+"]日期冲突.",BizExceptionConstant.CODE_ALREADY_USED);
+						}
+					}
+				}
+				
+				if(ctDto.getCatering().getRsvId() != null){
+					MasterBase mb = masterBaseDao.get(MasterBase.class, ctDto.getCatering().getRsvId());
+					if(mb != null){
+						if(mb.getCompanyId() != null && mb.getCompanyId().compareTo(0L) != 0)
+							ctDto.getCatering().setCompanyId(mb.getCompanyId());
+						else if(mb.getAgentId() != null && mb.getAgentId().compareTo(0L) != 0)
+							ctDto.getCatering().setCompanyId(mb.getAgentId());
+						else
+							ctDto.getCatering().setCompanyId(mb.getSourceId());
+					}
+				}
+
+				cateringDao.save(ctDto.getCatering());
+			}else{
+				saveCateringFromTimeItems(hotelGroupId,hotelId,ctDto.getCatering(),ctDto.getSelectedTimeItems(),ctDto.getDateInterval());
+			}
+		}else{
+			for(Catering existCatering : existCaterings){
+				if(!existCatering.getId().equals(ctDto.getCatering().getId())){
+					if(ctDto.getCatering().isEffectSta() && isDateConflict(ctDto.getCatering(), existCatering)){
+						throw new BizException("与宴会["+existCatering.getTheme()+"]日期冲突.",BizExceptionConstant.CODE_ALREADY_USED);
+					}
+				}
+			}
+			cateringDao.merge(ctDto.getCatering());
+		}
+	}
+
+	/**
+	 * 选中时间段保存宴会
+	 * @param hotelGroupId
+	 * @param hotelId
+	 * @param catering
+	 * @param items
+	 */
+	private void saveCateringFromTimeItems(Long hotelGroupId, Long hotelId,Catering catering,List<CateringTimeItem> items,Integer dateInterval) {
+		//按照场地将时段放在List中
+		Map<String, List<CateringTimeItem>> placeItemsMap = new HashMap<String, List<CateringTimeItem>>();
+		for(CateringTimeItem cti : items){
+			if(!placeItemsMap.containsKey(cti.getCateringPlace())){
+				List<CateringTimeItem> value = new ArrayList<CateringTimeItem>();
+				value.add(cti);
+				placeItemsMap.put(cti.getCateringPlace(), value);
+			}else{
+				placeItemsMap.get(cti.getCateringPlace()).add(cti);
+			}
+		}
+		
+		int number = 0;
+		for(Map.Entry<String, List<CateringTimeItem>> entry : placeItemsMap.entrySet()){
+			List<CateringTimeItem> placeTimeItems = entry.getValue();
+			Date begin = null;
+			Date end = null;
+			//找到最大时间和最小时间
+			for(CateringTimeItem cti : placeTimeItems){
+				if(begin == null || begin.after(cti.getDate())){
+					begin = cti.getDate();
+				}
+				if(end == null || end.before(cti.getDate())){
+					end = cti.getDate();
+				}
+			}
+			//天数
+			Integer interval = (dateInterval != null ? dateInterval : (DateUtil.getDiffDays(begin, end) + 1));
+			//根据天数获取时段代码
+			String[] codeArray = generateTimeDefine(hotelGroupId, hotelId,interval);
+			//时段代码与时段定义的Map
+			Map<String,CodeRentalShowPeriod> codeRentalMap = createCodeRentalMap(hotelGroupId, hotelId);
+			
+			//记录每一场会议的开始时间和结束时间
+			Date start = null;
+			Date stop = null;
+			
+			while(!begin.after(end)){
+				for(String code : codeArray){
+					//标记选中的时间段是否是连续
+					boolean link = false;
+					CodeRentalShowPeriod crsp = codeRentalMap.get(code);
+					
+					for(CateringTimeItem cti : placeTimeItems){
+						if(cti.getDate().equals(begin) && code.equalsIgnoreCase(cti.getTimePeriod())){
+							link = true;
+							stop = generateDate(begin, crsp.getTimeEnd());
+							if(start == null)
+								start = generateDate(begin, crsp.getTimeBegin());
+						}
+					}
+					
+					//时段不连续，或者此时段是独立的，则生成单独的会议主单
+					if(!link || "T".equalsIgnoreCase(crsp.getIsIndependent())){
+						if(start != null && stop != null){
+							CateringDto newDto = new CateringDto();
+							Catering newCatering = catering.cloneEx();
+							newCatering.setCateringPlace(entry.getKey());
+							newCatering.setDateBegin(start);
+							newCatering.setDateEnd(stop);
+							newDto.setCatering(newCatering);
+							
+							if(start.after(stop))
+								throw new BizException();
+							
+							saveOrUpdateCateringDto(hotelGroupId, hotelId, newDto);
+							
+							number ++;
+							
+							start = null;
+							stop = null;
+						}
+					}
+				}
+				
+				begin = DateUtil.addDays(begin, 1);
+			}
+			
+			//如果时段已经循环完成，且选中的方块全部是连续的，则会执行这里
+			if(start != null && stop != null){
+				CateringDto newDto = new CateringDto();
+				Catering newCatering = catering.cloneEx();
+				newCatering.setCateringPlace(entry.getKey());
+				newCatering.setDateBegin(start);
+				newCatering.setDateEnd(stop);
+				newDto.setCatering(newCatering);
+				
+				saveOrUpdateCateringDto(hotelGroupId, hotelId, newDto);
+				number ++;
+			}
+		}
+		
+		updateRsvExtraFlag(hotelGroupId, hotelId,catering.getRsvId(), number);
+	}
+	
+	 private void updateRsvExtraFlag(Long hotelGroupId,Long hotelId,Long accnt,int length) throws DataAccessException{
+		 MasterBase mb = masterBaseDao.get(MasterBase.class, accnt);
+		 //已经转历史了就不管
+		 if(mb != null){
+			 masterBaseDao.updateMasterExtraFlag((length > 9)?"*":length+"",8, accnt, hotelGroupId,hotelId);
+		 }
+	 }
+	
+	 /**
+	  * 根据开始时间和结束时间生成时段定义的code和descript
+	  * @param hotelGroupId
+	  * @param hotelId
+	  * @param dateBegin
+	  * @param dateEnd
+	  * @return
+	  */
+	private Map<String,String[]> getTimeDefineMap(Long hotelGroupId,Long hotelId,Date dateBegin,Date dateEnd){
+		Integer interval = DateUtil.getDiffDays(dateBegin, dateEnd) + 1;
+		String[] codes = generateTimeDefine(hotelGroupId, hotelId,interval);
+		Map<String,String> timeCodeMap = createTimeCodeDefineMap(hotelGroupId,hotelId,codes);
+		String[] keys = new String[timeCodeMap.keySet().size()];
+		String[] values = new String[timeCodeMap.values().size()];
+		
+		timeCodeMap.keySet().toArray(keys);
+		timeCodeMap.values().toArray(values);
+		
+		for(int i = 0 ; i < values.length ; i++){
+			String value = values[i];
+			String newValue = value.split(",")[2];
+			
+			values[i] = newValue;
+		}
+		
+		Map<String,String[]> maps = new HashMap<String, String[]>();
+		
+		maps.put("keys", keys);
+		maps.put("values", values);
+		
+		return maps;
+	}
+	
+	@Override
+	public List<CateringResourceMap> listResourceMapByCateringId(Long hotelGroupId, Long hotelId, Long cateringId) {
+		CateringResourceMap crm = new CateringResourceMap();
+		crm.setCatering(cateringId);
+		return commonDao.listDataWithProperties(hotelGroupId, hotelId, crm);
+	}
+
+	@Override
+	public void deleteCateringResourceMap(Long hotelGroupId, Long hotelId,CateringResourceMap crm) {
+		commonDao.deleteData(crm);
+	}
+
+	private CateringMessage findCateringMessageByCateringAndResource(Long hotelGroupId, Long hotelId, Long catering,String cateringResource) {
+		CateringMessage cm = new CateringMessage();
+		cm.setCatering(catering);
+		cm.setCateringResource(cateringResource);
+		
+		List<CateringMessage> cmlist = commonDao.listDataWithProperties(hotelGroupId, hotelId, cm);
+		
+		if(cmlist != null && cmlist.size() > 0)
+			return cmlist.get(0);
+		return null;
+	}
+
+	@Override
+	public CateringResourceMap saveOrUpdateCateringResourceMap(Long hotelGroupId,Long hotelId, CateringResourceMap crm) {
+		List<CateringResourceMap> existResourceMaps = cateringDao.listEffectResourceMapByResourceCode(hotelGroupId,hotelId,crm.getCateringResource());
+		CateringResource allResources = findCateringResourceByCode(hotelGroupId,hotelId,crm.getCateringResource());
+		BigDecimal all = allResources.getAmout();
+		
+		all = all.subtract(crm.getCateringResourceNum());
+		
+		for(CateringResourceMap tcrm : existResourceMaps){
+			if(!tcrm.getId().equals(crm.getId()))
+				all = all.subtract(tcrm.getCateringResourceNum());
+		}
+		
+		if(all.compareTo(BigDecimal.ZERO) < 0){
+			crm.setCateringResourceLack(all.abs());
+		}else{
+			crm.setCateringResourceLack(BigDecimal.ZERO);
+		}
+		
+		if(crm.getId() == null){
+			commonDao.saveData(crm);
+			
+			CateringResource cr = findCateringResourceByCode(hotelGroupId,hotelId,crm.getCateringResource());
+			CateringMessage cm = findCateringMessageByCateringAndResource(hotelGroupId, hotelId, crm.getCatering(), crm.getCateringResource());
+			
+			if(cm == null && StringUtil.isNotBlank(cr.getRemark())){
+				cm = new CateringMessage();
+				cm.setCatering(crm.getCatering());
+				cm.setDepartment(cr.getDepartment());
+				cm.setMessage(cr.getRemark());
+				cm.setCateringResource(cr.getCode());
+				
+				commonDao.saveData(cm);
+			}
+			
+		}else
+			cateringDao.merge(crm);
+		
+		return crm;
+	}
+	
+	/**
+	 * 这里默认CateringList里面场地都是一样的
+	 * @param hotelGroupId
+	 * @param hotelId
+	 * @param dateBegin
+	 * @param dateEnd
+	 * @param cateringList
+	 * @return
+	 */
+	private Map<String,List<CateringTimeItem>> generateTimeItemsCollection(Long hotelGroupId,Long hotelId,Date dateBegin,Date dateEnd,List<Catering> cateringList,String place,String placeName,String[] codeArray){
+		Map<String, List<CateringTimeItem>> result = new HashMap<String, List<CateringTimeItem>>();
+		Date begin = new Date(dateBegin.getTime());
+		Date end = new Date(dateEnd.getTime());
+		
+		while(!dateBegin.after(dateEnd)){
+			
+			String key = DateUtil.format(dateBegin, "MM-dd");
+			List<CateringTimeItem> value = new ArrayList<CateringTimeItem>();
+			
+			for(String timePeriod : codeArray){
+				CateringTimeItem cti = new CateringTimeItem();
+				cti.setDate(dateBegin);
+				cti.setCateringPlace(place);
+				cti.setCateringPlaceName(placeName);
+				cti.setTimePeriod(timePeriod);
+				cti.setOccSta(0);
+				
+				value.add(cti);
+			}
+			
+			result.put(key, value);
+			
+			dateBegin = DateUtil.addDays(dateBegin, 1);
+		}
+		
+		for(Catering catering : cateringList){
+			Map<String,List<CateringTimeItem>> subMap = generateTimeItemsMap(catering,begin,end,codeArray);
+			//将单个会议生成的时间段合并到输出结果里
+			mergeToCollection(result, subMap);
+		}
+		
+		return result;
+	}
+
+	/**
+	 * 将指定的时间item合并到输出结果中
+	 * @param collection
+	 * @param subMap
+	 */
+	private void mergeToCollection(Map<String, List<CateringTimeItem>> collection,Map<String, List<CateringTimeItem>> subMap){
+		for(Map.Entry<String, List<CateringTimeItem>> entry : collection.entrySet()){
+			String key = entry.getKey();
+			List<CateringTimeItem> value = entry.getValue();
+			List<CateringTimeItem> targetValue = subMap.get(key);
+			
+			if(targetValue == null)
+				continue;
+			
+			for(CateringTimeItem collectionItem : value){
+				for(CateringTimeItem targetItem : targetValue){
+					if(collectionItem.getTimePeriod().equalsIgnoreCase(targetItem.getTimePeriod())){
+						if(targetItem.getOccSta() == 1){
+							if(collectionItem.getOccSta() == 0){
+								collectionItem.setRsvSta(targetItem.getRsvSta());
+								collectionItem.setOccSta(1);
+								collectionItem.setRsvId(targetItem.getRsvId());
+								collectionItem.setCategory(targetItem.getCategory());
+								collectionItem.setSalesman(targetItem.getSalesman());
+							}else{
+								collectionItem.setOccSta(collectionItem.getOccSta() + 1);
+								if(Catering.effectSta().contains(targetItem.getRsvSta())){
+									collectionItem.setSalesman(targetItem.getSalesman());
+									collectionItem.setRsvId(targetItem.getRsvId() + "," + collectionItem.getRsvId());
+									collectionItem.setRsvSta(targetItem.getRsvSta());
+									collectionItem.setCategory(targetItem.getCategory());
+								}else{
+									collectionItem.setRsvId(collectionItem.getRsvId() + "," + targetItem.getRsvId());
+								}
+							}
+						}
+						break;
+					}
+				}
+			}
+		}
+		
+	}
+	
+	private Map<String,List<CateringTimeItem>> generateTimeItemsMap(Catering catering,Date begin,Date end,String[] codeArray){
+		Date dateBegin = DateUtil.parseDateNoTime(begin);
+		Date dateEnd = DateUtil.parseDateNoTime(end);
+		Map<String, List<CateringTimeItem>> timeItemsMap = new HashMap<String, List<CateringTimeItem>>();
+		
+		Map<String,String> timeCodeMap = createTimeCodeDefineMap(catering.getHotelGroupId(),catering.getHotelId(),codeArray);
+		
+		while(!dateBegin.after(dateEnd)){
+			List<CateringTimeItem> timeItems = new ArrayList<CateringTimeItem>();
+			
+			for(String timeCode : codeArray){
+				CateringTimeItem cti = new CateringTimeItem();
+				cti.setCateringPlace(catering.getCateringPlace());
+				cti.setDate(dateBegin);
+				cti.setTimePeriod(timeCode);
+				cti.setRsvSta(catering.getSta());
+				cti.setCategory(catering.getCategory());
+				cti.setSalesman(catering.getSalesman());
+				
+				if(isCrossWithDefine(catering.getDateBegin(),catering.getDateEnd(), dateBegin, timeCode,timeCodeMap)){
+					cti.setOccSta(1);
+					cti.setRsvId(catering.getId().toString());
+				}else{
+					cti.setOccSta(0);
+				}
+				
+				timeItems.add(cti);
+			}
+			
+			timeItemsMap.put(DateUtil.format(dateBegin, "MM-dd"), timeItems);
+			
+			dateBegin = DateUtil.addDays(dateBegin, 1);
+		}
+		
+		return timeItemsMap;
+	}
+	
+	
+	private boolean isCrossWithDefine(Date s1,Date e1,Date nowDate,String timeCode,Map<String,String> timeCodeMap){
+		String[] define = timeCodeMap.get(timeCode).split(",");
+		Date s2 = generateDate(nowDate, define[0]);
+		Date e2 = generateDate(nowDate, define[1]);
+		
+		if(!e1.after(s2) || !s1.before(e2))
+			return false;
+		
+		return true;
+	}
+	
+	private List<CateringResourceMap> listCateringResourceMapByCateringId(Long hotelGroupId,Long hotelId,Long cateringId){
+		CateringResourceMap crm = new CateringResourceMap();
+		crm.setCatering(cateringId);
+		return commonDao.listDataWithProperties(hotelGroupId, hotelId, crm);
+	}
+
+	@Override
+	public CateringResource findCateringResourceByCode(Long hotelGroupId,Long hotelId,String code) {
+		CateringResource cr = new CateringResource();
+		cr.setHotelGroupId(hotelGroupId);
+		cr.setHotelId(hotelId);
+		cr.setCode(code);
+		return (CateringResource) commonDao.loadData(cr);
+	}
+	
+	@Override
+	public CateringPlace findCateringPlaceByCode(Long hotelGroupId,Long hotelId,String code){
+		CateringPlace cr = new CateringPlace();
+		cr.setHotelGroupId(hotelGroupId);
+		cr.setHotelId(hotelId);
+		cr.setCode(code);
+		return (CateringPlace) commonDao.loadData(cr);
+	}
+	
+	private Date generateDate(Date date,String time){
+		String dateString =  DateUtil.format(date, "yyyy-MM-dd ") + time;
+		return DateUtil.parseString(dateString, "yyyy-MM-dd HH:mm:ss");
+	}
+	
+	private List<CodeRentalShowPeriod> listCodeRentalShowPeriod(Long hotelGroupId, Long hotelId,String parentCode,String[] codes){
+		String sqlFilter = "";
+		
+		if(StringUtil.isNotBlank(parentCode))
+			sqlFilter += "and parentCode = '" + parentCode + "'";
+		
+		if(codes != null){
+			sqlFilter += " and code in (";
+			for(int i = 0 ; i < codes.length ; i++){
+				sqlFilter += "'" + codes[i] + "'";
+				if(i < codes.length - 1){
+					sqlFilter += ",";
+				}
+			}
+			sqlFilter += ") ";
+		}
+		
+		return commonDao.listDataWithClazz(hotelGroupId, hotelId, CodeRentalShowPeriod.class, sqlFilter,null);
+	}
+	
+	private Map<String,CodeRentalShowPeriod> createCodeRentalMap(Long hotelGroupId, Long hotelId){
+		Map<String,CodeRentalShowPeriod> codeRentalMap = new LinkedHashMap<String, CodeRentalShowPeriod>();
+		List<CodeRentalShowPeriod> csplist = listCodeRentalShowPeriod(hotelGroupId, hotelId, null, null);
+		for(CodeRentalShowPeriod crs : csplist){
+			codeRentalMap.put(crs.getCode(), crs);
+		}
+		return codeRentalMap;
+	}
+	
+	private Map<String,String> createTimeCodeDefineMap(Long hotelGroupId, Long hotelId,String[] codeArray) {
+		Map<String,String> timeCodeMap = new LinkedHashMap<String, String>();
+		List<CodeRentalShowPeriod> csplist = listCodeRentalShowPeriod(hotelGroupId, hotelId, null, codeArray);
+		for(CodeRentalShowPeriod csp : csplist){
+			if(!timeCodeMap.containsKey(csp.getCode()))
+			timeCodeMap.put(csp.getCode(), csp.getTimeBegin() + "," + csp.getTimeEnd() + "," + csp.getDescript());
+		}
+		
+		return timeCodeMap;
+	}
+	
+	@Override
+	public List<CateringPlace> listCateringPlace(Long hotelGroupId, Long hotelId,String... places){
+		String sqlFilter = "";
+		if(places != null && places.length > 0){
+			sqlFilter = "and code in (";
+			for(int i = 0 ; i < places.length ; i++){
+				sqlFilter += "'" + places[i] + "'";
+				if(i < places.length - 1){
+					sqlFilter += ",";
+				}
+			}
+			sqlFilter += ")";
+		}
+		List<CateringPlace> list = commonDao.listDataWithClazz(hotelGroupId,hotelId,CateringPlace.class, sqlFilter,null);
+		return list;
+	}
+
+	@Override
+	public void updateCancelCatering(Long hotelGroupId, Long hotelId,List<Long> idslong) {
+		for(Long id : idslong){
+			Catering catering = cateringDao.load(Catering.class, id);
+			if(catering.getSta().equalsIgnoreCase(Catering.Sta.O))
+				deleteCatering(hotelGroupId,hotelId,id);
+			else{
+				catering.setSta("X");
+				cateringDao.update(catering);
+			}
+		}
+	}
+
+	@Override
+	public List<CateringMessage> listCateringMessage(Long hotelGroupId,Long hotelId, Long catering) {
+		CateringMessage cm = new CateringMessage();
+		cm.setCatering(catering);
+		return commonDao.listDataWithProperties(hotelGroupId, hotelId, cm);
+	}
+
+	@Override
+	public void deleteCateringMessage(Long hotelGroupId, Long hotelId,CateringMessage cm) {
+		commonDao.deleteData(cm);
+	}
+
+	@Override
+	public void saveOrUpdateCateringMessage(Long hotelGroupId, Long hotelId,List<CateringMessage> msgs) {
+		for(CateringMessage cm : msgs){
+			cateringDao.saveOrUpdate(cm);
+			cm.setListOrder(cm.getId());
+			cateringDao.update(cm);
+		}
+	}
+
+	@Override
+	public void deleteCatering(Long hotelGroupId, Long hotelId, Long catering) {
+		Catering c = cateringDao.load(Catering.class, catering);
+		try {
+			CateringHistory ch = new CateringHistory();
+			BeanUtils.copyProperties(ch, c);
+			ch.setSta("D");
+			ch.setModifyDatetime(new Date());
+			ch.setModifyUser(UserManager.getUserCode());
+			
+			cateringDao.save(ch);
+		} catch (Exception e) {
+			e.printStackTrace();
+		} 
+		cateringDao.delete(c);
+		
+		List<CateringMessage> cmlist = listCateringMessage(hotelGroupId, hotelId, catering);
+		for(CateringMessage cm : cmlist){
+			
+			CateringMessageHistory cmh = new CateringMessageHistory();
+			
+			try {
+				BeanUtils.copyProperties(cmh, cm);
+				cmh.setModifyDatetime(new Date());
+				cmh.setModifyUser(UserManager.getUserCode());
+				cateringDao.save(cmh);
+			} catch (Exception e) {
+			}
+			
+			cateringDao.delete(cm);
+		}
+		
+		List<CateringResourceMap> crmlist = listCateringResourceMapByCateringId(hotelGroupId, hotelId, catering);
+		for(CateringResourceMap crm : crmlist){
+			
+			CateringResourceMapHistory crmh = new CateringResourceMapHistory();
+			try {
+				BeanUtils.copyProperties(crmh, crm);
+				crmh.setModifyDatetime(new Date());
+				crmh.setModifyUser(UserManager.getUserCode());
+				cateringDao.save(crmh);
+			} catch (Exception e) {
+			}
+			
+			cateringDao.delete(crm);
+		}
+		
+		if(c.getRsvId() != null && c.getRsvId().intValue() > 0){
+			int count = cateringDao.countRsvCatering(hotelGroupId,hotelId,c.getRsvId());
+			updateRsvExtraFlag(hotelGroupId, hotelId, c.getRsvId(), count);
+		}
+		
+	}
+
+	@Override
+	public List<CateringDto> listCateringDtoByIds(Long hotelGroupId, Long hotelId,List<String> ids) {
+		
+		List<Catering> clist = new ArrayList<Catering>();
+		for(String idstr : ids){
+			Catering c = cateringDao.get(Catering.class, Long.parseLong(idstr));
+			clist.add(c);
+		}
+		List<CateringDto> list = transferToCateringDto(clist);
+		return list;
+	}
+
+	@Override
+	public void updateFixCateringPlace(Long hotelGroupId, Long hotelId,int type,String remark,List<CateringTimeItem> items,Integer interval){
+		
+		if(StringUtil.isBlank(remark)){
+			remark = type == 0 ? "维修":"自用";
+		}
+		
+		Catering catering = new Catering();
+		catering.setSta(type == 0 ? Catering.Sta.O:Catering.Sta.S);
+		catering.setRsvType("O");
+		catering.setRsvId(new Long(RandomUtils.nextInt()));
+		catering.setRsvName(type == 0 ? "维修":"自用");
+		catering.setCatNo(StringUtil.EMPTY_STRING);
+		catering.setTheme(catering.getRsvName());
+		catering.setBoard(StringUtil.EMPTY_STRING);
+		catering.setCategory("1");
+		catering.setPeopleNumber(0L);
+		catering.setTables(0L);
+		catering.setRate(BigDecimal.ZERO);
+		catering.setResRate(BigDecimal.ZERO);
+		catering.setRemark(remark);
+		
+		saveCateringFromTimeItems(hotelGroupId, hotelId, catering, items,interval);
+	}
+	
+	
+	private String[] generateTimeDefine(Long hotelGroupId,Long hotelId,Integer dateInterval){
+		//A:1,B:4,C:99
+		String timeDefine = sysOptionDao.findSysOptionByCatalogItemSetValue("sales", "catering_time_codes", hotelGroupId, hotelId);
+		if(StringUtil.isEmpty(timeDefine)){
+			throw new BizException("时段显示定义为空.",BizExceptionConstant.INVALID_PARAM);
+		}
+		
+		String defineCode = null;
+		
+		try {
+			String[] arr1 = timeDefine.split(",");
+			
+			for(String str1 : arr1){
+				String[] arr2 = str1.split(":");
+				if(Integer.parseInt(arr2[1]) >= dateInterval){
+					defineCode = arr2[0];
+					break;
+				}
+			}
+			
+		} catch (Exception e) {
+			throw new BizException("时段显示定义错误.",BizExceptionConstant.INVALID_PARAM);
+		}
+		
+		if(defineCode == null)
+			throw new BizException("时段显示定义错误.",BizExceptionConstant.INVALID_PARAM);
+		
+		
+		CodeRentalShowPeriod crsp = new CodeRentalShowPeriod();
+		crsp.setParentCode(defineCode);
+		
+		List<CodeRentalShowPeriod> list = commonDao.listDataWithProperties(hotelGroupId, hotelId, crsp);
+		
+		String[] result = new String[list.size()];
+
+		for(int i = 0 ; i < list.size() ; i++){
+			result[i] = list.get(i).getCode();
+		}
+		
+		return result;
+	}
+
+	@Override
+	public void updateExtraFlag(Long hotelGroupId, Long hotelId,Long cateringId, Integer index, int number) {
+		
+		if(index > 30)
+			return ;
+		
+		String flag;
+		if(number > 9)
+			flag = "*";
+		else
+			flag = String.valueOf(number);
+		
+		Catering c = cateringDao.load(Catering.class, cateringId);
+		String extraFlag = StringUtil.isEmpty(c.getExtraFlag()) ? "000000000000000000000000000000":c.getExtraFlag();
+		
+		String front = extraFlag.substring(0,index - 1);
+		String back = extraFlag.substring(index);
+		
+		extraFlag = front + flag + back;
+		
+		c.setExtraFlag(extraFlag);
+		
+		cateringDao.update(c);
+	}
+
+	@Override
+	public Container<CateringDto> listDtoBySearchDto(Long hotelGroupId,Long hotelId, CateringSearchDto csdto) {
+		Container<CateringDto> resultout = new Container<CateringDto>();
+		Container<Catering> result = cateringDao.listCateringBySearchDto(hotelGroupId, hotelId, csdto);
+		List<Catering> cateringlist = result.getResults();
+		List<CateringDto> cateringDtoList = transferToCateringDto(cateringlist);
+		
+		resultout.setTotalRows(result.getTotalRows());
+		resultout.setFirstResult(result.getFirstResult());
+		resultout.setMaxResults(result.getMaxResults());
+		resultout.setResults(cateringDtoList);
+		return resultout;
+	}
+
+	@SuppressWarnings("rawtypes")
+	@Override
+	public List listItemsBySearchDto(Long hotelGroupId, Long hotelId,CateringSearchDto csdto) {
+		List<CateringPlace> filterPlaces = null;
+		String[]  array = null;
+		Date dateBegin = csdto.getDateBegin();
+		Date dateEnd = csdto.getDateEnd();
+		
+		if(StringUtil.isNotBlank(csdto.getCateringPlaces())){
+			array = csdto.getCateringPlaces().split(",");
+			filterPlaces = listCateringPlace(hotelGroupId, hotelId, array);
+		}else{
+			// filterPlaces = commonDao.listDataWithClazzByOrder(hotelGroupId,hotelId,CateringPlace.class,null,"desc");
+			String sql = " select * from catering_place where hotel_group_id = "+hotelGroupId+" and hotel_id = "+hotelId ;
+			filterPlaces = posSubDao.getDataBySql(hotelGroupId, hotelId, CateringPlace.class, sql);
+		}
+		
+		Integer interval = DateUtil.getDiffDays(dateBegin, dateEnd) + 1;
+		//根据显示的天数计算应该使用哪些时间段代码
+		String[] codeArray = generateTimeDefine(hotelGroupId, hotelId,interval);
+		LinkedList<Map> list = new LinkedList<Map>();
+		
+		for(int i = 0 ; i < filterPlaces.size() ; i++){
+			CateringPlace cp = (CateringPlace) filterPlaces.get(i);
+			
+			//如果没有状态条件，则默认显示需要显示的状态
+			if(StringUtil.isBlank(csdto.getStas()))
+				csdto.setStas(Catering.itemShowSta());
+			
+			csdto.setCateringPlaces(cp.getCode());
+			
+			Container<Catering> result = cateringDao.listCateringBySearchDto(hotelGroupId, hotelId, csdto);
+			
+			List<Catering> cateirnglist = result.getResults();
+			
+			Map element = generateTimeItemsCollection(hotelGroupId,hotelId,dateBegin,dateEnd,cateirnglist,cp.getCode(),cp.getName(),codeArray);
+			
+			element.put("place", cp.getCode());
+			element.put("placeDes", cp.getName());
+			element.put("dateBegin", dateBegin);
+			element.put("dateEnd", dateEnd);
+			list.add(element);
+		}
+		
+		Map<String,String[]> maps = getTimeDefineMap(hotelGroupId, hotelId, dateBegin,dateEnd);
+		list.addFirst(maps);
+		
+		return list;
+	}
+
+	@Override
+	public void updateBatch(Long hotelGroupId, Long hotelId,CateringBatchUpdateDto updateDto, List<String> ids) {
+		if(CollectionUtils.isEmpty(ids))
+			return ;
+		
+		List<CateringDto> dtos = listCateringDtoByIds(hotelGroupId, hotelId, ids);
+		
+		for(CateringDto dto : dtos){
+			copyUpdateValuesToDto(updateDto, dto);
+			saveOrUpdateCateringDto(hotelGroupId, hotelId, dto);
+		}
+		
+	}
+	
+	private void copyUpdateValuesToDto(CateringBatchUpdateDto updateValues,CateringDto cateringDto){
+		if(isNotBlank(updateValues.getTheme()))
+			cateringDto.getCatering().setTheme(updateValues.getTheme());
+		if(isNotBlank(updateValues.getSta()))
+			cateringDto.getCatering().setSta(updateValues.getSta());
+		if(isNotBlank(updateValues.getBoard()))
+			cateringDto.getCatering().setBoard(updateValues.getBoard());
+		if(updateValues.getRsvId() != null && updateValues.getRsvId().intValue() != 0)
+			cateringDto.getCatering().setRsvId(updateValues.getRsvId());
+		if(isNotBlank(updateValues.getRsvName()))
+			cateringDto.getCatering().setRsvName(updateValues.getRsvName());
+		if(isNotBlank(updateValues.getCategory()))
+			cateringDto.getCatering().setCategory(updateValues.getCategory());
+		if(isNotBlank(updateValues.getSalesman()))
+			cateringDto.getCatering().setSalesman(updateValues.getSalesman());
+		if(isNotBlank(updateValues.getLinkman()))
+			cateringDto.getCatering().setLinkman(updateValues.getLinkman());
+		if(isNotBlank(updateValues.getPhone()))
+			cateringDto.getCatering().setPhone(updateValues.getPhone());
+	}
+}

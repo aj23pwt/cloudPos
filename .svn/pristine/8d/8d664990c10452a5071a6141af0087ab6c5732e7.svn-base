@@ -1,0 +1,189 @@
+package com.greencloud.facade.impl;
+
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
+
+import com.greencloud.dao.IPosModeDefDao;
+import com.greencloud.entity.PosAccess;
+import com.greencloud.entity.PosMaster;
+import com.greencloud.entity.PosModeDef;
+import com.greencloud.entity.PosPay;
+import com.greencloud.entity.PosRes;
+import com.greencloud.entity.PosResOrder;
+import com.greencloud.entity.PosSortAll;
+import com.greencloud.entity.PosStation;
+import com.greencloud.facade.IPosCodeFacade;
+import com.greencloud.facade.IPosResFacade;
+import com.greencloud.service.IPosAccessService;
+import com.greencloud.service.IPosDetailService;
+import com.greencloud.service.IPosMasterService;
+import com.greencloud.service.IPosModeDefService;
+import com.greencloud.service.IPosPayService;
+import com.greencloud.service.IPosResOrderService;
+import com.greencloud.service.IPosResService;
+import com.greencloud.service.IPosSortAllService;	
+import com.greencloud.service.IPosStationService;
+import com.greencloud.service.IPosSubService;
+import com.greencloud.util.UserManager;
+
+
+public class PosResFacadeImpl implements IPosResFacade {
+	private IPosSubService posSubService;
+	private IPosResService  posResService;
+	private IPosMasterService posMasterService ;
+	private IPosDetailService posDetailService;
+	private IPosAccessService posAccessService;
+	private IPosStationService posStationService;
+	private IPosModeDefService posModeDefService; 
+	
+	public IPosStationService getPosStationService() {
+		return posStationService;
+	}
+	public void setPosStationService(IPosStationService posStationService) {
+		this.posStationService = posStationService;
+	}
+	public void setPosModeDefService(IPosModeDefService posModeDefService) {
+		this.posModeDefService = posModeDefService;
+	}
+	public IPosAccessService getPosAccessService() {
+		return posAccessService;
+	}
+	public void setPosAccessService(IPosAccessService posAccessService) {
+		this.posAccessService = posAccessService;
+	}
+	public IPosDetailService getPosDetailService() {
+		return posDetailService;
+	}
+	public void setPosDetailService(IPosDetailService posDetailService) {
+		this.posDetailService = posDetailService;
+	}
+	private IPosResOrderService posResOrderService ;
+	private IPosPayService posPayService ;
+	public IPosPayService getPosPayService() {
+		return posPayService;
+	}
+	public void setPosPayService(IPosPayService posPayService) {
+		this.posPayService = posPayService;
+	}
+	public IPosResOrderService getPosResOrderService() {
+		return posResOrderService;
+	}
+	public void setPosResOrderService(IPosResOrderService posResOrderService) {
+		this.posResOrderService = posResOrderService;
+	}
+	public IPosResService getPosResService() {
+		return posResService;
+	}
+	public IPosSubService getPosSubService() {
+		return posSubService;
+	}
+	public IPosMasterService getPosMasterService() {
+		return posMasterService;
+	}
+	public void setPosMasterService(IPosMasterService posMasterService) {
+		this.posMasterService = posMasterService;
+	}
+	public void setPosSubService(IPosSubService posSubService) {
+		this.posSubService = posSubService;
+	}
+	public void setPosResService(IPosResService posResService) {
+		this.posResService = posResService;
+	}
+
+	@Override
+	public List<PosRes> getResList(String sql) {
+		// TODO Auto-generated method stub
+		return posResService.getResList(sql);
+	}
+	@Override
+	public String getResAccnt(Object object) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+	@Override
+	public void updateRes(Object object) {
+		// TODO Auto-generated method stub
+		
+	}
+	@Override
+	public void updateResSta(Object object) {
+		// TODO Auto-generated method stub
+		
+	}
+	@Override
+	public String saveRes(PosRes posres) {
+		// TODO Auto-generated method stub
+		return posResService.saveRes(posres);
+	}
+	@Override
+	public List<PosResOrder> getResPluList(PosResOrder posResOrder) {
+		// TODO Auto-generated method stub
+		return  posResOrderService.listPosResOrder(posResOrder);
+	}
+	@Override
+	public List<PosPay> getResPayList(PosPay posPay) {
+		// TODO Auto-generated method stub
+		return posPayService.listPosPay(posPay);
+	}
+	@Override
+	public <T> List<T> getTableMap( String hotelGroupId, String hotelId,String date,String shift,String pccode,String status,String type,String flag) {
+		// TODO Auto-generated method stub
+		return posResService.getTableMap(hotelGroupId,hotelId,date,shift, pccode, status, type,flag);
+	}
+	@Override
+	public List<PosMaster> getMasterList(String sql) {
+		// TODO Auto-generated method stub
+		return posMasterService.getMasterList(sql);
+	}
+	@Override
+	public List<Object> getPosAccntList(String ename, Object object) {
+		// TODO Auto-generated method stub
+		return posSubService.getPosAccntList(ename, object);
+	}
+	@Override
+	//用于定金管理页面(拼装sql)
+	public List<PosPay> getAllResPayList(String sql) {
+		// TODO Auto-generated method stub
+		return posPayService.getPosPayList(sql);
+	}
+	@Override
+	public <T> List<T> getShiftCloseList(String hotelGroupId, String hotelId,String pccode, String empid, String shift,String biz_date,String reportNo) {
+		return posDetailService.getShiftCloseList(hotelGroupId,hotelId,pccode,empid,shift,biz_date,reportNo);
+	}
+	@Override
+	public void saveAccess(String tnum, String pcode, String punit) {
+		PosAccess posAccess = new PosAccess();
+		posAccess.setHotelGroupId(UserManager.getHotelGroupId());
+		posAccess.setHotelId(UserManager.getHotelId());
+		posAccess.setBizDate(UserManager.getBizDate());
+		posAccess.setPluCode(pcode);
+		posAccess.setPluUnit(punit);
+		posAccess.setNumber(new BigDecimal(tnum));
+		posAccess.setNumber1(new BigDecimal("0"));
+		posAccess.setNumber2(new BigDecimal("0"));
+		posAccess.setIsHalt("F");
+	    posAccessService.savePosAccess(posAccess);
+	}
+
+	@Override
+	public List<PosAccess> getAccessList() {
+		return posAccessService.listPosAccess(null);
+	}
+	@Override
+	public void savePosStation(PosStation posStation) {
+		posStationService.savePosStation(posStation);
+	}
+	@Override
+	public List<PosModeDef> getPosModeDefList(PosModeDef posModeDef) {
+		// TODO Auto-generated method stub
+		return posModeDefService.listPosModeDef(posModeDef);
+	}
+	@Override
+	public <T> List<T> getPosVipQuery(String searchText) {
+		// TODO Auto-generated method stub
+		return posResService.getPosVipQuery(UserManager.getHotelGroupId(),UserManager.getHotelId(), searchText);
+	}
+
+}

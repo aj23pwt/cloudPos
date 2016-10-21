@@ -1,0 +1,95 @@
+package com.greencloud.entity;
+
+public class PosPrinter extends OperationInfo {
+
+	/**
+	 * 
+	 */
+	private static final Long serialVersionUID = -561211288048577019L;
+
+	private String code;
+	private String descript;
+	private String descriptEn;
+	private String ipAddress;
+	private String printMode;
+	private String printerType;
+	private String printServer;
+	private String dishCheck;
+	private String state;
+	private String oldState;
+	private String valueState;
+	private String standbyPrinter;
+	
+	public String getCode() {
+		return code;
+	}
+	public void setCode(String code) {
+		this.code = code;
+	}
+	public String getDescript() {
+		return descript;
+	}
+	public void setDescript(String descript) {
+		this.descript = descript;
+	}
+	public String getDescriptEn() {
+		return descriptEn;
+	}
+	public void setDescriptEn(String descriptEn) {
+		this.descriptEn = descriptEn;
+	}
+	public String getIpAddress() {
+		return ipAddress;
+	}
+	public void setIpAddress(String ipAddress) {
+		this.ipAddress = ipAddress;
+	}
+	public String getPrintMode() {
+		return printMode;
+	}
+	public void setPrintMode(String printMode) {
+		this.printMode = printMode;
+	}
+	public String getPrinterType() {
+		return printerType;
+	}
+	public void setPrinterType(String printerType) {
+		this.printerType = printerType;
+	}
+	public String getPrintServer() {
+		return printServer;
+	}
+	public void setPrintServer(String printServer) {
+		this.printServer = printServer;
+	}
+	public String getDishCheck() {
+		return dishCheck;
+	}
+	public void setDishCheck(String dishCheck) {
+		this.dishCheck = dishCheck;
+	}
+	public String getState() {
+		return state;
+	}
+	public void setState(String state) {
+		this.state = state;
+	}
+	public String getOldState() {
+		return oldState;
+	}
+	public void setOldState(String oldState) {
+		this.oldState = oldState;
+	}
+	public String getValueState() {
+		return valueState;
+	}
+	public void setValueState(String valueState) {
+		this.valueState = valueState;
+	}
+	public String getStandbyPrinter() {
+		return standbyPrinter;
+	}
+	public void setStandbyPrinter(String standbyPrinter) {
+		this.standbyPrinter = standbyPrinter;
+	}
+}

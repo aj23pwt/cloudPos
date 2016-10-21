@@ -1,0 +1,57 @@
+package com.greencloud.facade.impl;
+
+import java.util.List;
+
+import com.greencloud.entity.PosDrinksConsume;
+import com.greencloud.entity.PosDrinksDepositOrder;
+import com.greencloud.facade.IPosDrinksDepositFacade;
+import com.greencloud.service.IPosDrinksConsumeService;
+import com.greencloud.service.IPosDrinksDepositOrderService;
+
+public class PosDrinksDepositFacadeImpl implements IPosDrinksDepositFacade {
+
+	private IPosDrinksConsumeService posDrinksConsumeService;
+	private IPosDrinksDepositOrderService posDrinksDepositOrderService;
+	
+	public void setPosDrinksConsumeService(
+			IPosDrinksConsumeService posDrinksConsumeService) {
+		this.posDrinksConsumeService = posDrinksConsumeService;
+	}
+
+	public void setPosDrinksDepositOrderService(
+			IPosDrinksDepositOrderService posDrinksDepositOrderService) {
+		this.posDrinksDepositOrderService = posDrinksDepositOrderService;
+	}
+
+	@Override
+	public void savePosDrinksDepositOrder(
+			PosDrinksDepositOrder posDrinksDepositOrder) {
+		posDrinksDepositOrderService.savePosDrinksDepositOrder(posDrinksDepositOrder);
+
+	}
+
+	@Override
+	public void updatePosDrinksDepositOrder(
+			PosDrinksDepositOrder posDrinksDepositOrder) {
+		posDrinksDepositOrderService.updatePosDrinksDepositOrder(posDrinksDepositOrder);
+	}
+
+	@Override
+	public void savePosDrinksConsume(PosDrinksConsume posDrinksConsume) {
+		posDrinksConsumeService.savePosDrinksConsume(posDrinksConsume);
+	}
+
+	@Override
+	public PosDrinksDepositOrder findPosDrinksDepositOrderById(Long id) {
+		// TODO Auto-generated method stub
+		PosDrinksDepositOrder result = null;
+		PosDrinksDepositOrder posDrinksDepositOrder = new PosDrinksDepositOrder();
+		posDrinksDepositOrder.setId(id);
+		List<PosDrinksDepositOrder> resultSet = posDrinksDepositOrderService.listPosDrinksDepositOrder(posDrinksDepositOrder);
+		if(resultSet != null && resultSet.size() > 0){
+			result = resultSet.get(0);
+		}
+		return result;
+	}
+
+}

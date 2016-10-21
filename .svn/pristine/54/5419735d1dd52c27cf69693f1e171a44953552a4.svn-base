@@ -1,0 +1,820 @@
+package com.greencloud.facade.impl;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Resource;
+
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+import com.greencloud.controller.BasePosSycHttpRequester;
+import com.greencloud.entity.OperationInfo;
+import com.greencloud.entity.PosAccntSync;
+import com.greencloud.entity.PosPay;
+import com.greencloud.entity.PosPccodeAuditFlag;
+import com.greencloud.entity.PosRes;
+import com.greencloud.entity.PosResOrder;
+import com.greencloud.entity.PosTableSync;
+import com.greencloud.entity.SysOption;
+import com.greencloud.facade.IPosSycFacade;
+import com.greencloud.service.IPosAccntSyncService;
+import com.greencloud.service.IPosPccodeAuditFlagService;
+import com.greencloud.service.IPosResService;
+import com.greencloud.service.IPosSubService;
+import com.greencloud.service.IPosSycOperation;
+import com.greencloud.service.IPosTableSyncService;
+import com.greencloud.service.ISysOptionService;
+import com.greencloud.util.DateUtil;
+import com.greencloud.util.StringUtil;
+import com.greencloud.util.UserManager;
+import com.greencloud.utils.PropertiesUtil4Sync;
+
+/**
+ * 新餐饮本地请求,获取中央数据（代码、预订单同步）
+ * 
+ * @author gc-pwt
+ *
+ */
+
+public class PosSycFacadeImpl implements IPosSycFacade {
+   // 全局变量  config.properties
+	private String serverType;
+	private static PosAccntSync posAccntSycOld ;
+	// 同步存储Service
+	@Resource
+	private IPosSycOperation posSycOperation;
+	private IPosSubService posSubService;	
+	private IPosAccntSyncService posAccntSyncService;
+	private IPosTableSyncService posTableSyncService;
+	private IPosResService posResService;
+	private ISysOptionService sysOptionService;
+    private IPosPccodeAuditFlagService posPccodeAuditFlagService ;
+	
+	public void setPosPccodeAuditFlagService(
+			IPosPccodeAuditFlagService posPccodeAuditFlagService)
+	{
+		this.posPccodeAuditFlagService = posPccodeAuditFlagService;
+	}
+	public void setSysOptionService(ISysOptionService sysOptionService)
+	{
+		this.sysOptionService = sysOptionService;
+	}
+	public void setPosResService(IPosResService posResService) {
+		this.posResService = posResService;
+	}
+	public void setPosTableSyncService(IPosTableSyncService posTableSyncService) {
+		this.posTableSyncService = posTableSyncService;
+	}
+	public void setPosSubService(IPosSubService posSubService) {
+		this.posSubService = posSubService;
+	}
+	public void setPosAccntSyncService(IPosAccntSyncService posAccntSyncService) {
+		this.posAccntSyncService = posAccntSyncService;
+	}
+	
+	public void setServerType(String serverType) {
+		this.serverType = serverType;
+	}
+	private static String[] SycMasterEntityArr = { "PosMaster", "PosAccount","PosDetail"};
+	private static String[] SycResEntityArr = { "PosRes", "PosResOrder",
+			"PosPay" };
+	private static String[] SycCodeEntityArr = { "CodeBase",//"SysOption", "PosAccess", "PosStation","pos_price",
+			"PosConddtl", "PosCondst", "PosCurrentPrice", "PosModeDef",
+			"PosModeName", "PosPccode", "PosPccodeNote", "PosPccodeShift",
+			"PosPccodeTable", "PosSysReason","PosIp","PosPluAll","PosPluStd",
+			"PosSortAll","PosSysReason","UserPosAuth","UserPosAuthUserAuth"};
+
+	private static String hotelGroupId = UserManager.getHotelGroupId() + "";
+	private static String hotelId = UserManager.getHotelId() + "";
+	private static String sycUrl = "";
+	private static boolean isLocalDatabase = false;
+	// 默认本地数据与中央差异时间为3天
+	private static String sycDays = "3";
+	// 默认同步时间标识：now
+	private String sycDate = DateUtil.getLongDateString(new Date());
+
+	// private String sycDate = "20150301000000";
+	// 获取配置文件参数，静态方法
+	static {
+		try {
+			sycUrl = PropertiesUtil4Sync.getProperty("SycHttpUrl");
+			hotelGroupId = PropertiesUtil4Sync.getProperty("hotelGroupId");
+			hotelId = PropertiesUtil4Sync.getProperty("hotelId");
+			sycDays =  PropertiesUtil4Sync.getProperty("SycDays");
+			isLocalDatabase = PropertiesUtil4Sync.getProperty("jdbc.url").indexOf("portal_pos")>0;
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	/**
+	 * 从中央获取预订单、预订菜式、预订金信息
+	 * 
+	 * @param type
+	 * @param entity
+	 * @param date
+	 * @throws IOException
+	 * @throws ClassNotFoundException
+	 * @throws InstantiationException
+	 * @throws IllegalAccessException
+	 */
+	@Override
+	public void getRes() {
+		//this.getSycConfig();
+		List<OperationInfo> T = new ArrayList<OperationInfo>();
+
+		for (int i = 0; i < SycResEntityArr.length; i++) {
+
+			OperationInfo objectInfo = new OperationInfo();
+			objectInfo.setHotelGroupId(java.lang.Long.parseLong(hotelGroupId));
+			objectInfo.setHotelId(java.lang.Long.parseLong(hotelId));
+			// 获得本地需要同步的表的最新时间
+			T = posSubService.getSycLocalDateList(SycResEntityArr[i],
+					objectInfo);
+			if (T.size() > 0) {
+				/*
+				 * Field[] field =T.get(0).getClass().getDeclaredFields();
+				 * for(Field f:field) {
+				 * if("ModifyDatetime".equalsIgnoreCase(f.getName())){ try {
+				 * Date date = DateUtil.parseDateNewFormat((String)
+				 * f.get(T.get(0))); sycDate = DateUtil.getLongDateString(date);
+				 * System.out.println("同步时间："+sycDate); } catch
+				 * (IllegalArgumentException | IllegalAccessException e) { //
+				 * TODO Auto-generated catch block e.printStackTrace(); } }
+				 * 
+				 * }
+				 */
+				sycDate = DateUtil.getLongDateString(T.get(0)
+						.getModifyDatetime());
+			}else{
+				sycDate = "20150101000000";
+			}
+			Map<String, String> params = new HashMap<String, String>();
+			params.put("hotelGroupId", hotelGroupId);
+			params.put("hotelId", hotelId);
+			params.put("type", "add");
+			params.put("entity", SycResEntityArr[i]);
+			params.put("date", sycDate);
+			params.put("days", sycDays);
+
+			Map<String, String> propertys = new HashMap<String, String>();
+			propertys.put("Charset", "UTF-8");
+			propertys.put("Content-Type", "application/json");
+
+			BasePosSycHttpRequester hp = new BasePosSycHttpRequester();
+			String url = sycUrl + "/PosSycRemoteGet/getRes.do";
+			String response;
+			try {
+				response = hp.sendGet(url, params, propertys, "UTF-8")
+						.getContent();
+				JSONObject j = JSON.parseObject(response);
+
+				if (j.getString("success") == "true") {
+					List<String> keyfields = new ArrayList<String>();
+					keyfields.add("hotelGroupId");
+					keyfields.add("hotelId");
+					keyfields.add("accnt");
+					if ("PosRes" == SycResEntityArr[i]) {
+						List<PosRes> oldlist = new ArrayList<PosRes>();
+						oldlist = JSON.parseArray(j.getString("obj"),
+								PosRes.class);
+						//预订单保存的时候,先判断本地预订单的状态,是否已经转登记
+						for (int k=0;k< oldlist.size();k++) {
+							       PosRes baseRes = new PosRes();
+							       baseRes.setHotelGroupId(oldlist.get(k).getHotelGroupId()); 
+							       baseRes.setHotelId(oldlist.get(k).getHotelId());
+							       baseRes.setAccnt(oldlist.get(k).getAccnt());
+							       baseRes = posResService.getPosRes(baseRes);
+							       if("I".equalsIgnoreCase(baseRes.getSta())){
+							    	   oldlist.remove(k); 
+							       }
+						}
+						posSycOperation.saveData(oldlist, false, keyfields);
+					} else if ("PosResOrder" == SycResEntityArr[i]) {
+						List<PosResOrder> oldlist = new ArrayList<PosResOrder>();
+						oldlist = JSON.parseArray(j.getString("obj"),
+								PosResOrder.class);
+						for (int k=0;k< oldlist.size();k++) {
+						       PosRes baseRes = new PosRes();
+						       baseRes.setHotelGroupId(oldlist.get(k).getHotelGroupId()); 
+						       baseRes.setHotelId(oldlist.get(k).getHotelId());
+						       baseRes.setAccnt(oldlist.get(k).getAccnt());
+						       baseRes = posResService.getPosRes(baseRes);
+						       if("I".equalsIgnoreCase(baseRes.getSta())){
+						    	   oldlist.remove(k); 
+						       }
+					}
+						posSycOperation.saveData(oldlist, false, keyfields);
+					} else if ("PosPay" == SycResEntityArr[i]) {
+						List<PosPay> oldlist = new ArrayList<PosPay>();
+						oldlist = JSON.parseArray(j.getString("obj"),
+								PosPay.class);
+						for (int k=0;k< oldlist.size();k++) {
+						       PosRes baseRes = new PosRes();
+						       baseRes.setHotelGroupId(oldlist.get(k).getHotelGroupId()); 
+						       baseRes.setHotelId(oldlist.get(k).getHotelId());
+						       baseRes.setAccnt(oldlist.get(k).getAccnt());
+						       baseRes = posResService.getPosRes(baseRes);
+						       if("I".equalsIgnoreCase(baseRes.getSta())){
+						    	   oldlist.remove(k); 
+						       }
+					}
+						posSycOperation.saveData(oldlist, false, keyfields);
+					}
+				} else {
+					System.out.println("未同步entity：" + j.getString("obj"));
+				}
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+	}
+	/**
+	 * 获取中央基本代码、业务代码的设置信息
+	 * 
+	 * @param type
+	 * @param entity
+	 * @param date
+	 * @throws IOException
+	 * @throws InstantiationException
+	 * @throws IllegalAccessException
+	 */
+	public void getCode() {  
+		//this.getSycConfig();
+		if(isLocalDatabase){
+			List<OperationInfo> T = new ArrayList<OperationInfo>();
+			for (int i = 0; i < SycCodeEntityArr.length; i++) {
+				OperationInfo objectInfo = new OperationInfo();
+				objectInfo.setHotelGroupId(java.lang.Long.parseLong(hotelGroupId));
+				objectInfo.setHotelId(java.lang.Long.parseLong(hotelId));
+	
+				T = posSubService.getSycLocalDateList(SycCodeEntityArr[i],
+						objectInfo);
+	
+				if (T.size() > 0) {
+					/*
+					 * Field[] field =T.get(0).getClass().getDeclaredFields();
+					 * for(Field f:field) {
+					 * if("ModifyDatetime".equalsIgnoreCase(f.getName())){ try {
+					 * Date date = DateUtil.parseDateNewFormat((String)
+					 * f.get(T.get(0))); sycDate = DateUtil.getLongDateString(date);
+					 * System.out.println("同步时间："+sycDate); } catch
+					 * (IllegalArgumentException | IllegalAccessException e) { //
+					 * TODO Auto-generated catch block e.printStackTrace(); } }
+					 * 
+					 * }
+					 */
+					sycDate = DateUtil.getLongDateString(T.get(0)
+							.getModifyDatetime());
+				}
+				else{
+					sycDate = "20150101000000";
+				}
+				Map<String, String> params = new HashMap<String, String>();
+				params.put("hotelGroupId", hotelGroupId);
+				params.put("hotelId", hotelId);
+				params.put("type", "add");
+				params.put("entity", SycCodeEntityArr[i]);
+				params.put("date", sycDate);
+	
+				Map<String, String> propertys = new HashMap<String, String>();
+				propertys.put("Charset", "UTF-8");
+				propertys.put("Content-Type", "application/json");
+	
+				BasePosSycHttpRequester hp = new BasePosSycHttpRequester();
+				String url = sycUrl + "/PosSycRemoteGet/getCode.do";
+				String response;
+				try {
+					response = hp.sendGet(url, params, propertys, "UTF-8")
+							.getContent();
+	
+					JSONObject j = JSON.parseObject(response);
+					if (j.getString("success") == "true") {
+						List<String> keyfields = new ArrayList<String>();
+						keyfields.add("hotelGroupId");
+						keyfields.add("hotelId");
+						@SuppressWarnings("rawtypes")
+						Class c = null;
+							try {
+								c = Class.forName("com.greencloud.entity."+SycCodeEntityArr[i]);
+								if(SycCodeEntityArr[i].equalsIgnoreCase("CodeBase")){
+									keyfields.add("parentCode");
+								}
+								@SuppressWarnings("unchecked")
+								List<Object> newlist = JSON.parseArray(j.getString("obj"),c);
+								posSycOperation.saveData(newlist, false, keyfields);
+							} catch (ClassNotFoundException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+							//修改本地codeCache表便于重建本地缓存
+							posSubService.updateDataBySql(" UPDATE code_cache SET modify_datetime = NOW() ");
+					} else {
+						System.out.println("未同步entity：" + j.getString("obj"));
+					}
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		}
+	}
+	public void getPmsCode(){
+		//this.getSycConfig();
+		if(isLocalDatabase){
+			List<PosTableSync>  syncTable = new ArrayList<PosTableSync>();
+			PosTableSync posTableSync = new PosTableSync();
+			posTableSync.setHotelGroupId(java.lang.Long.parseLong(hotelGroupId));
+			posTableSync.setHotelId(java.lang.Long.parseLong(hotelId));
+			posTableSync.setDataFrom("PMS");
+			syncTable = posTableSyncService.listPosTableSync(posTableSync);
+			if(syncTable.size()>0){
+				List<OperationInfo> T = new ArrayList<OperationInfo>();
+				for (int i = 0; i < syncTable.size(); i++) {
+					OperationInfo objectInfo = new OperationInfo();
+					objectInfo.setHotelGroupId(java.lang.Long.parseLong(hotelGroupId));
+					objectInfo.setHotelId(java.lang.Long.parseLong(hotelId));
+				    String syncTye = syncTable.get(i).getType() ;
+				  //需要根据酒店+修改时间 同步的entity
+				   if(syncTye.equalsIgnoreCase("TIME")){
+						T = posSubService.getSycLocalDateList(syncTable.get(i).getEntityName(),objectInfo);
+						if (T.size() > 0) {
+							sycDate = DateUtil.getLongDateString(T.get(0).getModifyDatetime());
+						}
+						else{
+							sycDate = "20100101000000";
+						}
+					}else{
+						// 需要整表同步的entity ALL-GROUP,需要根据酒店同步的entity-HOTEL ,
+						sycDate = "20100101000000";
+					}
+				   //不需要同步或者entity结构有变化的-F
+				   if(!syncTye.equalsIgnoreCase("F")){
+						Map<String, String> params = new HashMap<String, String>();
+						params.put("hotelGroupId", hotelGroupId);
+						params.put("hotelId", hotelId);
+						params.put("type",syncTable.get(i).getType());
+						params.put("entity", syncTable.get(i).getEntityName());
+						params.put("date", sycDate);
+			
+						Map<String, String> propertys = new HashMap<String, String>();
+						propertys.put("Charset", "UTF-8");
+						propertys.put("Content-Type", "application/json");
+		
+						BasePosSycHttpRequester hp = new BasePosSycHttpRequester();
+						String url = sycUrl + "/PosSycRemoteGet/getPmsCode.do";
+						String response;
+						try {
+							response = hp.sendGet(url, params, propertys, "UTF-8")
+									.getContent();
+							JSONObject j = JSON.parseObject(response);
+							if (j.getString("success") == "true") {
+								List<String> keyfields = new ArrayList<String>();
+								@SuppressWarnings("rawtypes")
+								Class c = null;
+									try {
+										c = Class.forName("com.greencloud.entity."+syncTable.get(i).getEntityName());
+										@SuppressWarnings("unchecked")
+										List<Object> newlist = JSON.parseArray(j.getString("obj"),c);
+										if(syncTye.equalsIgnoreCase("ALL")){
+											posSycOperation.deleteDataAllTable(newlist, keyfields);
+											posSycOperation.saveData(newlist, true, keyfields);
+										}else if(syncTye.equalsIgnoreCase("GROUP")){
+											keyfields.add("hotelGroupId");
+											posSycOperation.deleteDataAllTable(newlist, keyfields);
+											posSycOperation.saveData(newlist, true, keyfields);
+										}
+										else if(syncTye.equalsIgnoreCase("HOTEL")){
+											keyfields.add("hotelGroupId");
+											keyfields.add("hotelId");
+											posSycOperation.deleteDataAllTable(newlist, keyfields);
+											posSycOperation.saveData(newlist, true, keyfields);
+										}
+										else if(syncTye.equalsIgnoreCase("TIME")){
+											keyfields.add("hotelGroupId");
+											keyfields.add("hotelId");
+											posSycOperation.saveData(newlist, false, keyfields);
+										}
+										System.out.println("同步完成PMS-entity：" + syncTable.get(i).getEntityName());
+									} catch (ClassNotFoundException e) {
+										// TODO Auto-generated catch block
+										e.printStackTrace();
+									}
+							} else {
+								System.out.println("未同步PMS-entity：" + j.getString("obj"));
+							}
+						} catch (IOException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+				    }else{
+				    	System.out.println("不需要同步PMS-entity：" + syncTable.get(i).getEntityName());
+				    }
+				}
+			}
+		}
+	}
+	
+	/*
+	 * (non-Javadoc) 检查本地数据,做餐饮主单和主单明细数据上传
+	 * 
+	 * @see com.greencloud.facade.IPosSycFacade#saveMaster()
+	 * 已停止使用
+	 */
+	@Override
+	public void saveMaster() {
+		// TODO Auto-generated method stub
+		//this.getSycConfig();
+		for (int i = 0; i < SycMasterEntityArr.length; i++) {
+			Map<String, String> params = new HashMap<String, String>();
+			params.put("hotelGroupId", hotelGroupId);
+			params.put("hotelId", hotelId);
+			params.put("type", "save");
+			params.put("entity", SycMasterEntityArr[i]);
+			Map<String, String> propertys = new HashMap<String, String>();
+			propertys.put("Charset", "UTF-8");
+			propertys.put("Content-Type", "application/json");
+			BasePosSycHttpRequester hp = new BasePosSycHttpRequester();
+			String url = sycUrl + "/PosSycRemoteUpload/getDatePosMaster.do";
+			String response;
+			try {
+				response = hp.sendGet(url, params, propertys, "UTF-8")
+						.getContent();
+				JSONObject j = JSON.parseObject(response);
+				// 返回远程同步时间标志
+				if (j.getString("success") == "true") {
+					sycDate = j.getString("msg").trim();
+					OperationInfo objectInfo = new OperationInfo();
+					objectInfo.setHotelGroupId(java.lang.Long
+							.parseLong(hotelGroupId));
+					objectInfo.setHotelId(java.lang.Long.parseLong(hotelId));
+					objectInfo.setModifyDatetime(DateUtil
+							.parseDateLongFormat(sycDate));
+					// 获取本地需要上传的数据列表
+					
+					List<Object> T = new ArrayList<Object>();
+					
+					T = posSubService.getSycDaysList(SycMasterEntityArr[i],
+							objectInfo, sycDate, Integer.parseInt(sycDays));
+					if (T != null) {
+						Map<String, String> upParams = new HashMap<String, String>();
+						upParams.put("entity", SycMasterEntityArr[i]);
+						upParams.put("data", JSON.toJSONString(T));
+						String upUrl = sycUrl
+								+ "/PosSycRemoteUpload/savePosMater.do";
+						try {
+							response = hp.sendPost(upUrl, upParams, propertys,
+									"UTF-8").getContent();
+							j.clear();
+							j = JSON.parseObject(response);
+						} catch (IOException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+					} else {
+						System.out.println("未同步entity：" + j.getString("obj"));
+					}
+				}
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+	}
+
+	/** 
+	* @Title: 检查本地数据,做餐饮主单和主单明细数据上传(根据账号同步上传)
+	* @Description: TODO(这里用一句话描述这个方法的作用) 
+	* @param     设定文件 
+	* @return 
+	* @throws 
+	*/
+	@Override
+	public void saveSyncMaster() {
+		// TODO Auto-generated method stub
+		//this.getSycConfig();
+		PosAccntSync posAccntSync = new PosAccntSync();
+		posAccntSync.setHotelGroupId(java.lang.Long.parseLong(hotelGroupId));
+		posAccntSync.setHotelId(java.lang.Long.parseLong(hotelId));
+		posAccntSync.setIsSync("F");
+		//获取本地需要同步的账务主单
+		List<PosAccntSync> list = posAccntSyncService.listPosAccntSync(posAccntSync);
+		if(list !=null && list.size()>0){
+			// 有需要同步的 账务
+			int result = 0 ;
+			int resResult = 0 ;
+			for(Iterator<PosAccntSync> i=list.iterator();i.hasNext();){
+				PosAccntSync obj = i.next();
+				posAccntSycOld = obj.cloneEx() ;
+				result = saveSyncMasterByAccnt(obj);			   
+			    //主单如果有与预订业务相关，该预订单信息 也要上传修改
+			    if(obj.getResAccnt()!=null && obj.getResAccnt().length()>0){
+			    	resResult = saveSyncResByAccnt(obj);
+			    	if(result >=1 && resResult>=1){
+			    		posAccntSycOld.setIsSync("T");
+				    	posAccntSyncService.update(posAccntSycOld);
+			    	}
+			    }else{
+				    if(result >= 1){
+				    	posAccntSycOld.setIsSync("T");
+				    	posAccntSyncService.update(posAccntSycOld);
+				    }
+			    }
+			 }
+		}
+	}	
+		
+	/** 
+	* @Title: 
+	* @Description: TODO(这里用一句话描述这个方法的作用) 
+	* @param     设定文件 
+	* @return 
+	* @throws 
+	*/
+	public int saveSyncMasterByAccnt(PosAccntSync posAccntSync){
+		int res = 0 ;
+		Map<String, String> propertys = new HashMap<String, String>();
+		propertys.put("Charset", "UTF-8");
+		propertys.put("Content-Type", "application/json");
+		BasePosSycHttpRequester hp = new BasePosSycHttpRequester();
+		String response = null;
+		JSONObject j = JSON.parseObject("");
+		for (int i = 0; i < SycMasterEntityArr.length; i++) {
+			// 获取本地需要上传的数据列表
+			List<Object> T = new ArrayList<Object>();
+			T = posSubService.getPosSyncAccntList(SycMasterEntityArr[i], posAccntSync,"master");
+
+			if (T.size()>0) {
+				//HTTP 请求中央 保存 需要保存的数据
+				Map<String, String> upParams = new HashMap<String, String>();
+				upParams.put("entity", SycMasterEntityArr[i]);
+				upParams.put("data", JSON.toJSONString(T));
+				String upUrl = sycUrl
+						+ "/PosSycRemoteUpload/savePosMater.do";
+				try {
+					response = hp.sendPost(upUrl, upParams, propertys,
+							"UTF-8").getContent();
+					//j.clear();
+					j = JSON.parseObject(response);
+					if (j.getString("success") == "true") {
+						res = res+1 ;
+						//记录已经同步的accnt+entity
+						posAccntSync.setEntityName(SycMasterEntityArr[i]);
+						posAccntSync.setIsSync("T");
+						posAccntSync.setType("SycComp");
+						posAccntSync.setIsHalt("T");
+						posAccntSyncService.savePosAccntSync(posAccntSync);
+					}
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			} else {
+				posAccntSync.setEntityName(SycMasterEntityArr[i]);
+				posAccntSync.setIsSync("T");
+				posAccntSync.setType("SycUnCom");
+				posAccntSync.setIsHalt("T");
+				posAccntSyncService.savePosAccntSync(posAccntSync);
+			}
+		}
+		return res;
+	}
+	
+	/** 
+	* @Title: 
+	* @Description: TODO(这里用一句话描述这个方法的作用) 
+	* @param     设定文件 
+	* @return 
+	* @throws 
+	*/
+	public int saveSyncResByAccnt(PosAccntSync posAccntSync){
+		int res = 0 ;
+		String[] saveSycResEntityArr = {"PosRes","PosPay" };
+		Map<String, String> propertys = new HashMap<String, String>();
+		propertys.put("Charset", "UTF-8");
+		propertys.put("Content-Type", "application/json");
+		BasePosSycHttpRequester hp = new BasePosSycHttpRequester();
+		String response = null;
+		JSONObject j = JSON.parseObject("");
+		for (int i = 0; i < saveSycResEntityArr.length; i++) {
+			// 获取本地需要上传的数据列表
+			List<Object> T = new ArrayList<Object>();
+			T = posSubService.getPosSyncAccntList(saveSycResEntityArr[i], posAccntSync,"res");
+
+			if (T.size()>0) {
+				//HTTP 请求中央 保存 需要保存的数据
+				Map<String, String> upParams = new HashMap<String, String>();
+				upParams.put("entity", saveSycResEntityArr[i]);
+				upParams.put("data", JSON.toJSONString(T));
+				String upUrl = sycUrl
+						+ "/PosSycRemoteUpload/savePosRes.do";
+				try {
+					response = hp.sendPost(upUrl, upParams, propertys,
+							"UTF-8").getContent();
+					j = JSON.parseObject(response);
+					if (j.getString("success") == "true") {	
+						res = res+ 1;
+						//记录已经同步的accnt+entity
+						posAccntSync.setEntityName(saveSycResEntityArr[i]);
+						posAccntSync.setIsSync("T");
+						posAccntSync.setType("SycComp");
+						posAccntSync.setIsHalt("T");
+						posAccntSyncService.savePosAccntSync(posAccntSync);
+					}
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			} else {
+				posAccntSync.setEntityName(saveSycResEntityArr[i]);
+				posAccntSync.setIsSync("T");
+				posAccntSync.setType("SycUnCom");
+				posAccntSync.setIsHalt("T");
+				posAccntSyncService.savePosAccntSync(posAccntSync);
+			}
+		}
+		return res;
+		
+	}
+	@Override
+	public String updatePosAuditUpdatePosBizdate() {
+		// TODO Auto-generated method stub
+		//this.getSycConfig();
+		Map<String, String> params = new HashMap<String, String>();
+		params.put("hotelGroupId",hotelGroupId);
+		params.put("hotelId",hotelId);
+		params.put("type", "UpdatePosBizdate");
+		Map<String, String> propertys = new HashMap<String, String>();
+		propertys.put("Charset", "UTF-8");
+		propertys.put("Content-Type", "application/json");
+		BasePosSycHttpRequester hp = new BasePosSycHttpRequester();
+		String url = sycUrl + "/PosSycRemoteUpload/updatePosAuditUpdatePosBizdate.do";
+		String response;
+		String returnMsg = "-1";
+		try {
+			response = hp.sendGet(url, params, propertys, "UTF-8")
+					.getContent();
+			JSONObject j = JSON.parseObject(response);
+			// 返回远程同步时间标志
+			if (j.getString("success") == "true") {
+				   returnMsg = j.getString("msg");
+				}
+		}catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		return returnMsg;
+	}
+	@Override
+	public void getPmsCodeByFlag(String flag) {
+		if(isLocalDatabase){
+			List<PosTableSync>  syncTable = new ArrayList<PosTableSync>();
+			PosTableSync posTableSync = new PosTableSync();
+			posTableSync.setHotelGroupId(java.lang.Long.parseLong(hotelGroupId));
+			posTableSync.setHotelId(java.lang.Long.parseLong(hotelId));
+			posTableSync.setDataFrom("PMS");
+			syncTable = posTableSyncService.listPosTableSync(posTableSync);
+			if(syncTable.size()>0){
+				List<OperationInfo> T = new ArrayList<OperationInfo>();
+				for (int i = 0; i < syncTable.size(); i++) {
+					OperationInfo objectInfo = new OperationInfo();
+					objectInfo.setHotelGroupId(java.lang.Long.parseLong(hotelGroupId));
+					objectInfo.setHotelId(java.lang.Long.parseLong(hotelId));
+				    String syncTye = syncTable.get(i).getType() ;
+				  //需要根据酒店+修改时间 同步的entity
+				   if(syncTye.equalsIgnoreCase("TIME")){
+						T = posSubService.getSycLocalDateList(syncTable.get(i).getEntityName(),objectInfo);
+						if (T.size() > 0) {
+							sycDate = DateUtil.getLongDateString(T.get(0).getModifyDatetime());
+						}
+						else{
+							sycDate = "20100101000000";
+						}
+					}else{
+						// 需要整表同步的entity ALL-GROUP,需要根据酒店同步的entity-HOTEL ,
+						sycDate = "20100101000000";
+					}
+				   //不需要同步或者entity结构有变化的-F
+				   if(!syncTye.equalsIgnoreCase("F") && StringUtil.contains(syncTable.get(i).getEntityName(), flag)){
+						Map<String, String> params = new HashMap<String, String>();
+						params.put("hotelGroupId", hotelGroupId);
+						params.put("hotelId", hotelId);
+						params.put("type",syncTable.get(i).getType());
+						params.put("entity", syncTable.get(i).getEntityName());
+						params.put("date", sycDate);
+			
+						Map<String, String> propertys = new HashMap<String, String>();
+						propertys.put("Charset", "UTF-8");
+						propertys.put("Content-Type", "application/json");
+		
+						BasePosSycHttpRequester hp = new BasePosSycHttpRequester();
+						String url = sycUrl + "/PosSycRemoteGet/getPmsCode.do";
+						String response;
+						try {
+							response = hp.sendGet(url, params, propertys, "UTF-8")
+									.getContent();
+							JSONObject j = JSON.parseObject(response);
+							if (j.getString("success") == "true") {
+								List<String> keyfields = new ArrayList<String>();
+								@SuppressWarnings("rawtypes")
+								Class c = null;
+									try {
+										c = Class.forName("com.greencloud.entity."+syncTable.get(i).getEntityName());
+										@SuppressWarnings("unchecked")
+										List<Object> newlist = JSON.parseArray(j.getString("obj"),c);
+										if(syncTye.equalsIgnoreCase("ALL")){
+											posSycOperation.deleteDataAllTable(newlist, keyfields);
+											posSycOperation.saveData(newlist, true, keyfields);
+										}else if(syncTye.equalsIgnoreCase("GROUP")){
+											keyfields.add("hotelGroupId");
+											posSycOperation.deleteDataAllTable(newlist, keyfields);
+											posSycOperation.saveData(newlist, true, keyfields);
+										}
+										else if(syncTye.equalsIgnoreCase("HOTEL")){
+											keyfields.add("hotelGroupId");
+											keyfields.add("hotelId");
+											posSycOperation.deleteDataAllTable(newlist, keyfields);
+											posSycOperation.saveData(newlist, true, keyfields);
+										}
+										else if(syncTye.equalsIgnoreCase("TIME")){
+											keyfields.add("hotelGroupId");
+											keyfields.add("hotelId");
+											posSycOperation.saveData(newlist, false, keyfields);
+										}
+										System.out.println("同步完成PMS-entity：" + syncTable.get(i).getEntityName());
+									} catch (ClassNotFoundException e) {
+										// TODO Auto-generated catch block
+										e.printStackTrace();
+									}
+							} else {
+								System.out.println("未同步PMS-entity：" + j.getString("obj"));
+							}
+						} catch (IOException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+				    }else{
+				    	System.out.println("不需要同步PMS-entity：" + syncTable.get(i).getEntityName());
+				    }
+				}
+			}
+		}
+	}
+	/*
+	 * (non-Javadoc) 检查本地餐饮营业点夜审标志表,告知PMS
+	 * 
+	 * 
+	 */
+	@Override
+	public void uploadPosPccodeAuditFlag() {
+		// TODO Auto-generated method stub
+		//this.getSycConfig();
+			Map<String, String> params = new HashMap<String, String>();
+			params.put("hotelGroupId", hotelGroupId);
+			params.put("hotelId", hotelId);
+			params.put("type", "save");
+			params.put("entity", "PosPccodeAuditFlag");
+			Map<String, String> propertys = new HashMap<String, String>();
+			propertys.put("Charset", "UTF-8");
+			propertys.put("Content-Type", "application/json");
+			BasePosSycHttpRequester hp = new BasePosSycHttpRequester();
+			String response;
+			// 获取本地需要上传的营业点夜审标志表
+			 SysOption sysOption =  sysOptionService.findSysOptionByCatalogItem("system", "pos_biz_date",java.lang.Long.parseLong(hotelGroupId),java.lang.Long.parseLong(hotelId));
+			 PosPccodeAuditFlag posPccodeAuditFlag = new PosPccodeAuditFlag();
+			 posPccodeAuditFlag.setHotelGroupId(java.lang.Long.parseLong(hotelGroupId));
+			 posPccodeAuditFlag.setHotelId(java.lang.Long.parseLong(hotelId));
+			 posPccodeAuditFlag.setBizDate(DateUtil.parseDateWevFormat(sysOption.getSetValue()));
+			 posPccodeAuditFlag.setIsAudit("T");
+			 posPccodeAuditFlag.setIsRmposted("F");
+			 List<PosPccodeAuditFlag> T = posPccodeAuditFlagService.listPosPccodeAuditFlag(posPccodeAuditFlag);
+			 if (T != null && T.size()>0) {
+					Map<String, String> upParams = new HashMap<String, String>();
+					upParams.put("entity", "PosPccodeAuditFlag");
+					upParams.put("data", JSON.toJSONString(T));
+					String upUrl = sycUrl
+							+ "/PosSycRemoteUpload/uploadPosPccodeAuditFlag.do";
+					try {
+						response = hp.sendPost(upUrl, upParams, propertys,
+								"UTF-8").getContent();
+						JSONObject	j = JSON.parseObject(response);
+						if (j.getString("success") == "true") {
+							for (int i=0;i<T.size();i++) {
+							   T.get(i).setIsRmposted("T");
+							   posPccodeAuditFlagService.update(T.get(i));
+							}
+						}
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+			 }
+	}
+}

@@ -1,0 +1,85 @@
+package com.greencloud.dao;
+import com.aua.dao.IBaseDao;
+import java.util.List;
+import com.greencloud.entity.PosDishcard;
+import org.springframework.dao.DataAccessException;
+ /**
+   * operate PosDishcard into db
+   *@author 
+   *@version 1.0
+   *@date 2015-11-19 14:56
+   */
+public interface IPosDishcardDao extends IBaseDao
+{
+
+  /**
+   *save posDishcard object  method
+   *@param posDishcard PosDishcard 
+   *@throws DataAccessException 
+   *@author  
+   *@version 1.0
+   *@date 2015-11-19 14:56
+   */
+  public void save(PosDishcard posDishcard) throws DataAccessException;
+
+   /**
+   *update posDishcard method
+   *@param posDishcard PosDishcard
+   *@throws DataAccessException 
+   *@author 
+   *@version 1.0
+   *@date 2015-11-19 14:56
+   */
+  public void update(PosDishcard posDishcard) throws DataAccessException;
+ 
+   /**
+   *save or update posDishcard object method
+   *@param posDishcard PosDishcard
+   *@throws DataAccessException
+   *@author  
+   *@version 1.0
+   *@date 2015-11-19 14:56
+   */
+  public void saveOrUpdate(PosDishcard posDishcard) throws DataAccessException;
+  
+   /**
+   *query posDishcard collection method
+   *@param posDishcard PosDishcard send query vo 
+   *@param firstResult 
+   *@param maxResults 
+   *@throws DataAccessException 
+   *@author 
+   *@version 1.0
+   *@date 2015-11-19  14:56
+   */
+  public List<PosDishcard> list(PosDishcard posDishcard,int firstResult ,int maxResults)throws DataAccessException;
+  
+   /**
+   *query collection method  
+   *@param posDishcard PosDishcard send query vo 
+   *@throws DataAccessException
+   *@author 
+   *@version 1.0
+   *@date 2015-11-19 14:56
+   */
+  public List<PosDishcard> list(PosDishcard posDishcard)throws DataAccessException;
+ 
+  /**
+   *count obj amount
+   *@param posDishcard PosDishcard query vo
+   *@throws DataAccessException
+   *@author 
+   *@date 2015-11-19 14:56
+   */
+  public int count(PosDishcard posDishcard)throws DataAccessException;
+  
+   /**
+   *query a posDishcard by id 
+   *@param id 
+   *@throws DataAccessException 
+   *@author 
+   *@date 2015-11-19 14:56
+   */
+  public PosDishcard load(Long id)throws DataAccessException;
+  
+}

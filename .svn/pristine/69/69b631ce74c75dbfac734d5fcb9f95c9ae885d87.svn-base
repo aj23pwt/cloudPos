@@ -1,0 +1,40 @@
+package com.greencloud.facade;
+
+import java.util.List;
+
+import com.greencloud.entity.PosAccess;
+import com.greencloud.entity.PosMaster;
+import com.greencloud.entity.PosModeDef;
+import com.greencloud.entity.PosPay;
+import com.greencloud.entity.PosRes;
+import com.greencloud.entity.PosResOrder;
+import com.greencloud.entity.PosStation;
+
+public interface IPosResFacade {
+	public List<PosRes> getResList(String sql);
+	public List<PosPay> getAllResPayList(String sql);
+	public List<PosMaster> getMasterList(String sql);
+	public String getResAccnt(Object object);
+	public void saveAccess(String tnum,String pcode,String punit);
+	public List<PosAccess> getAccessList();
+	public String saveRes(PosRes res);
+	public void savePosStation(PosStation posStation);
+	
+	public void updateRes(Object object);
+	
+	public void updateResSta(Object object);
+	
+	public List<PosResOrder> getResPluList(PosResOrder object);
+	public List<PosPay> getResPayList(PosPay object);	
+	public <T> List<T> getTableMap( String hotelGroupId, String hotelId,String date,String shift,String pccode,String status,String type,String flag);
+	
+	public List<Object> getPosAccntList(String ename,Object object);
+	public <T> List<T> getShiftCloseList(String hotelGroupId,String hotelId,String pccode,String empid,String shift,String biz_date,String reportNo);
+	
+	public List<PosModeDef> getPosModeDefList(PosModeDef posModeDef);
+	
+	public <T> List<T> getPosVipQuery(String searchText);
+	
+	public List<Object> getPosAccntContainHistoryList(String ename,Object object);
+	
+}

@@ -1,0 +1,91 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+    <class name="com.greencloud.entity.PosPccodeAuditFlag" table="pos_pccode_audit_flag" >
+        <id name="id" type="java.lang.Long">
+            <column name="id" />
+            <generator class="identity"/>
+        </id>
+        <property name="hotelGroupId" type="long">
+            <column name="hotel_group_id"  />
+        </property>
+        <property name="hotelId" type="long">
+            <column name="hotel_id" />
+        </property>
+        <property name="posPccode" type="string">
+            <column name="pos_pccode"/>
+        </property>
+        <property name="posPccodeDescript" type="string">
+            <column name="pos_pccode_descript"/>
+        </property>
+        <property name="bizDate" type="timestamp">
+            <column name="biz_date" />
+        </property>
+        <property name="bizDate1" type="timestamp">
+            <column name="biz_date1"/>
+        </property>
+         <property name="isAudit" type="string">
+            <column name="is_audit">
+            </column>
+        </property>
+        <property name="auditUser" type="string">
+            <column name="audit_user"/>
+        </property>
+        <property name="stationAudit" type="string">
+            <column name="station_audit"/>
+        </property>
+        <property name="isRmposted" type="string">
+            <column name="is_rmposted">
+            </column>
+        </property>
+        <property name="stationRmcheck" type="string">
+            <column name="station_rmcheck"/>
+        </property>
+        <property name="stationRmpost" type="string">
+            <column name="station_rmpost"/>
+        </property>
+         <property name="isExcludePart" type="string">
+            <column name="is_exclude_part">
+            </column>
+        </property>
+         <property name="stationExcludePart" type="string">
+            <column name="station_exclude_part"/>
+        </property>
+        <property name="isCanCheckout" type="string">
+            <column name="is_can_checkout">
+            </column>
+        </property>
+        <property name="isKeypart" type="string">
+            <column name="is_keypart">
+            </column>
+        </property>
+        <property name="isYearFirstDay" type="string">
+            <column name="is_year_first_day">
+            </column>
+        </property>
+        <property name="isMonthFirstDay" type="string">
+            <column name="is_month_first_day">
+            </column>
+        </property>
+        <property name="isReportDone" type="string">
+            <column name="is_report_done">
+            </column>
+        </property>
+         <property name="createUser"  type="string">
+            <column name="create_user" length="20" />
+        </property>
+        <property name="createDatetime" type="timestamp">
+            <column name="create_datetime" length="0" />
+        </property>
+        <property name="modifyUser"  type="string">
+            <column name="modify_user" length="20" />
+        </property>
+        <property name="modifyDatetime" type="timestamp">
+            <column name="modify_datetime" length="0" />
+        </property>
+    </class>
+</hibernate-mapping>
+
+       
+        

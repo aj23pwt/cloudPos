@@ -1,0 +1,38 @@
+jdbc.devClass=org.springframework.jdbc.datasource.DriverManagerDataSource
+jdbc.poolClass=org.apache.commons.dbcp.BasicDataSource
+jdbc.driverClassName=org.gjt.mm.mysql.Driver
+
+jdbc.url=jdbc:mysql://192.168.0.231:3306/portal_cc
+
+jdbc.username=gc_eng
+jdbc.password=gc_eng127.0.0.l.0613
+
+
+jdbc.maxActive=30
+jdbc.maxWait=5000
+jdbc.poolPerparedStatements=false
+jdbc.defaultAutoCommit=true
+jdbc.testOnBorrow=true
+jdbc.testWhileIdle=true
+jdbc.maxIdle=5
+jdbc.minIdle=3
+jdbc.validationQuery=SELECT 1
+jdbc.removeAbandoned=true
+jdbc.logAbandoned=true
+jdbc.removeAbandonedTimeout=90
+
+c3p0.minPoolSize=5
+c3p0.maxPoolSize=70
+c3p0.maxIdleTime=2
+c3p0.preferredTestQuery=SELECT 1
+c3p0.idleConnectionTestPeriod=60
+c3p0.testConnectionOnCheckout = true
+
+
+hibernate.dialect=com.aua.hibernate.dialect.MySQL5InnoDBDialect
+hibernate.format_sql=false
+hibernate.show_sql=true
+hibernate.generate_statistics=false
+
+dao.impl=
+orm.impl=

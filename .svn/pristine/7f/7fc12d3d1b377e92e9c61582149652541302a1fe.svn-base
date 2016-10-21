@@ -1,0 +1,370 @@
+package com.greencloud.service.impl;
+import java.math.BigDecimal;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
+
+import org.springframework.dao.DataAccessException;
+
+import com.aua.dao.IBaseDao;
+import com.aua.service.impl.BaseServiceImpl;
+import com.aua.util.Container;
+import com.aua.util.StringHelper;
+import com.greencloud.constant.BizExceptionConstant;
+import com.greencloud.dao.IPosResDao;
+import com.greencloud.dao.IPosStationDao;
+import com.greencloud.dto.PosCodeDto;
+import com.greencloud.dto.PosResDto;
+import com.greencloud.dto.PosResOrderDto;
+import com.greencloud.dto.PosTableMapDto;
+import com.greencloud.entity.PosRes;
+import com.greencloud.entity.PosResOrder;
+import com.greencloud.entity.PosStation;
+import com.greencloud.exception.BizException;
+import com.greencloud.service.IPosIpService;
+import com.greencloud.service.IPosModeDefService;
+import com.greencloud.service.IPosResService;
+import com.greencloud.service.IPosSubService;
+import com.greencloud.util.DateUtil;
+import com.greencloud.util.ModelUtil;
+import com.greencloud.util.UserManager;
+/**
+ * @author gc-pwt
+ *
+ */
+public class PosResServiceImpl extends BaseServiceImpl implements IPosResService
+{
+   //dao 
+   private IPosResDao posResDao;
+   private IPosStationDao posStationDao;
+   private IPosSubService posSubService;
+   public void setPosSubService(IPosSubService posSubService) {
+		this.posSubService = posSubService;
+	}
+   public void setPosStationDao(IPosStationDao posStationDao) {
+	this.posStationDao = posStationDao;
+}
+
+/**
+   *save posRes object  method
+   *@param posRes PosRes 
+   *@throws DataAccessException 
+   *@author  
+   *@version 1.0
+   *@date 2015-03-30 17:30
+   */
+  public void savePosRes(PosRes posRes) throws DataAccessException{
+     	if(log.isDebugEnabled()){
+			log.debug("start savePosRes method");
+		}
+         posResDao.save(posRes);
+     	if(log.isDebugEnabled()){
+			log.debug("end savePosRes method");
+		}
+  }//end save method
+  
+   /**
+   *update posRes method
+   *@param posRes PosRes
+   *@throws DataAccessException 
+   *@author 
+   *@version 1.0
+   *@date 2015-03-30 17:30
+   */
+  public void updatePosRes(PosRes posRes) throws DataAccessException{ 
+  	    if(log.isDebugEnabled()){
+			log.debug("start updatePosRes method");
+		}
+        posResDao.update(posRes);
+        if(log.isDebugEnabled()){
+			log.debug("end updatePosRes method");
+		}
+  }//end update method
+  
+   /**
+   *save or update posRes object method
+   *@param posRes PosRes
+   *@throws DataAccessException
+   *@author  
+   *@version 1.0
+   *@date 2015-03-30 17:30
+   */
+  public void saveOrUpdatePosRes(PosRes posRes) throws DataAccessException{//start saveOrUpdate method
+      
+        if(log.isDebugEnabled()){
+			log.debug("start saveOrUpdatePosRes method");
+		}
+		
+        posResDao.saveOrUpdate(posRes);
+        
+        if(log.isDebugEnabled()){
+			log.debug("end saveOrUpdatePosRes method");
+		}
+		
+  }//end saveOrUpdate method
+
+  /**
+   *query a container obj
+   *@param posRes PosRes query vo
+   *@param firstResult
+   *@param maxResults 
+   *@throws DataAccessException 
+   *@author weihuawon
+   *@date 2015-03-30 17:30
+   */
+  public Container<PosRes> findPosRes(PosRes posRes,int firstResult ,int maxResults)throws DataAccessException{
+        if(log.isDebugEnabled()){
+			log.debug("start findPosRes method");
+		}
+        Container<PosRes> container = new Container<PosRes>();
+        List<PosRes> list = posResDao.list(posRes, firstResult , maxResults);
+        container.setResults(list);
+        container.setTotalRows(posResDao.count(posRes));
+        if(log.isDebugEnabled()){
+			log.debug("end findPosRes method");
+		}
+       return container;
+  }//end find method
+
+  /**
+   *count obj amount
+   *@param posRes PosRes query vo
+   *@throws DataAccessException
+   *@author 
+   *@date 2015-03-30 17:30
+   */
+  public int countPosRes(PosRes posRes)throws DataAccessException{
+    return posResDao.count(posRes);
+  }//end count method
+  
+   /**
+   *query a posRes by id 
+   *@param id 
+   *@throws DataAccessException 
+   *@author 
+   *@date 2015-03-30 17:30
+   */
+  public PosRes findPosResById(Long id)throws DataAccessException{
+    PosRes  posRes = posResDao.load(id);
+    return posRes;
+  }//end findPosResById method
+  
+    /**
+   *query posRes collection method
+   *@param posRes PosRes send query vo 
+   *@throws DataAccessException 
+   *@author 
+   *@version 1.0
+   *@date 2015-03-30  17:30
+   */
+  public List<PosRes> listPosRes(PosRes  posRes)
+		throws DataAccessException {
+	  List<PosRes> list = posResDao.list(posRes);
+      return list;
+  }//end list method
+  
+   /**
+   *query posRes collection method
+   *@param posRes PosRes send query vo 
+   *@param firstResult 
+   *@param maxResults 
+   *@throws DataAccessException 
+   *@author 
+   *@version 1.0
+   *@date 2015-03-30  17:30
+   */
+  public List<PosRes> listPosRes(PosRes posRes,int firstResult ,int maxResults)throws DataAccessException{
+	   List<PosRes> list = posResDao.list(posRes, firstResult ,maxResults);
+	   return list;
+  }
+  
+  /**
+   * Spring 
+   * @param  posResDao 
+   * @author weihuawon
+   * @date 2015年M3月d30�?17:30
+   */
+  public void setPosResDao(IPosResDao posResDao){ 
+     this.posResDao = posResDao;
+  }//end setPosResDao method
+  
+  @Override
+  protected IBaseDao getDao(){
+    return this.posResDao;
+  }//end getDao method
+
+@Override
+public List<PosRes> getResList(String sql) throws DataAccessException {
+	// TODO Auto-generated method stub
+	return posResDao.getResList(sql);
+}
+
+/**
+ * * 获取新的预订号
+	 * @param code 			业务指针类型(RSVNO:酒店预定号；CRSNO:中央预订号)
+	 * @param type			预订类型前缀（可选参数，传入空串或null将获取酒店预订号）
+	 * @param bizDate		营业日期
+	 * @param hotelGroupId	集团ID
+	 * @param hotelId		酒店ID
+	 * @return String
+ */
+@Override
+public String updateNewPosRsvNo(String code,String type,Date bizDate,Long hotelGroupId,Long hotelId){
+	
+	    // 默认模式 yyMMdd+XXXX
+		// 计算预订号
+		SimpleDateFormat sdf = new SimpleDateFormat("yyMMdd");
+		String timestamp = sdf.format(bizDate);
+		String posCur = posResDao.findSysExtraIdByProc(code, hotelGroupId, hotelId);
+		if(posCur.length() > 16){
+			throw new BizException("sysExtraId数据配置错误,code=["+code+"]hotelGroupId=["+hotelGroupId+"]hotelId=["+hotelId+"]\n"+posCur,
+					BizExceptionConstant.INVALID_PARAM,BizException.BIZ_TYPE.TYPE_1);
+		}
+		int tempInt = 4 - posCur.length();
+		// 前补位
+		for (int i = 0; i < tempInt; i++) {
+			posCur = "0" + posCur;
+		}
+		if(StringHelper.isNotNull(type)){
+			return type + timestamp + posCur;
+		}
+		return timestamp + posCur;
+}
+
+@Override
+public String saveRes(PosRes posres) {
+	// TODO Auto-generated method stub
+	   String accnt = "R"+this.updateNewPosRsvNo("POSRSV", "", posres.getResDate(), posres.getHotelGroupId(), posres.getHotelId());
+		posres.setAccnt(accnt);
+		posResDao.save(posres);
+	
+	return accnt+"#"+posres.getId();
+}
+
+@Override
+public <T> List<T> getTableMap( String hotelGroupId, String hotelId,String date,String shift,String pccode,String status,String type,String flag){
+	// TODO Auto-generated method stub
+	if(pccode != null && pccode.equals("all")){
+		PosStation posStation = new PosStation();
+		posStation.setHotelGroupId(Long.parseLong(hotelGroupId));
+		posStation.setHotelId(Long.parseLong(hotelId));
+		posStation.setCode(UserManager.getWorkStationCode());
+		List<PosStation> list = posStationDao.list(posStation);
+		if(list!=null && list.size()>0){
+			PosStation posStationGet =  list.get(0);
+			if(posStationGet.getPccodes() != null && !posStationGet.getPccodes().equals("")){
+				pccode=posStationGet.getPccodes();
+			}else{
+				pccode="";
+			}
+		}else{
+			pccode="";
+		}
+	}
+	return posResDao.getTableMap(hotelGroupId, hotelId, date, shift, pccode, status, type,flag);
+}
+
+@Override
+public <T> List<T> getPosVipQuery(Long hotelGroupId, Long hotelId,  String searchText) {
+	// TODO Auto-generated method stub
+	return posResDao.getPosVipQuery(hotelGroupId,hotelId,searchText);
+}
+
+@Override
+public PosRes getPosRes(PosRes posRes) throws DataAccessException {
+	// TODO Auto-generated method stub
+	List<PosRes> list = posResDao.list(posRes);
+	PosRes newPosRes = posRes ;
+	if(list!=null && list.size()>0){
+		 newPosRes =  list.get(0);
+	}
+	return newPosRes;
+}
+
+@Override
+public List<PosTableMapDto> getTableMapDto(String hotelGroupId, String hotelId,
+		String date, String shift, String pccode, String status, String type,
+		String flag) {
+	// TODO Auto-generated method stub
+	return posResDao.getTableMapDto(hotelGroupId, hotelId, date, shift, pccode, status, type, flag);
+}
+
+@Override
+public String saveWxRes(PosResDto posResDto) {
+	// TODO Auto-generated method stub
+	//取得accnt
+	String accnt = "error" ;
+	  try {
+	    accnt = "R"+this.updateNewPosRsvNo("POSRSV", "", DateUtil.parseDateNoTime(posResDto.getResDate(),DateUtil.newFormatShort), java.lang.Long.parseLong(posResDto.getHotelGroupId()), java.lang.Long.parseLong(posResDto.getHotelId()));
+	    PosRes posRes = new PosRes();
+	    posRes.setAccnt(accnt);
+	    posRes.setHotelGroupId(java.lang.Long.parseLong(posResDto.getHotelGroupId()));
+	    posRes.setHotelId(java.lang.Long.parseLong(posResDto.getHotelId()));
+	    posRes.setResName(posResDto.getResName());
+	    posRes.setResDate(DateUtil.parseDateNoTime(posResDto.getResDate(),DateUtil.newFormatShort));
+	    posRes.setPccode(posResDto.getPccode());
+	    posRes.setMode("");
+	    posRes.setShift(posResDto.getShift());
+	    posRes.setSta("R");
+	    posRes.setBizDate(DateUtil.parseDateNoTime(posResDto.getBizDate(),DateUtil.newFormatShort));
+	    posRes.setTableType(posResDto.getTableType());
+	    posRes.setTableno(posResDto.getTableno());
+	    posRes.setGsts(Integer.parseInt(posResDto.getGsts()));
+	    posRes.setPhone(posResDto.getPhone());
+	    posRes.setArrtime(posResDto.getArrtime());
+	    posRes.setHaccnt(posResDto.getHaccnt());
+	    posRes.setName(posResDto.getName());
+	    posRes.setInfo("微信预订: "+posResDto.getInfo());
+	    posResDao.save(posRes);
+	    //预订菜式
+	    if(posResDto.getPosResOrderDto().size()>0){
+	    	this.saveWxResOrder(accnt, posResDto);
+	    }
+	} catch (NumberFormatException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	} catch (ParseException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
+	  
+	return accnt;
+}
+
+@Override
+public void saveWxResOrder(String accnt, PosResDto posResDto) {
+	// TODO Auto-generated method stub
+	ArrayList<Object> resOrderList = new ArrayList<Object>();
+	List<PosResOrderDto> orderDto = posResDto.getPosResOrderDto();
+	for (Iterator<PosResOrderDto> i = orderDto.iterator(); i.hasNext();) {
+		PosResOrderDto obj = i.next();
+		PosResOrder posResOrder = new PosResOrder();
+		posResOrder.setHotelGroupId(java.lang.Long.parseLong(posResDto.getHotelGroupId()));
+		posResOrder.setHotelId(java.lang.Long.parseLong(posResDto.getHotelId()));
+		posResOrder.setPcid("1");
+		posResOrder.setAccnt(accnt);
+		posResOrder.setNoteCode(obj.getNoteCode());
+		posResOrder.setSortCode(obj.getSortCode()); 
+		posResOrder.setPluCode(obj.getPluCode()); 
+		posResOrder.setDescript(obj.getDescript()); 
+		posResOrder.setDescriptEn(obj.getDescript()); 
+		posResOrder.setSta("I");
+		posResOrder.setFlag(obj.getFlag()); 
+		posResOrder.setFlag1("0000000000");
+		posResOrder.setNumber(BigDecimal.valueOf(java.lang.Long.parseLong(obj.getNumber())));
+		posResOrder.setInumber(0); 
+		posResOrder.setTnumber(resOrderList.size()+1);
+		posResOrder.setUnit(obj.getUnit()); 
+		posResOrder.setPrice(BigDecimal.valueOf(java.lang.Long.parseLong(obj.getPrice()))); 
+		resOrderList.add(posResOrder);
+	}
+	posSubService.saveCodeCollection(resOrderList);
+}
+
+
+
+
+}//end class PosResServiceImpl

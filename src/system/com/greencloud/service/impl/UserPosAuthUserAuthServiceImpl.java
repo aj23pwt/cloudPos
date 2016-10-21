@@ -1,0 +1,173 @@
+package com.greencloud.service.impl;
+import com.aua.util.Container;
+import com.aua.dao.IBaseDao;
+import com.aua.service.impl.BaseServiceImpl;
+
+import java.util.Date;
+import java.util.List;
+
+import com.greencloud.entity.UserPosAuthUserAuth;
+import com.greencloud.dao.IUserPosAuthUserAuthDao;
+import com.greencloud.service.IUserPosAuthUserAuthService;
+
+import org.springframework.dao.DataAccessException;
+public class UserPosAuthUserAuthServiceImpl extends BaseServiceImpl implements IUserPosAuthUserAuthService
+{
+   //dao 
+   private IUserPosAuthUserAuthDao userPosAuthUserAuthDao;
+   
+  /**
+   *save userPosAuthUserAuth object  method
+   *@param userPosAuthUserAuth UserPosAuthUserAuth 
+   *@throws DataAccessException 
+   *@author  
+   *@version 1.0
+   *@date 2015-10-08 20:02
+   */
+  public void saveUserPosAuthUserAuth(UserPosAuthUserAuth userPosAuthUserAuth) throws DataAccessException{
+     	if(log.isDebugEnabled()){
+			log.debug("start saveUserPosAuthUserAuth method");
+		}
+         userPosAuthUserAuthDao.save(userPosAuthUserAuth);
+     	if(log.isDebugEnabled()){
+			log.debug("end saveUserPosAuthUserAuth method");
+		}
+  }//end save method
+  
+   /**
+   *update userPosAuthUserAuth method
+   *@param userPosAuthUserAuth UserPosAuthUserAuth
+   *@throws DataAccessException 
+   *@author 
+   *@version 1.0
+   *@date 2015-10-08 20:02
+   */
+  public void updateUserPosAuthUserAuth(UserPosAuthUserAuth userPosAuthUserAuth) throws DataAccessException{ 
+  	    if(log.isDebugEnabled()){
+			log.debug("start updateUserPosAuthUserAuth method");
+		}
+        userPosAuthUserAuthDao.update(userPosAuthUserAuth);
+        if(log.isDebugEnabled()){
+			log.debug("end updateUserPosAuthUserAuth method");
+		}
+  }//end update method
+  
+   /**
+   *save or update userPosAuthUserAuth object method
+   *@param userPosAuthUserAuth UserPosAuthUserAuth
+   *@throws DataAccessException
+   *@author  
+   *@version 1.0
+   *@date 2015-10-08 20:02
+   */
+  public void saveOrUpdateUserPosAuthUserAuth(UserPosAuthUserAuth userPosAuthUserAuth) throws DataAccessException{//start saveOrUpdate method
+      
+        if(log.isDebugEnabled()){
+			log.debug("start saveOrUpdateUserPosAuthUserAuth method");
+		}
+		
+        userPosAuthUserAuthDao.saveOrUpdate(userPosAuthUserAuth);
+        
+        if(log.isDebugEnabled()){
+			log.debug("end saveOrUpdateUserPosAuthUserAuth method");
+		}
+		
+  }//end saveOrUpdate method
+
+  /**
+   *query a container obj
+   *@param userPosAuthUserAuth UserPosAuthUserAuth query vo
+   *@param firstResult
+   *@param maxResults 
+   *@throws DataAccessException 
+   *@author weihuawon
+   *@date 2015-10-08 20:02
+   */
+  public Container<UserPosAuthUserAuth> findUserPosAuthUserAuth(UserPosAuthUserAuth userPosAuthUserAuth,int firstResult ,int maxResults)throws DataAccessException{
+        if(log.isDebugEnabled()){
+			log.debug("start findUserPosAuthUserAuth method");
+		}
+        Container<UserPosAuthUserAuth> container = new Container<UserPosAuthUserAuth>();
+        List<UserPosAuthUserAuth> list = userPosAuthUserAuthDao.list(userPosAuthUserAuth, firstResult , maxResults);
+        container.setResults(list);
+        container.setTotalRows(userPosAuthUserAuthDao.count(userPosAuthUserAuth));
+        if(log.isDebugEnabled()){
+			log.debug("end findUserPosAuthUserAuth method");
+		}
+       return container;
+  }//end find method
+
+  /**
+   *count obj amount
+   *@param userPosAuthUserAuth UserPosAuthUserAuth query vo
+   *@throws DataAccessException
+   *@author 
+   *@date 2015-10-08 20:02
+   */
+  public int countUserPosAuthUserAuth(UserPosAuthUserAuth userPosAuthUserAuth)throws DataAccessException{
+    return userPosAuthUserAuthDao.count(userPosAuthUserAuth);
+  }//end count method
+  
+   /**
+   *query a userPosAuthUserAuth by id 
+   *@param id 
+   *@throws DataAccessException 
+   *@author 
+   *@date 2015-10-08 20:02
+   */
+  public UserPosAuthUserAuth findUserPosAuthUserAuthById(Long id)throws DataAccessException{
+    UserPosAuthUserAuth  userPosAuthUserAuth = userPosAuthUserAuthDao.load(id);
+    return userPosAuthUserAuth;
+  }//end findUserPosAuthUserAuthById method
+  
+    /**
+   *query userPosAuthUserAuth collection method
+   *@param userPosAuthUserAuth UserPosAuthUserAuth send query vo 
+   *@throws DataAccessException 
+   *@author 
+   *@version 1.0
+   *@date 2015-10-08  20:02
+   */
+  public List<UserPosAuthUserAuth> listUserPosAuthUserAuth(UserPosAuthUserAuth  userPosAuthUserAuth)
+		throws DataAccessException {
+	  List<UserPosAuthUserAuth> list = userPosAuthUserAuthDao.list(userPosAuthUserAuth);
+      return list;
+  }//end list method
+  
+   /**
+   *query userPosAuthUserAuth collection method
+   *@param userPosAuthUserAuth UserPosAuthUserAuth send query vo 
+   *@param firstResult 
+   *@param maxResults 
+   *@throws DataAccessException 
+   *@author 
+   *@version 1.0
+   *@date 2015-10-08  20:02
+   */
+  public List<UserPosAuthUserAuth> listUserPosAuthUserAuth(UserPosAuthUserAuth userPosAuthUserAuth,int firstResult ,int maxResults)throws DataAccessException{
+	   List<UserPosAuthUserAuth> list = userPosAuthUserAuthDao.list(userPosAuthUserAuth, firstResult ,maxResults);
+	   return list;
+  }
+  
+  /**
+   * Spring 
+   * @param  userPosAuthUserAuthDao 
+   * @author weihuawon
+   * @date 2015年M10月d8�?20:02
+   */
+  public void setUserPosAuthUserAuthDao(IUserPosAuthUserAuthDao userPosAuthUserAuthDao){ 
+     this.userPosAuthUserAuthDao = userPosAuthUserAuthDao;
+  }//end setUserPosAuthUserAuthDao method
+  
+  @Override
+  protected IBaseDao getDao(){
+    return this.userPosAuthUserAuthDao;
+  }//end getDao method
+
+@Override
+public List<UserPosAuthUserAuth> findUserPosAuthUserAuth(Long hotelGroupId,
+		Long hotelId, Date modifyDatetime) {
+	// TODO Auto-generated method stub
+	return userPosAuthUserAuthDao.findUserPosAuthUserAuth(hotelGroupId, hotelId, modifyDatetime);
+}
+}//end class UserPosAuthUserAuthServiceImpl

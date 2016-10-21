@@ -1,0 +1,443 @@
+package com.greencloud.service.impl;
+
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.Serializable;
+import java.io.UnsupportedEncodingException;
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.PostConstruct;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Unmarshaller;
+
+import org.apache.commons.httpclient.HttpClient;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.ContentType;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.util.EntityUtils;
+import org.hibernate.LockMode;
+import org.springframework.context.ApplicationContext;
+import org.springframework.dao.DataAccessException;
+import org.springframework.jdbc.support.rowset.SqlRowSet;
+import org.springframework.web.context.ContextLoader;
+
+import com.aua.entity.BaseEntity;
+import com.aua.jdbc.core.JdbcTemplate;
+import com.aua.util.SQLHelper;
+import com.greencloud.entity.PosDetail;
+import com.greencloud.entity.PosMaster;
+import com.greencloud.entity.SysOption;
+import com.greencloud.exception.BizException;
+import com.greencloud.service.IKaiYuanInterfaceService;
+import com.greencloud.service.ISysOptionService;
+import com.greencloud.util.DateUtil;
+import com.greencloud.util.StringUtil;
+import com.greencloud.util.UserManager;
+import com.greencloud.constant.BizExceptionConstant;
+import com.greencloud.dao.IPosAccountDao;
+import com.greencloud.dao.IPosDetailDao;
+import com.greencloud.dto.KaiYuanCardPosDto;
+import com.greencloud.dto.KaiYuanPosDetailDto;
+import com.greencloud.dto.KaiYuanPosPayDto;
+import com.greencloud.dto.POSInterfaceCardFkDto;
+
+import flex.messaging.io.ArrayCollection;
+
+@SuppressWarnings("deprecation")
+public class KaiYuanInterfaceServiceImpl implements IKaiYuanInterfaceService{
+	
+	private String             SERVER_ADDR = "";
+	private ISysOptionService sysOptionService;
+	
+	private ApplicationContext factory;
+	private JdbcTemplate       mysqlJdbcTemplate;
+	private Map<Class<?>, JAXBContext> contextMap = null;
+	
+	private IPosDetailDao posDetailDao;
+	private IPosAccountDao posAccountDao;
+	
+	private static final String          DEFAULT_CHARSET = "UTF-8";
+	
+	public void setPosDetailDao(IPosDetailDao posDetailDao) {
+		this.posDetailDao = posDetailDao;
+	}
+	public void setPosAccountDao(IPosAccountDao posAccountDao) {
+		this.posAccountDao = posAccountDao;
+	}
+	
+	public JdbcTemplate getMysqlJdbcTemplate() {
+        if (mysqlJdbcTemplate == null) {
+            factory = ContextLoader.getCurrentWebApplicationContext();
+            mysqlJdbcTemplate = (JdbcTemplate) factory.getBean("jdbcTemplate");
+        }
+
+        return mysqlJdbcTemplate;
+	}
+//	getMysqlJdbcTemplate().update("insert into kaiyuan_interface_log(hotel_group_id,hotel_id,url,params,ret_info,create_user,create_datetime) values(?,?,?,?,?,?,NOW())",hotelGroupId,hotelId,path,paramsStr,responseMsg,UserManager.getUserCode());
+	public void setSysOptionService(ISysOptionService sysOptionService) {
+		this.sysOptionService = sysOptionService;
+	}
+	
+	private Boolean notGetServer(long hotelGroupId,long hotelId){
+		if(StringUtil.isEmpty(SERVER_ADDR)){
+			SysOption sysoption  = sysOptionService.findSysOptionByCatalogItem("member", "kaiy_interface_serverip", hotelGroupId, hotelId);
+			if(sysoption != null){
+				SERVER_ADDR = sysoption.getSetValue().trim();
+			}else{
+				SERVER_ADDR = "http://test2.shands.cn/posService/api.do";
+			}
+		}
+		return StringUtil.isEmpty(SERVER_ADDR);
+	}
+	
+	private String updateCheckoutForKy(long hotelGroupId,long hotelId,String billNo){
+		
+		return "1";
+	}
+	
+	private String updateCheckCancelForKy(long hotelGroupId,long hotelId,String billNo){
+		
+		return "1";
+	}
+	
+    @SuppressWarnings("resource")
+	private String sendUploadRequest(String postXml){
+		org.apache.http.client.HttpClient httpClient =  new DefaultHttpClient();
+        HttpPost httpPost = new HttpPost(SERVER_ADDR);
+        httpPost.setHeader("Content-Type","text/html;charset=utf-8");
+        httpPost.setHeader("Connection", "keep-alive");
+    	
+        StringEntity entity2 = null;
+//        entity2 = new StringEntity(postXml,"GBK");
+        entity2 = new StringEntity(postXml,"UTF-8");
+        httpPost.setEntity(entity2);
+        
+        
+        HttpResponse response = null;
+        String responseContent = "";
+        
+        try {
+            response = httpClient.execute(httpPost);
+            HttpEntity entity = response.getEntity();
+            if (null != entity) {
+                responseContent = EntityUtils.toString(entity, ContentType.getOrDefault(entity).getCharset());
+                EntityUtils.consume(entity);
+            }
+        } catch (ClientProtocolException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }finally{
+        	//doSaveLog(SERVER_ADDR, postXml, response.toString().concat("--").concat(responseContent));
+        }
+        httpClient.getConnectionManager().shutdown();
+        return responseContent;  
+        
+    }
+    
+    private List<POSInterfaceCardFkDto> findKaiYuanCardDto(long hotelGroupId,long hotelId,String key){
+    	
+    	return null;
+    }
+	@Override
+	public void updateCardInfo(long hotelGroupId, long hotelId, Date bizDate,
+			String accnt,String cardno,String userCode, String foodDiscount, String beveDiscount,
+			String miscDiscount, String discount1, String discount2) {
+		
+		getMysqlJdbcTemplate().update("Delete from  pos_discount_rate_kaiyuan where hotel_group_id = ? and hotel_id = ? and accnt = ? and cardno = ?",
+							hotelGroupId,hotelId,accnt,cardno);
+		
+		getMysqlJdbcTemplate().update("insert into pos_discount_rate_kaiyuan(hotel_group_id,hotel_id,accnt,cardno,biz_date,fooddiscount,beveDiscount,miscDiscount,discount1,discount2,create_user,create_datetime,modify_user,modify_datetime) values(?,?,?,?,?,?,?,?,?,?,?,NOW(),?,NOW())",
+							hotelGroupId,hotelId,accnt,cardno,bizDate,foodDiscount,beveDiscount,miscDiscount,discount1,discount2,userCode,userCode);
+	}
+	
+	@Override
+	public String updateCardConsume(long hotelGroupId, long hotelId,	
+			Date bizDate, String billNo, BigDecimal pay,String type,String cardno,String flag,long gsts,String hotelCode,String accnt,String pccode) {
+        if (notGetServer(hotelGroupId, hotelId))
+            return null;
+		
+		String SalesItemizersXml = "<SalesItemizers>";
+		String MenuItemsXml = "<MenuItems>";
+		String DiscountsXml = "<Discounts>"; 
+		String SurChargesXml = "<SurCharges>";
+		String PaymentsXml = "<Payments>";
+		String footerXml = "";
+//		</SurCharges>
+		String msg = "";
+		
+		BigDecimal foodAmount = BigDecimal.ZERO;
+		BigDecimal beveAmount = BigDecimal.ZERO;
+		BigDecimal miscAmount = BigDecimal.ZERO;
+		
+		BigDecimal foodDis = BigDecimal.ZERO;
+		BigDecimal beveDis = BigDecimal.ZERO;
+		BigDecimal miscDis = BigDecimal.ZERO;
+		BigDecimal totalDisc = BigDecimal.ZERO;
+		BigDecimal totalamount = BigDecimal.ZERO;
+		BigDecimal totalSrv	= BigDecimal.ZERO;
+		BigDecimal totalpay = BigDecimal.ZERO;
+		
+		BigDecimal amount = BigDecimal.ZERO;
+	
+//		储值卡扣款 结账金额  撤销结账0-结账金额
+		if("SV_REDEMPTION".equalsIgnoreCase(type)){
+			amount = pay;
+		}else if("SV_REDEMPTION_R_P".equalsIgnoreCase(type)){
+			amount = BigDecimal.ZERO.subtract(pay);
+		}
+
+//		定义类  点菜明细 付款明细
+		List<KaiYuanPosDetailDto> posDetail = new ArrayList<KaiYuanPosDetailDto>();
+		List<KaiYuanPosPayDto> posPay = new ArrayList<KaiYuanPosPayDto>();
+		
+//		SV_REDEMPTION_R_P：撤销结账，扣卡
+//		SV_REDEMPTION_R：撤销结账 传消费
+//		SV_REDEMPTION：结账 扣卡
+//		SV_REDEMPTION_C 结账 传消费
+
+//		储值卡扣款 Y  上传消费 N
+		String CheckSequence = "";
+		if("SV_REDEMPTION_C".equals(type) || "SV_REDEMPTION_R".equals(type)){
+			CheckSequence = "N";
+		}else if("SV_REDEMPTION".equals(type) || "SV_REDEMPTION_R_P".equals(type)){
+			CheckSequence = "Y";
+		}
+
+//		点菜明细  flag = "0" 表示账已经结清存在billno按billno获取点菜明细  "1"表示账没结清 没有billno只能按照accnt获取点菜明细
+		if("0".equals(flag)){
+			posDetail = posDetailDao.getPosDetailByBillNo(hotelGroupId, hotelId, billNo);
+		}else{
+			posDetail = posDetailDao.getPosDetailByAccnt(hotelGroupId, hotelId, billNo);
+		}
+
+//		获取ls_no号
+        String lsNoSet = "1";
+        lsNoSet = accnt.substring(accnt.length()-6, accnt.length());
+        
+		String lsNo = DateUtil.getDateString(new Date()).concat(DateUtil.getTimeString(new Date())).concat("NXX").concat(lsNoSet);
+		lsNo = lsNo.substring(2,lsNo.length());
+		String posXml = "<?xml version=\"1.0\" encoding=\"utf-8\"?><SVCMessage version=\"1.7\"><HotelCode>"+hotelCode+"</HotelCode>"
+					+ "<RequestCode>SV_REDEMPTION</RequestCode><TraceID>"+lsNo+"</TraceID><TerminalID>"+UserManager.getWorkStationCode()+"</TerminalID>"
+					+ "<Amount>"+amount+"</Amount><TipAmount>0.00</TipAmount><SVAN>"+cardno+"</SVAN><Password></Password>"
+					+ "<TransactionEmployee>"+UserManager.getUserCode()+"</TransactionEmployee><RevenueCenter>"+pccode+"</RevenueCenter>"
+					+ "<CheckNumber>"+accnt+"</CheckNumber><CheckSequence>"+CheckSequence+"</CheckSequence><LocalDate>"+DateUtil.getDateString(new Date())+"</LocalDate><LocalTime>"+DateUtil.getTimeString(new Date())+"</LocalTime>"
+					+ "<BusinessDate>"+DateUtil.getDateString(UserManager.getBizDate())+"</BusinessDate><TerminalType>PCWS</TerminalType><PosPlatform>"+gsts+"</PosPlatform><CheckSummary>";
+
+//			拼点菜明细 获取汇总金额和折扣总金额
+			if(posDetail != null && posDetail.size() > 0){
+				for(Iterator<KaiYuanPosDetailDto> i = posDetail.iterator();i.hasNext();){
+					KaiYuanPosDetailDto posDetailGet = i.next();
+//					当不是撤销消费时 才获取分类汇总金额
+					if(!"SV_REDEMPTION_R".equalsIgnoreCase(type)){						
+						if("FoodDiscount".equals(posDetailGet.getToCodeTypeDesEn())){
+							foodAmount = foodAmount.add(posDetailGet.getAmount());
+							foodDis = foodDis.add(posDetailGet.getDsc());
+						}else if("BeveDiscount".equals(posDetailGet.getToCodeTypeDesEn())){
+							beveAmount = beveAmount.add(posDetailGet.getAmount());
+							beveDis = beveDis.add(posDetailGet.getDsc());
+						}else{
+							miscAmount = miscAmount.add(posDetailGet.getAmount());
+							miscDis = miscDis.add(posDetailGet.getDsc());
+						}						
+					}
+					
+					totalDisc = totalDisc.add(posDetailGet.getDsc());
+					totalSrv = totalSrv.add(posDetailGet.getSrv());
+//					如果是消费撤销的上传的话 一条正数记录下还得跟一条负数记录
+	//				<MI ID="2237" NAME="mf米饭" QTY="2">2</MI>
+					MenuItemsXml = MenuItemsXml + "<MI ID=\""+posDetailGet.getPluCode()+"\" NAME=\""+posDetailGet.getPluDescript()+"\" QTY=\""+posDetailGet.getNumber().toString()+"\">"+posDetailGet.getAmount().toString()+"</MI>";
+					if("SV_REDEMPTION_R".equals(type)){
+						MenuItemsXml = MenuItemsXml + "<MI ID=\""+posDetailGet.getPluCode()+"\" NAME=\""+posDetailGet.getPluDescript()+"\" QTY=\""+BigDecimal.ZERO.subtract(posDetailGet.getNumber()).toString()+"\">"+BigDecimal.ZERO.subtract(posDetailGet.getAmount()).toString()+"</MI>";
+					}
+				}
+			}
+		
+//			拼消费汇总金额 食品 酒水 其他 如何是撤销消费的话 全部为0
+//			<SI ID="1" NAME="Food">150</SI>
+			SalesItemizersXml = SalesItemizersXml + "<SI ID=\"1\" NAME=\"Food\">"+foodAmount+"</SI>"
+							+"<SI ID=\"2\" NAME=\"Beverage\">"+beveAmount+"</SI>"
+							+"<SI ID=\"3\" NAME=\"Misc\">"+miscAmount+"</SI>"
+							+"<SI ID=\"4\" NAME=\"\">0</SI>"
+							+"<SI ID=\"5\" NAME=\"\">0</SI>"
+							+"<SI ID=\"6\" NAME=\"\">0</SI>"
+							+"<SI ID=\"7\" NAME=\"\">0</SI>"
+							+"<SI ID=\"8\" NAME=\"\">0</SI>";
+			SalesItemizersXml = SalesItemizersXml + "</SalesItemizers>";
+			MenuItemsXml = MenuItemsXml + "</MenuItems>";
+			
+//			拼折扣记录 如果是撤销消费 有正有负  如果是撤销传消费的话一正一负抵消 所以不用拼
+//			<DS ID="41" NAME="SVC FOOD DIS" QTY="1">-18</DS>
+			if(!"SV_REDEMPTION_R".equals(type)){
+				if(!foodDis.equals(BigDecimal.ZERO)){
+					DiscountsXml = DiscountsXml + "<DS ID=\"1\" NAME=\"SVC FOOD DIS\" QTY=\"1\">"+BigDecimal.ZERO.subtract(foodDis).toString()+"</DS>";
+					if("SV_REDEMPTION_R".equals(type)){
+						DiscountsXml = DiscountsXml + "<DS ID=\"1\" NAME=\"SVC FOOD DIS\" QTY=\"-1\">"+foodDis.toString()+"</DS>";
+					}
+				}
+				if(!beveDis.equals(BigDecimal.ZERO)){
+					DiscountsXml = DiscountsXml + "<DS ID=\"2\" NAME=\"SVC Beve DIS\" QTY=\"1\">"+BigDecimal.ZERO.subtract(beveDis).toString()+"</DS>";
+					if("SV_REDEMPTION_R".equals(type)){
+						DiscountsXml = DiscountsXml + "<DS ID=\"2\" NAME=\"SVC Beve DIS\" QTY=\"-1\">"+beveDis.toString()+"</DS>";
+					}
+				}
+				if(!miscDis.equals(BigDecimal.ZERO)){
+					DiscountsXml = DiscountsXml + "<DS ID=\"3\" NAME=\"SVC Misc DIS\" QTY=\"1\">"+BigDecimal.ZERO.subtract(miscDis).toString()+"</DS>";
+					if("SV_REDEMPTION_R".equals(type)){
+						DiscountsXml = DiscountsXml + "<DS ID=\"3\" NAME=\"SVC Misc DIS\" QTY=\"-1\">"+miscDis.toString()+"</DS>";
+					}
+				}
+			}
+			DiscountsXml = DiscountsXml + "</Discounts>";
+			
+			if(!totalSrv.equals(BigDecimal.ZERO)){
+				SurChargesXml = SurChargesXml + "<SC ID=\"Y\" NAME=\"Service Charge\" QTY=\"1\">"+totalSrv.toString()+"</SC>";
+			}			
+			SurChargesXml = SurChargesXml + "</SurCharges>";
+		
+//			如果是卡扣款 或卡撤销扣款 则不需要从表中获取付款  其他的则需要从付款表中获取数据 多种付款的话 或传多个
+			if("SV_REDEMPTION".equals(type) || "SV_REDEMPTION_R_P".equalsIgnoreCase(type)){
+				PaymentsXml = PaymentsXml + "<Payment ID=\"21\" NAME=\"POS会员\" QTY=\"1\">"+pay+"</Payment>";
+			}else{
+				posPay = posAccountDao.getPosPayByaccntS(hotelGroupId, hotelId, billNo);
+				
+				if(posPay != null && posPay.size() > 0){
+					for(Iterator<KaiYuanPosPayDto> i = posPay.iterator();i.hasNext();){
+						KaiYuanPosPayDto posPayGet = i.next();
+//						 <Payment ID="21" NAME="会员卡" QTY="1">152</Payment>
+						PaymentsXml = PaymentsXml + "<Payment ID=\""+posPayGet.getPaycode()+"\" NAME=\""+posPayGet.getDescript()+"\" QTY=\"1\">"+posPayGet.getCredit().toString()+"</Payment>";
+						if("SV_REDEMPTION_R".equals(type)){
+							PaymentsXml = PaymentsXml + "<Payment ID=\""+posPayGet.getPaycode()+"\" NAME=\""+posPayGet.getDescript()+"\" QTY=\"-1\">"+BigDecimal.ZERO.subtract(posPayGet.getCredit())+"</Payment>";
+						}
+						totalpay = totalpay.add(posPayGet.getCredit());
+					}
+					
+				}
+			}
+			PaymentsXml = PaymentsXml + "</Payments>";
+//			SV_REDEMPTION_R_P
+//			<Totals ttlTax="0" ttlDsc="0" ttlSvc="0" ttlPay="152" ttlDue="0"></Totals>
+			if("SV_REDEMPTION_C".equals(type)){
+				footerXml = "<Totals ttlTax=\"0\" ttlDsc=\"0\" ttlSvc=\"0\" ttlPay=\""+totalpay+"\" ttlDue=\"0\"></Totals></CheckSummary></SVCMessage>";
+			}else if("SV_REDEMPTION".equals(type)){
+				footerXml = "<Totals ttlTax=\"0\" ttlDsc=\"0\" ttlSvc=\"0\" ttlPay=\"0\" ttlDue=\""+pay+"\"></Totals></CheckSummary></SVCMessage>";
+			}else if("SV_REDEMPTION_R".equals(type)){
+				footerXml = "<Totals ttlTax=\"0\" ttlDsc=\"0\" ttlSvc=\"0\" ttlPay=\"0\" ttlDue=\"0\"></Totals></CheckSummary></SVCMessage>";
+			}else if("SV_REDEMPTION_R_P".equals(type)){
+				footerXml = "<Totals ttlTax=\"0\" ttlDsc=\"0\" ttlSvc=\"0\" ttlPay=\""+pay+"\" ttlDue=\"0\"></Totals></CheckSummary></SVCMessage>";
+			}
+			posXml = posXml + SalesItemizersXml + MenuItemsXml + DiscountsXml + SurChargesXml + PaymentsXml + footerXml;
+
+			String responseContent = sendUploadRequest(posXml);
+			updateSaveLog(hotelGroupId, hotelId, SERVER_ADDR, posXml, responseContent);
+			
+			getMysqlJdbcTemplate().update("update sys_option set set_value = set_value + 1 where hotel_group_id = ? and hotel_id = ? and catalog = 'interface' and item = 'kaiy_interface_ls_no'",hotelGroupId,hotelId);
+			if(responseContent == null || "".equals(responseContent)){
+				throw new BizException("未返回相关的会员信息,请检查网络或设置!",BizExceptionConstant.INVALID_PARAM);
+			}if(responseContent.indexOf("<ResponseCode>A</ResponseCode>") != -1){
+				return "1";
+			}else{
+				msg = responseContent.substring(responseContent.indexOf("<DisplayMessage>")+16, responseContent.indexOf("</DisplayMessage>"));
+				throw new BizException(msg,BizExceptionConstant.INVALID_PARAM);
+			}
+	}
+	
+	private String getLvHotelCode(Long hotelGroupId,Long hotelId) {
+		if(hotelId.equals(0L)){
+			SqlRowSet rs = getMysqlJdbcTemplate().queryForRowSet(
+	                "select code from hotel_group where id = ?", hotelGroupId);
+			if (rs.next()){
+				return rs.getString("code");
+			}
+		}else{
+			SqlRowSet rs = getMysqlJdbcTemplate().queryForRowSet(
+	                "select code from hotel where hotel_group_id = ? and id = ?", hotelGroupId,hotelId);
+			if (rs.next()){
+				return rs.getString("code");
+			}
+		}
+		return "";	   
+	}
+	
+    @SuppressWarnings("unchecked")
+    public <T> T unmarshal(String handleXml, String charsetName, Class<T> clazz) throws JAXBException, UnsupportedEncodingException {
+    	init();
+        Unmarshaller jaxbUnmarshaller = contextMap.get(clazz).createUnmarshaller();
+        T result = (T) jaxbUnmarshaller.unmarshal(new ByteArrayInputStream(handleXml.getBytes(charsetName)));
+        return result;
+    }
+    
+//    @PostConstruct
+//    protected void init() {
+//        try {
+//            contextMap = new HashMap<Class<?>, JAXBContext>();
+//            contextMap.put(KaiYuanCardPosDto.class, JAXBContext.newInstance(KaiYuanCardPosDto.class));
+//        } catch (JAXBException e) {
+//            e.printStackTrace();
+//        }
+//    }
+    
+    private void updateSaveLog(Long hotelGroupId,Long hotelId,String url, String params, String retInfo) {
+        getMysqlJdbcTemplate().update(
+                "INSERT INTO `kaiyuan_interface_log` (`hotel_group_id`,`hotel_id`,`url`, `params`,`ret_info`, "
+                        + " `create_user`, `create_datetime`) " + " VALUES(?,?,?,?,?,?,now())",
+                hotelGroupId, hotelId, url, StringUtil.getLeft(params,65535),retInfo,
+                UserManager.getUserCode());
+    }
+	@Override
+	public KaiYuanCardPosDto updateByCardSearchDtoForPos(Long hotelGroupId,Long hotelId, String accnt, String sataionCode, String cardNo,String userCode, String pccode,String type1){
+        if (notGetServer(hotelGroupId, hotelId))
+            return null;
+        
+        if(type1 == null || "".equalsIgnoreCase(type1)){
+        	type1 = "PCWS";
+        }
+		String lsNoSet = "1";
+        lsNoSet = accnt.substring(accnt.length()-6, accnt.length());
+        String lsNo = DateUtil.getDateString(new Date()).concat(DateUtil.getTimeString(new Date())).concat("NXX").concat(lsNoSet);
+        lsNo = lsNo.substring(2,lsNo.length());
+        String posXml = "<?xml version=\"1.0\" encoding=\"utf-8\"?><SVCMessage version=\"1.7\"><HotelCode>"+getLvHotelCode(hotelGroupId, hotelId)+"</HotelCode>"
+        		+ "<RequestCode>SV_BALANCE_INQUIRY</RequestCode><TraceID>"+lsNo+"</TraceID><TerminalID>"+sataionCode+"</TerminalID>"
+        		+ "<Amount>0.00</Amount><TipAmount>0.00</TipAmount><SVAN>"+cardNo+"</SVAN><Password></Password>"
+				+ "<TransactionEmployee>"+userCode+"</TransactionEmployee><RevenueCenter>"+pccode+"</RevenueCenter>"
+				+ "<CheckNumber>"+lsNo.substring(lsNo.length()-6, lsNo.length())+"</CheckNumber><CheckSequence></CheckSequence><LocalDate>"+DateUtil.getDateString(new Date())+"</LocalDate><LocalTime>"+DateUtil.getTimeString(new Date())+"</LocalTime>"
+				+ "<BusinessDate>"+DateUtil.getDateString(UserManager.getBizDate())+"</BusinessDate><TerminalType>"+type1+"</TerminalType><PosPlatform>0</PosPlatform></SVCMessage>";
+        
+        String responseContent = sendUploadRequest(posXml);
+        
+        KaiYuanCardPosDto kaiYuanCardPosDto = null;
+        
+        try {
+			kaiYuanCardPosDto = unmarshal(responseContent, DEFAULT_CHARSET, KaiYuanCardPosDto.class);
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		} catch (JAXBException e) {
+			e.printStackTrace();
+		} finally{
+			updateSaveLog(hotelGroupId, hotelId, SERVER_ADDR, posXml, responseContent.toString());
+		}
+               
+		return kaiYuanCardPosDto;
+	}
+	 
+    @PostConstruct
+    protected void init() {
+        try {
+            contextMap = new HashMap<Class<?>, JAXBContext>();
+            contextMap.put(KaiYuanCardPosDto.class, JAXBContext.newInstance(KaiYuanCardPosDto.class));
+        } catch (JAXBException e) {
+            e.printStackTrace();
+        }
+    }
+}

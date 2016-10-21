@@ -1,0 +1,116 @@
+package com.greencloud.entity;
+/**
+ * UserPosAuth 权限实体�? * @author pwt
+ */
+public class UserPosAuth extends OperationInfo {
+
+	
+	/**
+	 * 
+	 */
+	private static final Long serialVersionUID = 8883743500954763290L;
+	/**
+	 * 应用代码
+	 */
+	private String appCode;
+	/**
+	 * 代码
+	 */
+	private String code;
+	/**
+	 * parentCode
+	 */
+	private String parentCode;
+	/**
+	 * 中文描述
+	 */
+	private String descript;
+	/**
+	 * 英文描述
+	 */
+	private String descriptEn;
+	/**
+	 * 权限标志
+	 */
+	private String authFlag;
+	/**
+	 * 是否停用
+	 */
+	private String isHalt;
+	/**
+	 * 排序
+	 */
+	private Integer listOrder;
+	
+	public UserPosAuth() {
+	}
+
+	public String getAppCode() {
+		return appCode;
+	}
+
+
+	public void setAppCode(String appCode) {
+		this.appCode = appCode;
+	}
+
+
+	public String getCode() {
+		return this.code;
+	}
+
+	public void setCode(String code) {
+		this.code = code;
+	}
+
+	public String getParentCode() {
+		return this.parentCode;
+	}
+
+	public void setParentCode(String parentCode) {
+		this.parentCode = parentCode;
+	}
+
+	public String getDescript() {
+		return this.descript;
+	}
+
+	public void setDescript(String descript) {
+		this.descript = descript;
+	}
+
+	public String getDescriptEn() {
+		return this.descriptEn;
+	}
+
+	public void setDescriptEn(String descriptEn) {
+		this.descriptEn = descriptEn;
+	}
+
+	public String getAuthFlag() {
+		return authFlag;
+	}
+
+
+	public void setAuthFlag(String authFlag) {
+		this.authFlag = authFlag;
+	}
+
+
+	public String getIsHalt() {
+		return this.isHalt;
+	}
+
+	public void setIsHalt(String isHalt) {
+		this.isHalt = isHalt;
+	}
+
+	public Integer getListOrder() {
+		return this.listOrder;
+	}
+
+	public void setListOrder(Integer listOrder) {
+		this.listOrder = listOrder;
+	}
+
+}

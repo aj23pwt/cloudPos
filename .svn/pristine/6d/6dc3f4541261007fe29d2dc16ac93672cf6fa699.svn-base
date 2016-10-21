@@ -1,0 +1,388 @@
+package com.greencloud.dao.impl;
+import static com.aua.util.StringHelper.isNotNull;
+
+import java.util.Date;
+import java.util.List;
+
+import org.springframework.dao.DataAccessException;
+
+import com.aua.dao.impl.BaseDaoImpl;
+import com.aua.util.SQLHelper;
+import com.greencloud.dao.IPosPluAllDao;
+import com.greencloud.dto.PosPluNoteDto;
+import com.greencloud.entity.PosPluAll;
+import com.greencloud.util.UserManager;
+
+   /**
+   * operate PosPluAll into db
+   *@author 
+   *@version 1.0
+   *@date 2015-03-23 16:31
+   */
+  public class PosPluAllDaoImpl extends BaseDaoImpl implements IPosPluAllDao{
+
+  /**
+   *save posPluAll object  method
+   *@param posPluAll PosPluAll 
+   *@throws DataAccessException 
+   *@author  
+   *@version 1.0
+   *@date 2015-03-23 16:31
+   */
+  public void save(PosPluAll posPluAll) throws DataAccessException {
+       super.save(posPluAll);
+  }
+  
+  /**
+   *update posPluAll method
+   *@param posPluAll PosPluAll
+   *@throws DataAccessException 
+   *@author 
+   *@version 1.0
+   *@date 2015-03-23 16:31
+   */
+  public void update(PosPluAll posPluAll) throws DataAccessException{
+     super.update(posPluAll);
+  }
+  
+   /**
+   *save or update posPluAll object method
+   *@param posPluAll PosPluAll
+   *@throws DataAccessException
+   *@author  
+   *@version 1.0
+   *@date 2015-03-23 16:31
+   */
+  public void saveOrUpdate(PosPluAll posPluAll) throws DataAccessException{
+     super.saveOrUpdate(posPluAll);
+  }
+  
+   /**
+   *query posPluAll collection method
+   *@param posPluAll PosPluAll send query vo 
+   *@param firstResult 
+   *@param maxResults 
+   *@throws DataAccessException 
+   *@author 
+   *@version 1.0
+   *@date 2015-03-23  16:31
+   */
+  public List<PosPluAll> list(PosPluAll posPluAll,int firstResult ,int maxResults)throws DataAccessException{
+  	 SQLHelper sh = new SQLHelper("SELECT obj FROM PosPluAll obj WHERE 1=1 ");
+  	 spellSQL(sh,posPluAll);
+  	 sh.appendSql(" ORDER BY obj.id DESC");
+  	 sh.setFirstResult(firstResult);
+  	 sh.setMaxResults(maxResults);
+  	 return find(sh);
+  }
+  
+   /**
+   *query collection method  
+   *@param posPluAll PosPluAll send query vo 
+   *@throws DataAccessException
+   *@author 
+   *@version 1.0
+   *@date 2015-03-23 16:31
+   */
+  public List<PosPluAll> list(PosPluAll posPluAll)throws DataAccessException{
+  	 SQLHelper sh = new SQLHelper("SELECT obj FROM PosPluAll obj WHERE 1=1 ");
+  	 spellSQL(sh,posPluAll);
+  	 sh.appendSql(" ORDER BY obj.id DESC");
+  	 return find(sh);
+  }
+  
+  /**
+   *count obj amount
+   *@param posPluAll PosPluAll query vo
+   *@throws DataAccessException
+   *@author 
+   *@date 2015-03-23 16:31
+   */
+  public int count(PosPluAll posPluAll)throws DataAccessException
+  {
+    SQLHelper sh = new SQLHelper("SELECT count(obj) FROM PosPluAll obj WHERE 1=1 ");
+    spellSQL(sh,posPluAll);
+    return count(sh);
+  }
+  
+   /**
+   *query a posPluAll by id 
+   *@param id 
+   *@throws DataAccessException 
+   *@author 
+   *@date 2015-03-23 16:31
+   */
+  public PosPluAll load(Long id)throws DataAccessException
+  {
+    return load(PosPluAll.class ,id);
+  }
+  
+  /*
+   *basic spell SQL method 
+   *@param posPluAll query vo
+   *@throws DataAccessException 
+   *@author weihuawon
+   *@date 2015-03-23 16:31
+   */
+  private void spellSQL(SQLHelper sh,PosPluAll posPluAll)
+  {
+    if(posPluAll != null){
+    	if(posPluAll.getId()!= null){
+            sh.appendSql(" AND obj.id = ? ");
+            sh.insertValue(posPluAll.getId());
+         }
+         if(posPluAll.getHotelGroupId()!= null){
+            sh.appendSql(" AND obj.hotelGroupId = ? ");
+            sh.insertValue(posPluAll.getHotelGroupId());
+         }
+         if(posPluAll.getHotelId()!= null){
+            sh.appendSql(" AND obj.hotelId = ? ");
+            sh.insertValue(posPluAll.getHotelId());
+         }
+        if(isNotNull(posPluAll.getCode())){
+           sh.appendSql(" AND obj.code = ? ");
+           sh.insertValue(posPluAll.getCode().trim());
+        }
+        if(isNotNull(posPluAll.getSortCode())){
+           sh.appendSql(" AND obj.sortCode = ? ");
+           sh.insertValue(posPluAll.getSortCode().trim());
+        }
+        if(isNotNull(posPluAll.getDescript())){
+           sh.appendSql(" AND obj.descript = ? ");
+           sh.insertValue(posPluAll.getDescript().trim());
+        }
+        if(isNotNull(posPluAll.getDescriptEn())){
+           sh.appendSql(" AND obj.descriptEn = ? ");
+           sh.insertValue(posPluAll.getDescriptEn().trim());
+        }
+        if(isNotNull(posPluAll.getHelpcode())){
+           sh.appendSql(" AND obj.helpcode = ? ");
+           sh.insertValue(posPluAll.getHelpcode().trim());
+        }
+       if(posPluAll.getPrice()!= null){
+           sh.appendSql(" AND obj.price = ? ");
+           sh.insertValue(posPluAll.getPrice());
+        }
+        if(isNotNull(posPluAll.getUnit())){
+           sh.appendSql(" AND obj.unit = ? ");
+           sh.insertValue(posPluAll.getUnit().trim());
+        }
+       if(posPluAll.getCostPrice()!= null){
+           sh.appendSql(" AND obj.costPrice = ? ");
+           sh.insertValue(posPluAll.getCostPrice());
+        }
+        if(isNotNull(posPluAll.getMode())){
+           sh.appendSql(" AND obj.mode = ? ");
+           sh.insertValue(posPluAll.getMode().trim());
+        }
+        if(isNotNull(posPluAll.getMenu())){
+           sh.appendSql(" AND obj.menu = ? ");
+           sh.insertValue(posPluAll.getMenu().trim());
+        }
+        if(isNotNull(posPluAll.getFlag())){
+           sh.appendSql(" AND obj.flag = ? ");
+           sh.insertValue(posPluAll.getFlag().trim());
+        }
+        if(isNotNull(posPluAll.getCondgp1())){
+           sh.appendSql(" AND obj.condgp1 = ? ");
+           sh.insertValue(posPluAll.getCondgp1().trim());
+        }
+        if(isNotNull(posPluAll.getTocode())){
+           sh.appendSql(" AND obj.tocode = ? ");
+           sh.insertValue(posPluAll.getTocode().trim());
+        }
+        if(isNotNull(posPluAll.getTimecode())){
+           sh.appendSql(" AND obj.timecode = ? ");
+           sh.insertValue(posPluAll.getTimecode().trim());
+        }
+       if(posPluAll.getPtNum()!= null){
+           sh.appendSql(" AND obj.ptNum = ? ");
+           sh.insertValue(posPluAll.getPtNum());
+        }
+        if(isNotNull(posPluAll.getHasPic())){
+           sh.appendSql(" AND obj.hasPic = ? ");
+           sh.insertValue(posPluAll.getHasPic().trim());
+        }
+        if(isNotNull(posPluAll.getPicPath1())){
+           sh.appendSql(" AND obj.picPath1 = ? ");
+           sh.insertValue(posPluAll.getPicPath1().trim());
+        }
+        if(isNotNull(posPluAll.getIsCentral())){
+           sh.appendSql(" AND obj.isCentral = ? ");
+           sh.insertValue(posPluAll.getIsCentral().trim());
+        }
+        if(isNotNull(posPluAll.getIntroduction())){
+           sh.appendSql(" AND obj.introduction = ? ");
+           sh.insertValue(posPluAll.getIntroduction().trim());
+        }
+        if(isNotNull(posPluAll.getPluMaterial())){
+           sh.appendSql(" AND obj.pluMaterial = ? ");
+           sh.insertValue(posPluAll.getPluMaterial().trim());
+        }
+        if(isNotNull(posPluAll.getRemark())){
+           sh.appendSql(" AND obj.remark = ? ");
+           sh.insertValue(posPluAll.getRemark().trim());
+        }
+        if(isNotNull(posPluAll.getIsHalt())){
+           sh.appendSql(" AND obj.isHalt = ? ");
+           sh.insertValue(posPluAll.getIsHalt().trim());
+        }
+       if(posPluAll.getListOrder()!= null){
+           sh.appendSql(" AND obj.listOrder = ? ");
+           sh.insertValue(posPluAll.getListOrder());
+        }
+        if(isNotNull(posPluAll.getCodeType())){
+           sh.appendSql(" AND obj.codeType = ? ");
+           sh.insertValue(posPluAll.getCodeType().trim());
+        }
+        if(isNotNull(posPluAll.getGroupCode())){
+           sh.appendSql(" AND obj.groupCode = ? ");
+           sh.insertValue(posPluAll.getGroupCode().trim());
+        }
+        if(isNotNull(posPluAll.getIsGroup())){
+           sh.appendSql(" AND obj.isGroup = ? ");
+           sh.insertValue(posPluAll.getIsGroup().trim());
+        }
+        if(isNotNull(posPluAll.getCreateUser())){
+            sh.appendSql(" AND obj.createUser = ? ");
+            sh.insertValue(posPluAll.getCreateUser().trim());
+         }
+        if(posPluAll.getCreateDatetime()!= null){
+            sh.appendSql(" AND obj.createDatetime = ? ");
+            sh.insertValue(posPluAll.getCreateDatetime());
+         }
+         if(isNotNull(posPluAll.getModifyUser())){
+            sh.appendSql(" AND obj.modifyUser = ? ");
+            sh.insertValue(posPluAll.getModifyUser().trim());
+         }
+        if(posPluAll.getModifyDatetime()!= null){
+            sh.appendSql(" AND obj.modifyDatetime = ? ");
+            sh.insertValue(posPluAll.getModifyDatetime());
+         }
+    }
+  }
+
+	@Override
+	public void updateCode(Object object) {
+		this.getHibernateTemplate().update(object);
+	}
+
+	@Override
+	public List<PosPluAll> listById(PosPluAll posPluAll)throws DataAccessException {
+		 SQLHelper sh = new SQLHelper("SELECT obj FROM PosPluAll obj WHERE 1=1 ");
+	  	 spellSQL(sh,posPluAll);
+	  	 sh.appendSql(" ORDER BY obj.listOrder,obj.code");
+	  	 return find(sh);
+	}
+
+	@Override
+	public List<PosPluAll> listPosPluAllBySort(long hotelGroupId, long hotelId,String sort) throws DataAccessException {
+		SQLHelper sh = new SQLHelper("SELECT obj FROM PosPluAll obj WHERE 1=1 ");
+		sh.appendSql(" AND obj.hotelGroupId=? ");
+		sh.insertValue(hotelGroupId);
+		sh.appendSql(" AND obj.hotelId =?  ");
+		sh.insertValue(hotelId);
+		sh.appendSql(" AND obj.isHalt ='F'  ");
+		if (sort != null && !sort.equals("")) {
+			sh.appendSql(" AND obj.sortCode in "+sort+"");
+		}
+		return find(sh);
+	}
+
+	@Override
+	public List<PosPluAll> findPosPluAll(Long hotelGroupId, Long hotelId,Date modifyDatetime) {
+		SQLHelper sh = new SQLHelper("SELECT obj FROM PosPluAll obj WHERE 1=1 ");
+		sh.appendSql(" AND obj.hotelGroupId=? ");
+		sh.insertValue(hotelGroupId);
+		if (hotelId != null) {
+			sh.appendSql(" AND (obj.hotelId =? OR obj.hotelId IS NULL) ");
+			sh.insertValue(hotelId);
+		} else {
+			sh.appendSql(" AND obj.hotelId IS NULL ");
+		}
+		if (modifyDatetime != null) {
+			sh.appendSql(" AND obj.modifyDatetime>? ");
+			sh.insertValue(modifyDatetime);
+		}
+		return find(sh);
+	}
+
+	@Override
+	public int getMaxPosPluId(String sortCode) {
+		SQLHelper sh=new SQLHelper("select ifnull(max(cast(right(code,3) as signed))+1,1) from pos_plu_all  where hotel_group_id = '"+UserManager.getHotelGroupId()+"' and hotel_id='"+UserManager.getHotelId()+"' and sort_code='"+sortCode+"'");
+		return countByNativeSQL(sh);
+	}
+
+	@Override
+	public void updatePosPluFlag(Long hotelGroupId, Long hotelId,String selSort, String strFlag,String num) {
+		//String sql  = "update pos_plu_all set flag = CONCAT(SUBSTRING(flag,1,10),'"+strFlag+"',SUBSTRING(flag,18,LENGTH(flag))) WHERE"
+		String sql  = "update pos_plu_printer set flag = CONCAT(SUBSTRING(flag,1,10),'"+strFlag+"',SUBSTRING(flag,18,LENGTH(flag))) WHERE"
+				+ " hotel_group_id = '"+hotelGroupId+"' and hotel_id= '"+hotelId+"'";
+		if(num.equals("S"))
+		{
+			sql += " and sort_code = '"+selSort+"'";
+		}else if(num.equals("P"))
+		{
+			sql += " and code = '"+selSort+"'";
+		}
+		SQLHelper sh = new SQLHelper(sql);
+		bulkUpdateByNativeSQL(sh);
+	}
+
+	@Override
+	public List<PosPluAll> getPosPluByText(Long hotelGroupId, Long hotelId,String ctext) {
+		String sql = "SELECT p2.descript des2,p1.code code,p1.descript des1,p2.code as sortCode "
+				+ " FROM pos_plu_all p1,(SELECT code,descript FROM pos_sort_all WHERE hotel_group_id='"+hotelGroupId+"' AND hotel_id='"+hotelId+"' ) p2 "
+				+ " WHERE hotel_group_id='"+hotelGroupId+"' AND hotel_id='"+hotelId+"'AND p1.sort_code = p2.code AND (p1.code like  '%"+ctext+"%' "
+				+ " OR p1.descript like  '%"+ctext+"%' OR p1.helpcode like  '%"+ctext+"%')";
+		SQLHelper sh = new SQLHelper(sql);
+		return findByNativeSQL(sh);
+	}
+
+	@Override
+	public List<PosPluAll> getFlagByCode(Long hotelGroupId, Long hotelId, String pcode) {
+		SQLHelper sh = new SQLHelper("SELECT obj FROM PosPluAll obj WHERE 1=1 ");
+		sh.appendSql(" AND obj.hotelGroupId= '"+hotelGroupId+"'");
+		sh.appendSql(" AND obj.hotelId= '"+hotelId+"'");
+		sh.appendSql(" AND obj.code= '"+pcode+"'");
+		return find(sh);
+	}
+
+	@Override
+	public List<PosPluNoteDto> getPosWxPluNote(Long hotelGroupId, Long hotelId,
+			String pccode) {
+		// TODO Auto-generated method stub
+		SQLHelper sh = new SQLHelper();
+		sh.appendSql("  SELECT c.noteCode,c.noteDescript,d.sortCode,d.sortDescript,d.pluCode,d.pluDescript,d.pluUnit,d.pluPrice,d.pluPhotoUrl,d.pluFlag FROM  ");
+		sh.appendSql(" (SELECT `code` as noteCode ,descript as noteDescript FROM code_base a INNER JOIN pos_pccode_note b ON a.hotel_group_id=b.hotel_group_id AND a.hotel_id=b.hotel_id AND a.`code` = b.note_code ");
+		sh.appendSql(" WHERE  a.hotel_group_id = ? and a.hotel_id = ? AND a.parent_code = 'pos_note' AND b.pccode = ? ) c,");
+		sh.insertValue(hotelGroupId);
+		sh.insertValue(hotelId);
+		sh.insertValue(pccode);
+		sh.appendSql("  (SELECT a.plu_code as noteCode,a.`code` as sortCode,a.descript as sortDescript,'1' as pluCode,'1' as pluDescript,'1' as pluUnit,'1' as pluPrice,'1' as pluPhotoUrl ,'1' as pluFlag ");
+		sh.appendSql("   FROM pos_sort_all a  ");
+		sh.appendSql("   WHERE  a.hotel_group_id = ? and a.hotel_id = ? ) d  WHERE c.noteCode = d.noteCode  ");
+		sh.insertValue(hotelGroupId);
+		sh.insertValue(hotelId);
+		return findByNativeSQL(sh, PosPluNoteDto.class);
+	}
+
+	@Override
+	public List<PosPluNoteDto> getPosWxPluNote(Long hotelGroupId, Long hotelId,
+			String pccode, String sortCode) {
+		SQLHelper sh = new SQLHelper();
+		sh.appendSql("  SELECT c.noteCode,c.noteDescript,d.sortCode,d.sortDescript,d.pluCode,d.pluDescript,d.pluUnit,d.pluPrice,d.pluPhotoUrl,d.pluFlag FROM  ");
+		sh.appendSql(" (SELECT `code` as noteCode ,descript as noteDescript FROM code_base a INNER JOIN pos_pccode_note b ON a.hotel_group_id=b.hotel_group_id AND a.hotel_id=b.hotel_id AND a.`code` = b.note_code ");
+		sh.appendSql(" WHERE  a.hotel_group_id = ? and a.hotel_id = ? AND a.parent_code = 'pos_note' AND b.pccode = ? ) c,");
+		sh.insertValue(hotelGroupId);
+		sh.insertValue(hotelId);
+		sh.insertValue(pccode);
+		sh.appendSql("  (SELECT a.plu_code as noteCode,a.`code` as sortCode,a.descript as sortDescript,b.`code` as pluCode,b.descript as pluDescript,b.unit as pluUnit,b.price as pluPrice,b.pic_path1 as pluPhotoUrl ,b.flag as pluFlag     ");
+		sh.appendSql("   FROM pos_sort_all a INNER JOIN pos_plu_all b ON a.hotel_group_id=b.hotel_group_id AND a.hotel_id=b.hotel_id AND a.`code` = b.sort_code  ");
+		sh.appendSql("   WHERE  a.hotel_group_id = ? and a.hotel_id = ? and a.code = ? ) d  WHERE c.noteCode = d.noteCode  ");
+		sh.insertValue(hotelGroupId);
+		sh.insertValue(hotelId);
+		sh.insertValue(sortCode);
+		return findByNativeSQL(sh, PosPluNoteDto.class);
+	}
+}

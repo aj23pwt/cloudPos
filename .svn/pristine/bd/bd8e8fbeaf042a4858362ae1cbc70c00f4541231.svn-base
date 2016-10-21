@@ -1,0 +1,190 @@
+package com.greencloud.dao.impl;
+import com.aua.util.SQLHelper;
+import com.aua.dao.impl.BaseDaoImpl;
+
+import static com.aua.util.StringHelper.*;
+
+import java.util.List;
+
+import com.greencloud.entity.UserPosAuth;
+import com.greencloud.dao.IUserPosAuthDao;
+
+import org.springframework.dao.DataAccessException;
+
+   /**
+   * operate UserPosAuth into db
+   *@author 
+   *@version 1.0
+   *@date 2015-10-08 20:02
+   */
+  public class UserPosAuthDaoImpl extends BaseDaoImpl implements IUserPosAuthDao{
+
+  /**
+   *save userPosAuth object  method
+   *@param userPosAuth UserPosAuth 
+   *@throws DataAccessException 
+   *@author  
+   *@version 1.0
+   *@date 2015-10-08 20:02
+   */
+  public void save(UserPosAuth userPosAuth) throws DataAccessException {
+       super.save(userPosAuth);
+  }
+  
+  /**
+   *update userPosAuth method
+   *@param userPosAuth UserPosAuth
+   *@throws DataAccessException 
+   *@author 
+   *@version 1.0
+   *@date 2015-10-08 20:02
+   */
+  public void update(UserPosAuth userPosAuth) throws DataAccessException{
+     super.update(userPosAuth);
+  }
+  
+   /**
+   *save or update userPosAuth object method
+   *@param userPosAuth UserPosAuth
+   *@throws DataAccessException
+   *@author  
+   *@version 1.0
+   *@date 2015-10-08 20:02
+   */
+  public void saveOrUpdate(UserPosAuth userPosAuth) throws DataAccessException{
+     super.saveOrUpdate(userPosAuth);
+  }
+  
+   /**
+   *query userPosAuth collection method
+   *@param userPosAuth UserPosAuth send query vo 
+   *@param firstResult 
+   *@param maxResults 
+   *@throws DataAccessException 
+   *@author 
+   *@version 1.0
+   *@date 2015-10-08  20:02
+   */
+  public List<UserPosAuth> list(UserPosAuth userPosAuth,int firstResult ,int maxResults)throws DataAccessException{
+  	 SQLHelper sh = new SQLHelper("SELECT obj FROM UserPosAuth obj WHERE 1=1 ");
+  	 spellSQL(sh,userPosAuth);
+  	 sh.appendSql(" ORDER BY obj.id DESC");
+  	 sh.setFirstResult(firstResult);
+  	 sh.setMaxResults(maxResults);
+  	 return find(sh);
+  }
+  
+   /**
+   *query collection method  
+   *@param userPosAuth UserPosAuth send query vo 
+   *@throws DataAccessException
+   *@author 
+   *@version 1.0
+   *@date 2015-10-08 20:02
+   */
+  public List<UserPosAuth> list(UserPosAuth userPosAuth)throws DataAccessException{
+  	 SQLHelper sh = new SQLHelper("SELECT obj FROM UserPosAuth obj WHERE 1=1 ");
+  	 spellSQL(sh,userPosAuth);
+  	 sh.appendSql(" ORDER BY obj.id DESC");
+  	 return find(sh);
+  }
+  
+  /**
+   *count obj amount
+   *@param userPosAuth UserPosAuth query vo
+   *@throws DataAccessException
+   *@author 
+   *@date 2015-10-08 20:02
+   */
+  public int count(UserPosAuth userPosAuth)throws DataAccessException
+  {
+    SQLHelper sh = new SQLHelper("SELECT count(obj) FROM UserPosAuth obj WHERE 1=1 ");
+    spellSQL(sh,userPosAuth);
+    return count(sh);
+  }
+  
+   /**
+   *query a userPosAuth by id 
+   *@param id 
+   *@throws DataAccessException 
+   *@author 
+   *@date 2015-10-08 20:02
+   */
+  public UserPosAuth load(Long id)throws DataAccessException
+  {
+    return load(UserPosAuth.class ,id);
+  }
+  
+  /*
+   *basic spell SQL method 
+   *@param userPosAuth query vo
+   *@throws DataAccessException 
+   *@author weihuawon
+   *@date 2015-10-08 20:02
+   */
+  private void spellSQL(SQLHelper sh,UserPosAuth userPosAuth)
+  {
+    if(userPosAuth != null){
+    	if(userPosAuth.getId()!= null){
+            sh.appendSql(" AND obj.id = ? ");
+            sh.insertValue(userPosAuth.getId());
+         }
+         if(userPosAuth.getHotelGroupId()!= null){
+            sh.appendSql(" AND obj.hotelGroupId = ? ");
+            sh.insertValue(userPosAuth.getHotelGroupId());
+         }
+         if(userPosAuth.getHotelId()!= null){
+            sh.appendSql(" AND obj.hotelId = ? ");
+            sh.insertValue(userPosAuth.getHotelId());
+         }
+        if(isNotNull(userPosAuth.getAppCode())){
+           sh.appendSql(" AND obj.appCode = ? ");
+           sh.insertValue(userPosAuth.getAppCode().trim());
+        }
+        if(isNotNull(userPosAuth.getCode())){
+           sh.appendSql(" AND obj.code = ? ");
+           sh.insertValue(userPosAuth.getCode().trim());
+        }
+        if(isNotNull(userPosAuth.getParentCode())){
+           sh.appendSql(" AND obj.parentCode = ? ");
+           sh.insertValue(userPosAuth.getParentCode().trim());
+        }
+        if(isNotNull(userPosAuth.getDescript())){
+           sh.appendSql(" AND obj.descript = ? ");
+           sh.insertValue(userPosAuth.getDescript().trim());
+        }
+        if(isNotNull(userPosAuth.getDescriptEn())){
+           sh.appendSql(" AND obj.descriptEn = ? ");
+           sh.insertValue(userPosAuth.getDescriptEn().trim());
+        }
+        if(isNotNull(userPosAuth.getAuthFlag())){
+           sh.appendSql(" AND obj.authFlag = ? ");
+           sh.insertValue(userPosAuth.getAuthFlag().trim());
+        }
+        if(isNotNull(userPosAuth.getIsHalt())){
+           sh.appendSql(" AND obj.isHalt = ? ");
+           sh.insertValue(userPosAuth.getIsHalt().trim());
+        }
+       if(userPosAuth.getListOrder()!= null){
+           sh.appendSql(" AND obj.listOrder = ? ");
+           sh.insertValue(userPosAuth.getListOrder());
+        }
+       if(isNotNull(userPosAuth.getCreateUser())){
+           sh.appendSql(" AND obj.createUser = ? ");
+           sh.insertValue(userPosAuth.getCreateUser().trim());
+        }
+       if(userPosAuth.getCreateDatetime()!= null){
+           sh.appendSql(" AND obj.createDatetime = ? ");
+           sh.insertValue(userPosAuth.getCreateDatetime());
+        }
+        if(isNotNull(userPosAuth.getModifyUser())){
+           sh.appendSql(" AND obj.modifyUser = ? ");
+           sh.insertValue(userPosAuth.getModifyUser().trim());
+        }
+       if(userPosAuth.getModifyDatetime()!= null){
+           sh.appendSql(" AND obj.modifyDatetime = ? ");
+           sh.insertValue(userPosAuth.getModifyDatetime());
+        }
+    }
+  }
+}

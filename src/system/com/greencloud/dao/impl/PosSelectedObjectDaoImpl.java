@@ -1,0 +1,216 @@
+package com.greencloud.dao.impl;
+import com.aua.util.SQLHelper;
+import com.aua.dao.impl.BaseDaoImpl;
+
+import static com.aua.util.StringHelper.*;
+
+import java.util.List;
+
+import com.greencloud.entity.PosSelectedObject;
+import com.greencloud.dao.IPosSelectedObjectDao;
+
+import org.springframework.dao.DataAccessException;
+
+   /**
+   * operate PosSelectedObject into db
+   *@author 
+   *@version 1.0
+   *@date 2016-09-11 15:34
+   */
+  public class PosSelectedObjectDaoImpl extends BaseDaoImpl implements IPosSelectedObjectDao{
+
+  /**
+   *save posSelectedObject object  method
+   *@param posSelectedObject PosSelectedObject 
+   *@throws DataAccessException 
+   *@author  
+   *@version 1.0
+   *@date 2016-09-11 15:34
+   */
+  public void save(PosSelectedObject posSelectedObject) throws DataAccessException {
+       super.save(posSelectedObject);
+  }
+  
+  /**
+   *update posSelectedObject method
+   *@param posSelectedObject PosSelectedObject
+   *@throws DataAccessException 
+   *@author 
+   *@version 1.0
+   *@date 2016-09-11 15:34
+   */
+  public void update(PosSelectedObject posSelectedObject) throws DataAccessException{
+     super.update(posSelectedObject);
+  }
+  
+   /**
+   *save or update posSelectedObject object method
+   *@param posSelectedObject PosSelectedObject
+   *@throws DataAccessException
+   *@author  
+   *@version 1.0
+   *@date 2016-09-11 15:34
+   */
+  public void saveOrUpdate(PosSelectedObject posSelectedObject) throws DataAccessException{
+     super.saveOrUpdate(posSelectedObject);
+  }
+  
+   /**
+   *query posSelectedObject collection method
+   *@param posSelectedObject PosSelectedObject send query vo 
+   *@param firstResult 
+   *@param maxResults 
+   *@throws DataAccessException 
+   *@author 
+   *@version 1.0
+   *@date 2016-09-11  15:34
+   */
+  public List<PosSelectedObject> list(PosSelectedObject posSelectedObject,int firstResult ,int maxResults)throws DataAccessException{
+  	 SQLHelper sh = new SQLHelper("SELECT obj FROM PosSelectedObject obj WHERE 1=1 ");
+  	 spellSQL(sh,posSelectedObject);
+  	 sh.appendSql(" ORDER BY obj.id DESC");
+  	 sh.setFirstResult(firstResult);
+  	 sh.setMaxResults(maxResults);
+  	 return find(sh);
+  }
+  
+   /**
+   *query collection method  
+   *@param posSelectedObject PosSelectedObject send query vo 
+   *@throws DataAccessException
+   *@author 
+   *@version 1.0
+   *@date 2016-09-11 15:34
+   */
+  public List<PosSelectedObject> list(PosSelectedObject posSelectedObject)throws DataAccessException{
+  	 SQLHelper sh = new SQLHelper("SELECT obj FROM PosSelectedObject obj WHERE 1=1 ");
+  	 spellSQL(sh,posSelectedObject);
+  	 sh.appendSql(" ORDER BY obj.id DESC");
+  	 return find(sh);
+  }
+  
+  /**
+   *count obj amount
+   *@param posSelectedObject PosSelectedObject query vo
+   *@throws DataAccessException
+   *@author 
+   *@date 2016-09-11 15:34
+   */
+  public int count(PosSelectedObject posSelectedObject)throws DataAccessException
+  {
+    SQLHelper sh = new SQLHelper("SELECT count(obj) FROM PosSelectedObject obj WHERE 1=1 ");
+    spellSQL(sh,posSelectedObject);
+    return count(sh);
+  }
+  
+   /**
+   *query a posSelectedObject by id 
+   *@param id 
+   *@throws DataAccessException 
+   *@author 
+   *@date 2016-09-11 15:34
+   */
+  public PosSelectedObject load(Long id)throws DataAccessException
+  {
+    return load(PosSelectedObject.class ,id);
+  }
+  
+  /*
+   *basic spell SQL method 
+   *@param posSelectedObject query vo
+   *@throws DataAccessException 
+   *@author weihuawon
+   *@date 2016-09-11 15:34
+   */
+  private void spellSQL(SQLHelper sh,PosSelectedObject posSelectedObject)
+  {
+    if(posSelectedObject != null){
+    	if(posSelectedObject.getId()!= null){
+            sh.appendSql(" AND obj.id = ? ");
+            sh.insertValue(posSelectedObject.getId());
+         }
+         if(posSelectedObject.getHotelGroupId()!= null){
+            sh.appendSql(" AND obj.hotelGroupId = ? ");
+            sh.insertValue(posSelectedObject.getHotelGroupId());
+         }
+         if(posSelectedObject.getHotelId()!= null){
+            sh.appendSql(" AND obj.hotelId = ? ");
+            sh.insertValue(posSelectedObject.getHotelId());
+         }
+        if(isNotNull(posSelectedObject.getStationCode())){
+           sh.appendSql(" AND obj.stationCode = ? ");
+           sh.insertValue(posSelectedObject.getStationCode().trim());
+        }
+        if(isNotNull(posSelectedObject.getStationDes())){
+            sh.appendSql(" AND obj.stationDes = ? ");
+            sh.insertValue(posSelectedObject.getStationDes().trim());
+         }
+        if(isNotNull(posSelectedObject.getUserCode())){
+           sh.appendSql(" AND obj.userCode = ? ");
+           sh.insertValue(posSelectedObject.getUserCode().trim());
+        }
+        if(isNotNull(posSelectedObject.getCategory())){
+           sh.appendSql(" AND obj.category = ? ");
+           sh.insertValue(posSelectedObject.getCategory().trim());
+        }
+        if(isNotNull(posSelectedObject.getAccntType())){
+           sh.appendSql(" AND obj.accntType = ? ");
+           sh.insertValue(posSelectedObject.getAccntType().trim());
+        }
+        if(isNotNull(posSelectedObject.getAccnt())){
+           sh.appendSql(" AND obj.accnt = ? ");
+           sh.insertValue(posSelectedObject.getAccnt().trim());
+        }
+        if(isNotNull(posSelectedObject.getPcrec())){
+           sh.appendSql(" AND obj.pcrec = ? ");
+           sh.insertValue(posSelectedObject.getPcrec().trim());
+        }
+       if(posSelectedObject.getNumber()!= null){
+           sh.appendSql(" AND obj.number = ? ");
+           sh.insertValue(posSelectedObject.getNumber());
+        }
+       if(isNotNull(posSelectedObject.getCreateUser())){
+           sh.appendSql(" AND obj.createUser = ? ");
+           sh.insertValue(posSelectedObject.getCreateUser().trim());
+        }
+       if(posSelectedObject.getCreateDatetime()!= null){
+           sh.appendSql(" AND obj.createDatetime = ? ");
+           sh.insertValue(posSelectedObject.getCreateDatetime());
+        }
+        if(isNotNull(posSelectedObject.getModifyUser())){
+           sh.appendSql(" AND obj.modifyUser = ? ");
+           sh.insertValue(posSelectedObject.getModifyUser().trim());
+        }
+       if(posSelectedObject.getModifyDatetime()!= null){
+           sh.appendSql(" AND obj.modifyDatetime = ? ");
+           sh.insertValue(posSelectedObject.getModifyDatetime());
+        }
+    }
+  }
+
+@Override
+public void deletePosSelectedObject(Long hotelId, Long hotelGroupId,String stationCode) {
+		SQLHelper sh = new SQLHelper("Delete from  pos_selected_object where hotel_id = ? and hotel_group_id = ? and station_code = ?");
+		sh.insertValue(hotelId);
+		sh.insertValue(hotelGroupId);
+		sh.insertValue(stationCode);
+		this.bulkUpdateByNativeSQL(sh);
+	}
+
+@Override
+public List<PosSelectedObject> getPosSelectedObjectByAccnt(Long hotelGroupId,
+		Long hotelId, String accnt, String pcrec, String stationCode) {
+		SQLHelper sh = new SQLHelper("SELECT obj FROM PosSelectedObject obj WHERE hotel_group_id = ? and hotel_id = ? and station_code <> ? ");
+		sh.insertValue(hotelGroupId);
+		sh.insertValue(hotelId);
+		sh.insertValue(stationCode);
+		if(pcrec != null && !"".equals(pcrec)){
+			sh.appendSql(" AND obj.pcrec = ? ");
+			sh.insertValue(pcrec);
+		}else{
+			sh.appendSql(" AND obj.accnt = ? ");
+			sh.insertValue(accnt);
+		}
+		return find(sh);
+}
+}

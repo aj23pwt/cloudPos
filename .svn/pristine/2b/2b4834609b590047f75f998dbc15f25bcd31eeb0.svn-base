@@ -1,0 +1,11 @@
+package com.greencloud.facade;
+
+
+public interface IPosSycFacade {
+	public  void getRes ()  ;
+	public  void getCode()  ;
+	public  void saveMaster() ;
+	public  void getPmsCode()  ;
+	public  void saveSyncMaster() ;
+	public String updatePosAuditUpdatePosBizdate();
+}

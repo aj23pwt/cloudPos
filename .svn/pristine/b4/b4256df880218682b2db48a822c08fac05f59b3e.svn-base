@@ -1,0 +1,395 @@
+package com.greencloud.facade.impl;
+
+import java.util.Date;
+import java.util.List;
+
+import com.greencloud.constant.BizExceptionConstant;
+import com.greencloud.dao.IPosIpDao;
+import com.greencloud.dto.POSInterfaceArDto;
+import com.greencloud.dto.POSInterfaceCardDto;
+import com.greencloud.dto.POSInterfaceFoDto;
+import com.greencloud.dto.POSInterfaceGuestDto;
+import com.greencloud.dto.PosAuditProcessCkeckDto;
+import com.greencloud.dto.PosLinkDto;
+import com.greencloud.dto.PosMasterDto;
+import com.greencloud.dto.PosinterfaceFaceArGuestDto;
+import com.greencloud.entity.PosAccntSync;
+import com.greencloud.entity.PosDetail;
+import com.greencloud.entity.PosHotelTransfer;
+import com.greencloud.entity.PosIp;
+import com.greencloud.entity.PosMaster;
+import com.greencloud.entity.PosRes;
+import com.greencloud.entity.User;
+import com.greencloud.exception.BizException;
+import com.greencloud.facade.IPosMasterFacade;
+import com.greencloud.facade.IPosSycFacade;
+import com.greencloud.facade.IUserAuthFacadeService;
+import com.greencloud.hessian.HessianProxyFactory;
+import com.greencloud.hessian.HessianProxyFactoryBean;
+import com.greencloud.service.IPosAccntSyncService;
+import com.greencloud.service.IPosDetailService;
+import com.greencloud.service.IPosHotelTransferService;
+import com.greencloud.service.IPosMasterService;
+import com.greencloud.service.IPosResService;
+import com.greencloud.service.IUserService;
+import com.greencloud.util.MessageDigestUtil;
+import com.greencloud.util.ModelUtil;
+import com.greencloud.util.UserManager;
+
+public class PosMasterFacadeImpl implements IPosMasterFacade {
+
+	
+	private IPosMasterService posMasterService ;
+	private IPosResService posResService ;
+	private IPosDetailService posDetailService ;
+	private IPosAccntSyncService posAccntSyncService;
+	private IUserService userService;
+	private IPosIpDao posIpDao;
+	private IPosSycFacade posSycFacade;
+	private IPosHotelTransferService posHotelTransferService;
+
+
+	
+	public void setPosHotelTransferService(
+			IPosHotelTransferService posHotelTransferService)
+	{
+		this.posHotelTransferService = posHotelTransferService;
+	}
+	public void setPosSycFacade(IPosSycFacade posSycFacade) {
+		this.posSycFacade = posSycFacade;
+	}
+	public void setPosAccntSyncService(IPosAccntSyncService posAccntSyncService) {
+		this.posAccntSyncService = posAccntSyncService;
+	}
+	public IPosResService getPosResService() {
+		return posResService;
+	}
+	public void setPosResService(IPosResService posResService) {
+		this.posResService = posResService;
+	}
+	public IPosMasterService getPosMasterService() {
+		return posMasterService;
+	}
+	public void setPosMasterService(IPosMasterService posMasterService) {
+		this.posMasterService = posMasterService;
+	}
+	public void setPosDetailService(IPosDetailService posDetailService) {
+		this.posDetailService = posDetailService;
+	}
+	/** 
+	* @Title: 
+	* @Description: TODO(新开单) 
+	* @param @param posMaster
+	* @param @param pcid
+	* @param @return   accnt,+提示信息
+	* @return 
+	* @throws 
+	*/
+	@Override
+	public String savePosMaster(PosMaster posMaster,String pcid) {
+		return posMasterService.saveMaster(posMaster,pcid);
+	}
+	/** 
+	* @Title: 
+	* @Description: TODO(app2 预订转登记) 
+	* @param @param res
+	* @param @param posMaster
+	* @param @param pcid
+	* @param @return    设定文件 
+	* @return 
+	* @throws 
+	*/
+	@Override
+	public String updateResNewMaster(PosRes res, PosMaster posMaster,String pcid) {
+		return posMasterService.updateResNewMaster(res, posMaster, pcid);
+	}
+	
+	/** 
+	* @Title: 
+	* @Description: TODO(这里用一句话描述这个方法的作用) 
+	* @param @param accnt
+	* @param @return    设定文件 
+	* @return 
+	* @throws 
+	*/
+	@Override
+	public PosMasterDto getPosMasterDtoByAccnt(String accnt,String tableNo,String sta) {
+		return posMasterService.getPosMasterDtoByAccnt(UserManager.getHotelGroupId(), UserManager.getHotelId(), accnt,tableNo,sta);
+	}
+	@Override
+	public String updateTableNoByAccnt(String bizDate, String accnt,String shift, String oldTableNo, String newTableNo) {
+		return posMasterService.updateTableNoByAccnt(UserManager.getHotelGroupId(), UserManager.getHotelId(), bizDate, accnt, shift, oldTableNo, newTableNo, "0", UserManager.getUserCode());
+	}
+	/** 
+	* @Title: 
+	* @Description: TODO(联单&&撤联) 
+	* @param @param oldAccnt
+	* @param @param newAccnt
+	* @param @param flag flag = 1 表示 撤联操作 flag=2 表示 联单操作 ！！！与flex端 紧密相连
+	* @param @return    设定文件 
+	* @return 
+	* @throws 
+	*/
+	@Override
+	public String updateMasterPcrec(String oldAccnt, String newAccnt,String flag) {
+		return posMasterService.updateMasterPcrec(UserManager.getHotelGroupId(), UserManager.getHotelId(), oldAccnt, newAccnt, flag);
+	}
+	@Override
+	public PosMasterDto updateGetPosMasterDtoForCo(String accnt, String tableNo,Date bizDate) {
+		posMasterService.updateGetPosMasterDtoForCo1(UserManager.getHotelGroupId(), UserManager.getHotelId(),  accnt, tableNo, bizDate);
+		
+		PosMasterDto pmd=posMasterService.updateGetPosMasterDtoForCo2(UserManager.getHotelGroupId(), UserManager.getHotelId(),  accnt, tableNo, bizDate);
+		return pmd;
+	}
+	@Override
+	public String updateCheckoutRevoke(String bizDate, String billno, String shift,String flag, String user) {
+		
+		
+		return posMasterService.updateCheckoutRevoke(UserManager.getHotelGroupId(), UserManager.getHotelId(), bizDate, billno, shift, flag ,user);
+	}
+	
+	@Override
+	public List<POSInterfaceFoDto> getFoList(String key, String rsvClass) {
+		return posMasterService.getFoList(UserManager.getHotelGroupId(), UserManager.getHotelId(),  key, rsvClass);
+	}
+	@Override
+	public List<POSInterfaceArDto> getArList(String key) {
+		return posMasterService.getArList(UserManager.getHotelGroupId(), UserManager.getHotelId(), key);
+	}
+	@Override
+	public List<PosinterfaceFaceArGuestDto> getArGuestList(long arId, String relationCode) {
+		return posMasterService.getArGuestList(UserManager.getHotelGroupId(), UserManager.getHotelId(), arId ,relationCode);
+	}
+	@Override
+	public List<POSInterfaceCardDto> getCardList(String key) {
+		return posMasterService.getCardList(UserManager.getHotelGroupId(), UserManager.getHotelId(), key);
+	}
+	/** 
+	* @Title: 
+	* @Description: TODO(消单) 
+	* @param @param isSure
+	* @param @param accnt
+	* @param @param shift
+	* @param @param user
+	* @param @return    设定文件 
+	* @return 
+	* @throws 
+	*/
+	@Override
+	public String updateMasterRevoke(Boolean isSure, String accnt,
+			String shift, String user,String workStation,String reason) {
+		if(!isSure){
+			PosDetail posDetail = new PosDetail();
+			posDetail.setHotelGroupId(UserManager.getHotelGroupId());
+			posDetail.setHotelId(UserManager.getHotelId());
+			posDetail.setAccnt(accnt);
+			posDetail.setSta("I");
+			return	String.valueOf(posDetailService.countPosDetail(posDetail));
+		}else{
+			return posMasterService.updateMasterRevoke(UserManager.getHotelGroupId(), UserManager.getHotelId(), accnt, shift, user,workStation,reason);
+		}
+	}
+	@Override
+	public <T> List<T> getPosDetailModeView(String bizDate,String accnts,String flag) {
+		return posMasterService.getPosDetailModeView(UserManager.getHotelGroupId(), UserManager.getHotelId(), bizDate, accnts,flag);
+	}
+	@Override
+	public void updatePosDec(String accnts, String dec) {
+		posMasterService.updatePosDec(UserManager.getHotelGroupId(), UserManager.getHotelId(), accnts, dec);
+	}
+	/** 
+	* @Title: 
+	* @Description: TODO(并桌) 
+	* @param @param oldAccnt
+	* @param @param newAccnt
+	* @param @param oldTableno
+	* @param @param newTbleno
+	* @param @param flag
+	* @param @return    设定文件 
+	* @return 
+	* @throws 
+	*/
+	@Override
+	public String updateMasterMergerTable(String oldAccnt, String newAccnt, String oldTableno, String newTbleno, String flag) {
+		return posMasterService.updateMasterMergerTable(UserManager.getHotelGroupId(), UserManager.getHotelId(), oldAccnt, newAccnt, oldTableno, newTbleno, flag, UserManager.getUserCode());
+	}
+	@Override
+	public List<POSInterfaceGuestDto> getGuestList(String key) {
+		return posMasterService.getGuestList(UserManager.getHotelGroupId(), UserManager.getHotelId(), key);
+	}
+	@Override
+	public List<POSInterfaceGuestDto> getCompanyList(String key) {
+		return posMasterService.getCompanyList(UserManager.getHotelGroupId(), UserManager.getHotelId(),  key);
+	}
+	@Override
+	public List<PosAccntSync> getPosAccntSyncList() {
+		PosAccntSync posAccntSync = new PosAccntSync();
+		posAccntSync.setHotelGroupId(UserManager.getHotelGroupId());
+		posAccntSync.setHotelId(UserManager.getHotelId());
+		posAccntSync.setIsSync("F");
+		//获取本地需要同步的账务主单
+		return  posAccntSyncService.listPosAccntSync(posAccntSync);
+	}
+	@Override
+	public void updatePosMode(String accnts, String mode) {
+		posMasterService.updatePosMode(UserManager.getHotelGroupId(), UserManager.getHotelId(), accnts, mode);
+	}
+	@Override
+	public List<PosLinkDto> getPosLinkDtot(String accnt, String tableNo,Date bizDate) {
+		posMasterService.updateGetPosMasterDtoForCo1(UserManager.getHotelGroupId(), UserManager.getHotelId(),  accnt, tableNo, bizDate);
+		
+		return posMasterService.getPosLinkDtot(UserManager.getHotelGroupId(), UserManager.getHotelId(),  accnt, tableNo, bizDate);
+	}
+	@Override
+	public void updatePosSuspend(String accnt, String shift, String user) {
+		posMasterService.updatePosSuspend(UserManager.getHotelGroupId(), UserManager.getHotelId(), accnt, shift, user);
+	}
+	
+	//密码修改
+	public IUserService getUserService() {
+		return userService;
+	}
+	public void setUserService(IUserService userService) {
+		this.userService = userService;
+	}
+	
+	@Override
+	public void updateUserPassword(Long userId,String oldPwd,String newPwd){
+//		user = UserServiceImpl.findUserById(userId);
+		User user = getUserService().findUserById(userId);
+		if(user != null){
+			String diPwd = MessageDigestUtil.digestPassword(oldPwd);
+			if(!diPwd.equals(user.getPassword())){
+				throw new BizException(BizExceptionConstant.WRONG_PASSWORD);
+			}
+			user.setPassword(MessageDigestUtil.digestPassword(newPwd));
+			
+			String pmsIp = getRemoteIp(UserManager.getHotelGroupId(),UserManager.getHotelId());
+			if(pmsIp != null && !pmsIp.equals("")){
+				try {
+					IUserAuthFacadeService server = this.findInterfaceWithIp(pmsIp, IUserAuthFacadeService.class);
+					server.updateUserPassword(userId, oldPwd, newPwd);
+//					server.updateUserPassword(Long.valueOf(2875), oldPwd, newPwd);
+				}
+				catch (Exception e) {
+					throw new BizException("远程密码修改失败",BizExceptionConstant.WRONG_PASSWORD);
+				}
+				
+				getUserService().updateUser(user);
+			}else{
+				throw new BizException("远程服务器配置地址有误，请检查",BizExceptionConstant.WRONG_PASSWORD);
+//				throw new BizException("远程服务器配置地址有误，请检查",BizExceptionConstant.INVALID_PARAM);
+			}
+			
+		}else{
+			throw new BizException(BizExceptionConstant.INVALID_PARAM);
+		}
+	}
+	
+	private String getRemoteIp(Long hotelGroupId, Long hotelId) {
+		PosIp posIp = new PosIp();
+		posIp.setHotelGroupId(hotelGroupId);
+		posIp.setHotelId(hotelId);
+		posIp.setCode("PMS");
+		List<PosIp> list = posIpDao.list(posIp);
+		if(list != null && list.size()>0){
+			PosIp posIpGet = list.get(0);
+			return posIpGet.getServerIp();
+		}else{
+			return "";
+		}
+	}
+	
+	public IPosIpDao getPosIpDao() {
+		return posIpDao;
+	}
+	public void setPosIpDao(IPosIpDao posIpDao) {
+		this.posIpDao = posIpDao;
+	}
+	
+	public <T> T findInterfaceWithIp(String ip,Class<T> class1) {
+		 String className = class1.getName();
+	        if (className.lastIndexOf(".") > -1) {
+	            className = className.substring(className.lastIndexOf(".") + 1);
+	        }
+
+	        // FICommonFacadeService
+	        if (className.startsWith("FI")) {
+	            className = Character.toLowerCase(className.charAt(0)) + className.substring(2);
+	        } else {
+	            className = Character.toLowerCase(className.charAt(1)) + className.substring(2);
+	        }
+
+	        if (ip != null) {
+	            if (ip.indexOf("http://") == -1) {
+	                ip = "http://" + ip;
+	            }
+	            String url = ip + "/";
+	            url = url + className;
+	            
+	            
+	            HessianProxyFactoryBean factory = new HessianProxyFactoryBean();
+	            
+	            HessianProxyFactory hpf = new HessianProxyFactory();
+	            hpf.setOverloadEnabled(true);
+	            
+	            factory.setProxyFactory(hpf);
+	            factory.setServiceUrl(url);
+	            factory.setServiceInterface(class1);
+	            factory.afterPropertiesSet();
+	            return (T)factory.getObject();
+	        }
+	        
+	        return null;
+    }
+	@Override
+	public List<PosAuditProcessCkeckDto> updatePosAuditProcessCkeck(
+			String biz_date) {
+		// TODO Auto-generated method stub
+		return  posMasterService.updatePosAuditProcessCkeck(UserManager.getHotelGroupId(), UserManager.getHotelId(),  biz_date);
+	}
+	@Override
+	public <T> List<T> getTableMapTakeAway(String hotelGroupId, String hotelId,
+			String date, String shift, String pccode, String status,
+			String type, String flag)
+	{
+		// TODO Auto-generated method stub
+		return posMasterService.getTableMapTakeAway(hotelGroupId, hotelId, date, shift, pccode, status, type, flag);
+	}
+	@Override
+	public String saveSplitPosMasterDto(String type, String accnt,
+			String tableNo, List<PosMasterDto> splitPosMasterDto)
+	{
+		// TODO Auto-generated method stub
+		return posMasterService.saveSplitPosMasterDto(type, accnt, tableNo, splitPosMasterDto,UserManager.getHotelGroupId(), UserManager.getHotelId(),UserManager.getUserCode(),UserManager.getWorkStationId());
+	}
+	
+	@Override
+	public void updatePosAuditBeginCheck(long hotelGroupId, long hotelId, String bizDate) {		
+		if(posMasterService.updatePosAuditBeginCheck(hotelGroupId, hotelId, bizDate).equals("1")){
+			posSycFacade.saveSyncMaster();
+		};		
+	}
+	@Override
+	public List<PosHotelTransfer> getPosHotelTransfer()
+	{
+		PosHotelTransfer posHotelTransfer = new PosHotelTransfer();
+		posHotelTransfer.setHotelGroupId(UserManager.getHotelGroupId());
+		posHotelTransfer.setHotelId(UserManager.getHotelId());
+		return posHotelTransferService.listPosHotelTransfer(posHotelTransfer);
+	}
+	@Override
+	public List<POSInterfaceFoDto> getFoListHotelTransfer(
+			PosHotelTransfer hotelTransferData, String key, String rsvClass)
+	{
+		return posMasterService.getFoListHotelTransfer(hotelTransferData,key, rsvClass);
+	}
+	@Override
+	public List<POSInterfaceArDto> getArListHotelTransfer(
+			PosHotelTransfer hotelTransferData, String key)
+	{
+		return posMasterService.getArListHotelTransfer(hotelTransferData, key);
+	}
+
+
+}

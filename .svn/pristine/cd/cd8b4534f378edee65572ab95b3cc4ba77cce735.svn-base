@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="
+           http://www.springframework.org/schema/beans
+           http://www.springframework.org/schema/beans/spring-beans-2.5.xsd"
+    default-autowire="byName">
+	  <import resource="spring-basic.xml"/>
+	  <import resource="spring-datasource-dev.xml"/>
+	  <import resource="spring-hibernate-mysql.xml"/>
+	  <import resource="spring-transaction.xml"/>
+	  <import resource="spring-dao-mysql.xml"/>
+	  <import resource="spring-services.xml"/>
+	  <import resource="spring-flex.xml"/>
+	  <import resource="spring-controller.xml"/>
+	  <import resource="spring-hessian-exporter.xml"/>
+	  <import resource="classpath:/spring/spring-quartz.xml"/>
+	  <!-- framework -->
+	<import resource="classpath:/framework/spring/spring-dao-mysql.xml" />
+	<import resource="classpath:/framework/spring/spring-services.xml" />
+	<import resource="classpath:/framework/spring/spring-flex.xml" />
+	<import resource="classpath:/framework/spring/spring-remoting.xml" />
+    <import resource="classpath:/framework/spring/spring-language-interceptor.xml" />
+    
+    
+	  
+</beans>

@@ -1,0 +1,91 @@
+package com.greencloud.facade;
+
+import java.util.Date;
+import java.util.List;
+
+import org.springframework.dao.DataAccessException;
+
+import com.greencloud.dto.POSInterfaceArDto;
+import com.greencloud.dto.POSInterfaceArFkDto;
+import com.greencloud.dto.POSInterfaceCardDto;
+import com.greencloud.dto.POSInterfaceCardFkDto;
+import com.greencloud.dto.POSInterfaceFoDto;
+import com.greencloud.dto.POSInterfaceFoFkDto;
+import com.greencloud.dto.POSInterfaceGuestDto;
+import com.greencloud.dto.POSInterfaceGuestFkDto;
+import com.greencloud.dto.POSInterfaceScanDto;
+import com.greencloud.dto.PosAuditProcessCkeckDto;
+import com.greencloud.dto.PosLinkDto;
+import com.greencloud.dto.PosMasterDto;
+import com.greencloud.dto.PosinterfaceFaceArGuestDto;
+import com.greencloud.entity.PosAccntSync;
+import com.greencloud.entity.PosAccount;
+import com.greencloud.entity.PosHotelTransfer;
+import com.greencloud.entity.PosMaster;
+import com.greencloud.entity.PosRes;
+
+public interface IPosMasterFacade {
+	
+    public String savePosMaster(PosMaster posMaster,String pcid);
+    public String updateResNewMaster (PosRes res ,PosMaster posMaster,String pcid) ;
+    public PosMasterDto getPosMasterDtoByAccnt(String accnt,String tableNo,String sta);
+    public String updateTableNoByAccnt (String bizDate,String accnt,String shift,String oldTableNo,String newTableNo) ;
+    public String updateMasterPcrec(String oldAccnt, String newAccnt, String flag);
+    public PosMasterDto updateGetPosMasterDtoForCo(String accnt,String tableNo,Date bizDate);
+    public String updateCheckoutRevoke(String bizDate,String billno,String shift,String flag,String user);
+    public List<POSInterfaceFoDto> getFoList(String key,String rsvClass);
+    public List<POSInterfaceArDto> getArList(String key);
+    public List<POSInterfaceFoDto> getFoListHotelTransfer(PosHotelTransfer hotelTransferData,String key,String rsvClass);
+    public List<POSInterfaceArDto> getArListHotelTransfer(PosHotelTransfer hotelTransferData,String key);
+    public List<PosinterfaceFaceArGuestDto> getArGuestList(long arId, String relationCode);
+    public List<POSInterfaceCardDto> getCardList(String key);
+    public List<POSInterfaceGuestDto> getGuestList(String key);
+    public List<POSInterfaceGuestDto> getCompanyList(String key);
+    
+    public List<POSInterfaceScanDto> getScanList(String key);
+    
+//    public List<POSInterfaceCardDto> getCardListResFk(String key);
+//    public List<POSInterfaceGuestDto> getFoGuesFkList(String key);
+//    public List<POSInterfaceGuestDto> getCompanyResFkList(String key);
+    
+    
+    public String updateMasterRevoke(Boolean isSure,String accnt,String shift,String user,String workStation,String reason);
+    public <T> List<T> getPosDetailModeView(String bizDate,String accnts,String flag );
+    public void updatePosDec(String accnts,String dec);
+    public void updatePosMode(String accnts,String mode);
+    public void updatePosSuspend(String accnt,String shift, String user);
+    public String  updateMasterMergerTable(String oldAccnt, String newAccnt,String oldTableno, String newTbleno, String flag); 
+    public List<PosAccntSync> getPosAccntSyncList();
+    
+    public List<PosLinkDto> getPosLinkDtot(String accnt,String tableNo,Date bizDate);
+    
+	/**
+	 * 修改密码
+	 * @param userId 用户id
+	 * @param oldPwd 旧密码
+	 * @param pwd	   新密码
+	 * @throws DataAccessException
+	 */
+	public void updateUserPassword(Long userId,String oldPwd,String pwd) throws DataAccessException;
+	public List<PosAuditProcessCkeckDto> updatePosAuditProcessCkeck(String biz_date);
+	public <T> List<T> getTableMapTakeAway( String hotelGroupId, String hotelId,String date,String shift,String pccode,String status,String type,String flag);
+	public String saveSplitPosMasterDto(String type,String accnt,String tableNo,List<PosMasterDto>splitPosMasterDto);
+	
+	public void updatePosAuditBeginCheck(long hotelGroupId, long hotelId, String bizDate);
+	public List<PosHotelTransfer> getPosHotelTransfer();
+	
+	public void updatePosAccntSyncByPosMasterChanged(long hotelGroupId,long hotelId,String accnt);
+	public PosMaster getPosMaterByAccnt(String accnt);
+    public String updateKitchenMsg (String accnt,String type,String mode,String id,String oldTableNo,String newTableNo,String kitmsg) ;
+    
+    public List<POSInterfaceFoFkDto> getFoFkList(String key,String rsvClass);
+    public List<POSInterfaceArFkDto> getArFkList(String key);
+    public List<POSInterfaceGuestFkDto> getGuestFkList(String key);
+    public List<POSInterfaceGuestFkDto> getCompanyFkList(String key);
+    public List<POSInterfaceCardFkDto> getCardFkList(String key);
+    
+    public List<POSInterfaceFoFkDto> getFoListHotelTransferFk(PosHotelTransfer hotelTransferData,String key,String rsvClass);
+    public List<POSInterfaceArFkDto> getArListHotelTransferFk(PosHotelTransfer hotelTransferData,String key);
+    
+    public List<PosAccount> getPosAccountPayView(String bizDate,String accnts);
+}

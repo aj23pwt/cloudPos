@@ -1,0 +1,24 @@
+package com.greencloud.facade.impl;
+
+import java.util.List;
+
+import com.greencloud.facade.IPosBusinessFacade;
+import com.greencloud.service.IPosAuditReportService;
+
+public class PosBusinessFacadeImpl implements IPosBusinessFacade{
+	private IPosAuditReportService posAuditReportService;
+
+	@Override
+	public List<Object> search(String sql) {
+		return posAuditReportService.search(sql);
+	}
+
+	public IPosAuditReportService getPosAuditReportService() {
+		return posAuditReportService;
+	}
+
+	public void setPosAuditReportService(
+			IPosAuditReportService posAuditReportService) {
+		this.posAuditReportService = posAuditReportService;
+	}
+}

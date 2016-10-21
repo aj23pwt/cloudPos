@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+    <class name="com.greencloud.entity.PosAuditDate" table="pos_audit_date" >
+        <id name="id" type="java.lang.Long">
+            <column name="id" />
+            <generator class="identity" />
+        </id>
+        <property name="hotelGroupId" type="java.lang.Long">
+            <column name="hotel_group_id"  />
+        </property>
+        <property name="hotelId" type="java.lang.Long">
+            <column name="hotel_id"   />
+        </property>
+        <property name="bizSdate" type="timestamp">
+            <column name="biz_sdate" length="0"  />
+        </property>
+        <property name="bizDate" type="timestamp">
+            <column name="biz_date" length="0"  />
+        </property>
+        <property name="dateBegin" type="timestamp">
+            <column name="date_begin" length="0" >
+            </column>
+        </property>
+        <property name="dateEnd" type="timestamp">
+            <column name="date_end" length="0"  >
+            </column>
+        </property>
+        <property name="auditUser" type="string">
+            <column name="audit_user" length="20" >
+            </column>
+        </property>
+    </class>
+</hibernate-mapping>

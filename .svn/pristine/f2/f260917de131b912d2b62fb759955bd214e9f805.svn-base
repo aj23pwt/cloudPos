@@ -1,0 +1,596 @@
+package com.greencloud.service.impl;
+
+import static com.greencloud.constant.BizExceptionConstant.INVALID_PARAM;
+
+import java.net.MalformedURLException;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
+import com.greencloud.dao.ICodeBaseDao;
+import com.greencloud.dao.IHotelDao;
+import com.greencloud.dao.IPosDetailDao;
+import com.greencloud.dao.IPosHibernateDao;
+import com.greencloud.dao.IPosIpDao;
+import com.greencloud.dao.IPosSubDao;
+import com.greencloud.entity.CodeBase;
+import com.greencloud.entity.EntityInfo;
+import com.greencloud.entity.Hotel;
+import com.greencloud.entity.OperationInfo;
+import com.greencloud.entity.PosAccntSync;
+import com.greencloud.entity.PosDetail;
+import com.greencloud.entity.PosIp;
+import com.greencloud.entity.ReportCenter;
+import com.greencloud.exception.BizException;
+import com.greencloud.facade.ICodeFacadeService;
+import com.greencloud.facade.IPmsPosFacadeService;
+import com.greencloud.hessian.HessianProxyFactory;
+import com.greencloud.hessian.HessianProxyFactoryBean;
+import com.greencloud.service.IPosSubService;
+import com.greencloud.util.ModelUtil;
+import com.greencloud.util.UserManager;
+
+import flex.messaging.io.ArrayCollection;
+
+public class PosSubServiceImpl implements IPosSubService {
+	private IPosSubDao  posSubDao;
+	private ICodeBaseDao codeBaseDao;
+	private IHotelDao hotelDao;
+	private IPosHibernateDao posHibernateDao; 
+	private IPosDetailDao posDetailDao;
+	private IPosIpDao posIpDao;
+	
+	
+
+	public void setPosIpDao(IPosIpDao posIpDao) {
+		this.posIpDao = posIpDao;
+	}
+
+	public void setPosDetailDao(IPosDetailDao posDetailDao) {
+		this.posDetailDao = posDetailDao;
+	}
+
+	public void setPosHibernateDao(IPosHibernateDao posHibernateDao) {
+		this.posHibernateDao = posHibernateDao;
+	}
+
+	public void setHotelDao(IHotelDao hotelDao) {
+		this.hotelDao = hotelDao;
+	}
+
+	public void setCodeBaseDao(ICodeBaseDao codeBaseDao) {
+		this.codeBaseDao = codeBaseDao;
+	}
+
+	public void setPosSubDao(IPosSubDao posSubDao) {
+		this.posSubDao = posSubDao;
+	}
+
+	private String getGroupIp(long hotelGroupId, long hotelId){
+		PosIp posIp = new PosIp();
+		posIp.setHotelGroupId(hotelGroupId);
+		posIp.setHotelId(hotelId);
+		posIp.setCode("GROUP");
+		List<PosIp> list = posIpDao.list(posIp);
+		if(list != null && list.size()>0){
+			PosIp posIpGet = list.get(0);
+			return posIpGet.getServerIp();
+		}else{
+			return "";
+		}
+	}
+	
+	
+	@SuppressWarnings("unchecked")
+	public <T> T findInterfaceWithIp(String ip,Class<T> class1) {
+        String className = class1.getName();
+        if (className.lastIndexOf(".") > -1) {
+            className = className.substring(className.lastIndexOf(".") + 1);
+        }
+
+        // FICommonFacadeService
+        if (className.startsWith("FI")) {
+            className = Character.toLowerCase(className.charAt(0)) + className.substring(2);
+        } else {
+            className = Character.toLowerCase(className.charAt(1)) + className.substring(2);
+        }
+
+        if (ip != null) {
+            if (ip.indexOf("http://") == -1) {
+                ip = "http://" + ip;
+            }
+            String url = ip + "/";
+            url = url + className;
+            
+            
+            HessianProxyFactoryBean factory = new HessianProxyFactoryBean();
+            
+            HessianProxyFactory hpf = new HessianProxyFactory();
+            hpf.setOverloadEnabled(true);
+            
+            factory.setProxyFactory(hpf);
+            factory.setServiceUrl(url);
+            factory.setServiceInterface(class1);
+            factory.afterPropertiesSet();
+            return (T)factory.getObject();
+        }
+        
+        return null;
+        
+//        throw new BizException("参数错误.",BizExceptionConstant.INVALID_PARAM);
+    }
+
+	@Override
+	public List<Object> getDataBySql(String sql) {
+		return posSubDao.getDataBySql(sql);
+	}
+
+	@Override
+	public void updateDataBySql(String sql) {
+		posSubDao.updateDataBySql(sql); 
+	}
+
+	@Override
+	public List<CodeBase> getCodeBaseByParentCode(long hotelGroupId,long hotelId,String parentCode) {
+		CodeBase cb=new CodeBase();
+		cb.setHotelGroupId(hotelGroupId);
+		cb.setHotelId(hotelId);
+		cb.setParentCode(parentCode);
+		cb.setIsHalt("F");
+		List<CodeBase> list = codeBaseDao.list(cb);
+		return list;
+	}
+	
+	
+
+	@Override
+	public Object getCodeDetail(Object object) {
+		OperationInfo objectInfo = (OperationInfo)object;
+		
+		Boolean toGroup=false;
+		String groupIp=getGroupIp(UserManager.getHotelGroupId(),0l);
+		if(groupIp != null && !groupIp.equals("") ){
+			//分库版
+			if (object instanceof CodeBase){
+				toGroup = true;
+			}else{
+				toGroup = false;
+			}
+		}else{
+			//非分库版
+			toGroup = false;
+		}
+		
+		if(toGroup){
+			ICodeFacadeService service  = this.findInterfaceWithIp(groupIp, ICodeFacadeService.class);
+			Object oo=service.getCodeDetail(object);
+			return oo;
+		}else{
+			return posSubDao.getCodeDetail(object);
+		}
+		
+		
+		
+	}
+
+	@Override
+	public List<Object> getCodeList(String ename,Object object) {
+		OperationInfo objectInfo = (OperationInfo)object;
+		
+		Boolean toGroup=false;
+		String groupIp=getGroupIp(objectInfo.getHotelGroupId(),0l);
+		if(groupIp != null && !groupIp.equals("") ){
+			//分库版
+			if (object instanceof CodeBase){
+				toGroup = true;
+			}else{
+				toGroup = false;
+			}
+		}else{
+			//非分库版
+			toGroup = false;
+		}
+		
+		if(toGroup){
+			ICodeFacadeService service  = this.findInterfaceWithIp(groupIp, ICodeFacadeService.class);
+			CodeBase cb=new CodeBase();
+			cb.setHotelGroupId(objectInfo.getHotelGroupId());
+			cb.setHotelId(objectInfo.getHotelId());
+			
+			if(objectInfo.getId()!= null){
+				cb.setId(objectInfo.getId());
+			}
+	    	  String isHalt = (String)ModelUtil.getPropertyValue(objectInfo, "isHalt");
+	    	  if(isHalt != null && isHalt.equals("F")){
+	    		 cb.setIsHalt(isHalt);
+	    	  }
+	    
+		      if (ModelUtil.hasProperty(objectInfo, "parentCode")){
+		    	  cb.setParentCode((String) ModelUtil.getPropertyValue(objectInfo, "parentCode"));
+		      }
+			
+			
+		      List<CodeBase> list= service.listCodeBase(cb);
+		      
+		      List<Object> blist=new ArrayList<Object>();
+		      if(list != null && list.size()>0){
+		    	  for(Iterator<CodeBase> i=list.iterator();i.hasNext();){
+		    		  CodeBase codeBaseGet = i.next();
+		    		  
+		    		  Object oo = (Object)codeBaseGet;
+		    		  blist.add(oo);
+		    	  }
+		      }
+		      return blist;
+		}else{
+			return posSubDao.getCodeList(ename,object);
+		}
+	}
+
+	@Override
+	public String getHotelTree(Boolean filterR) {
+		return null;
+	}
+
+	@Override
+	public void saveCode(Object codeTemp) {
+		
+		Boolean toGroup=false;
+		String groupIp=getGroupIp(UserManager.getHotelGroupId(),0l);
+		if(groupIp != null && !groupIp.equals("") ){
+			//分库版
+			if (codeTemp instanceof CodeBase){
+				toGroup = true;
+			}else{
+				toGroup = false;
+			}
+		}else{
+			//非分库版
+			toGroup = false;
+		}
+		
+		if(toGroup){
+			ICodeFacadeService service  = this.findInterfaceWithIp(groupIp, ICodeFacadeService.class);
+			service.saveCode(codeTemp);
+		}else{
+			List<Object> objList =  posSubDao.isCodeExistedCc(codeTemp);
+			if(objList!=null && objList.size()>0){
+				throw new BizException("与酒店已有代码冲突！",INVALID_PARAM); 
+			}else{
+				posSubDao.saveCode(codeTemp);
+			}
+		}
+		
+		
+	
+	}
+	
+	@Override
+	public void saveCodeGroup(Object object, String hotels,long hotelGroupId) {
+		if (object instanceof EntityInfo)
+		{	
+			ModelUtil.setPropertyValue(object, "hotelGroupId", hotelGroupId);
+			ModelUtil.setPropertyValue(object, "hotelId", 0l);
+			
+			
+			
+			
+			Boolean toGroup=false;
+			String groupIp=getGroupIp(hotelGroupId,0l);
+			if(groupIp != null && !groupIp.equals("") ){
+				//分库版
+				if (object instanceof CodeBase){
+					toGroup = true;
+				}else{
+					toGroup = false;
+				}
+			}else{
+				//非分库版
+				toGroup = false;
+			}
+			
+			if(toGroup){
+				ICodeFacadeService service  = this.findInterfaceWithIp(groupIp, ICodeFacadeService.class);
+				service.saveCodeGroup(object, hotels);
+			}else{
+			
+				List<Object> objList =  posSubDao.isCodeExistedCc(object);
+				if(objList!=null && objList.size()>0){
+					throw new BizException("与酒店已有代码冲突！",INVALID_PARAM); 
+				}else{
+					//首先将集团端的保存下来
+					posSubDao.saveCode(object);
+					//然后保存各个酒店
+					EntityInfo entityInfo = ((EntityInfo) object).cloneEx();
+					List<Hotel> hotelList = hotelDao.findByhotelGroupId(hotelGroupId);
+					for(Iterator<Hotel> i=hotelList.iterator();i.hasNext();){
+						Hotel hotel = i.next();
+						
+						entityInfo.setId(null);
+						entityInfo.setHotelId(hotel.getId());
+						if(hotels != null && !hotels.equals("")){
+							if(hotels.equals(".")){
+								if(ModelUtil.hasProperty(entityInfo, "isHalt")){
+									ModelUtil.setPropertyValue(entityInfo, "isHalt", "T");
+								}
+								
+								if(ModelUtil.hasProperty(entityInfo, "halt")){
+									ModelUtil.setPropertyValue(entityInfo, "halt", "T");
+								}
+							}else if(hotels.equals("*")){
+								if(ModelUtil.hasProperty(entityInfo, "isHalt")){
+									ModelUtil.setPropertyValue(entityInfo, "isHalt", "F");
+								}
+								
+								if(ModelUtil.hasProperty(entityInfo, "halt")){
+									ModelUtil.setPropertyValue(entityInfo, "halt", "F");
+								}
+							}else
+							{
+								String [] hotelArr = hotels.split(",");
+								if(isExsit(hotelArr,hotel.getId().toString())){
+									if(ModelUtil.hasProperty(entityInfo, "isHalt")){
+										ModelUtil.setPropertyValue(entityInfo, "isHalt", "F");
+									}
+									
+									if(ModelUtil.hasProperty(entityInfo, "halt")){
+										ModelUtil.setPropertyValue(entityInfo, "halt", "F");
+									}
+								}else
+								{
+									if(ModelUtil.hasProperty(entityInfo, "isHalt")){
+										ModelUtil.setPropertyValue(entityInfo, "isHalt", "T");
+									}
+									
+									if(ModelUtil.hasProperty(entityInfo, "halt")){
+										ModelUtil.setPropertyValue(entityInfo, "halt", "T");
+									}
+								}
+							}
+						}
+						Object codeTempHotel = entityInfo.cloneEx();
+						posSubDao.saveCode(codeTempHotel);
+						
+					}
+				}
+			}
+			
+		
+		}
+	}
+
+	
+	
+	public boolean isExsit(String[] hotels,String hotel)
+	{
+		if(hotels != null && hotels.length>0)
+		{
+			for(int i=0;i<hotels.length;i++)
+			{
+				if(hotels[i].equals(hotel))
+				{
+					return true;
+				}
+			}
+			return false;
+		}else
+		{
+			return false;
+		}
+	}
+
+	@Override
+	public void deleteCode(Object object,long hotelGroupId) {
+		Boolean toGroup=false;
+		String groupIp=getGroupIp(UserManager.getHotelGroupId(),0l);
+		if(groupIp != null && !groupIp.equals("") ){
+			//分库版
+			if (object instanceof CodeBase){
+				toGroup = true;
+			}else{
+				toGroup = false;
+			}
+		}else{
+			//非分库版
+			toGroup = false;
+		}
+		
+		if(toGroup){
+			ICodeFacadeService service  = this.findInterfaceWithIp(groupIp, ICodeFacadeService.class);
+			service.deleteCode(object);
+		}else{
+			//第一步  取出详细信息
+			Object ObjDetal = getCodeDetail(object);
+			
+			//第二步  判断是集团代码/集团类型/酒店代码（自己增加的）
+			if(ModelUtil.hasProperty(ObjDetal, "hotelId")){
+				Long hotelId = (Long)ModelUtil.getPropertyValue(ObjDetal, "hotelId");
+				if(hotelId.intValue()>0){
+					//酒店自己增加的   直接删除
+					posSubDao.deleteCode(ObjDetal);
+				}else{
+					//集团的代码
+					posHibernateDao.deleteCodeGroup(ObjDetal, hotelGroupId);
+				}
+			}
+		}
+		
+		
+	}
+	
+	@Override
+	public String checkDetailByCode(Object object,boolean isGroup) {
+		//第一步  取出详细信息
+		Object ObjDetal = getCodeDetail(object);
+		PosDetail posDetail = new PosDetail();
+		posDetail.setCode((String)ModelUtil.getPropertyValue(ObjDetal, "code"));
+		posDetail.setHotelGroupId((Long)ModelUtil.getPropertyValue(ObjDetal, "hotelGroupId"));
+		if(!isGroup)
+		{
+			posDetail.setHotelId((Long)ModelUtil.getPropertyValue(ObjDetal, "hotelId"));
+		}
+		int iCount = posDetailDao.count(posDetail);
+		return (iCount > 0)?"Y":"";
+	}
+	
+	@Override
+	public void updateCodeGroup(Object object,long hotelGroupId) {
+		Boolean toGroup=false;
+		String groupIp=getGroupIp(hotelGroupId,0l);
+		if(groupIp != null && !groupIp.equals("") ){
+			//分库版
+			if (object instanceof CodeBase){
+				toGroup = true;
+			}else{
+				toGroup = false;
+			}
+		}else{
+			//非分库版
+			toGroup = false;
+		}
+		
+		if(toGroup){
+			ICodeFacadeService service  = this.findInterfaceWithIp(groupIp, ICodeFacadeService.class);
+			service.updateCodeGroup(object, "");
+		}else{
+			//直接集团内更新
+			posSubDao.updateCode(object);
+			posHibernateDao.updateCodeGroup(object,hotelGroupId);
+		}
+	}
+
+	@Override
+	public void updateCodeSta(Object object,long hotelGroupId) {
+		//第一步  取出详细信息
+		Object ObjDetal = getCodeDetail(object);
+		
+		//第二步  判断是集团代码/集团类型/酒店代码（自己增加的）
+		if(ModelUtil.hasProperty(ObjDetal, "hotelId")){
+			Long hotelId = (Long)ModelUtil.getPropertyValue(ObjDetal, "hotelId");
+			if(hotelId.intValue()>0){
+				//酒店自己增加的   直接修改
+				posSubDao.updateCodeSta(ObjDetal);
+			}else{
+				//集团的代码
+				posHibernateDao.updateCodeGroupSta(ObjDetal, hotelGroupId);
+			}
+		}
+	}
+
+	@Override
+	public void updateCode(Object object) {
+		Boolean toGroup=false;
+		String groupIp=getGroupIp(UserManager.getHotelGroupId(),0l);
+		if(groupIp != null && !groupIp.equals("") ){
+			//分库版
+			if (object instanceof CodeBase){
+				toGroup = true;
+			}else{
+				toGroup = false;
+			}
+		}else{
+			//非分库版
+			toGroup = false;
+		}
+		
+		if(toGroup){
+			ICodeFacadeService service  = this.findInterfaceWithIp(groupIp, ICodeFacadeService.class);
+			service.updateCode(object);
+		}else{
+			posSubDao.updateCode(object);
+		}
+		
+	}
+
+	@Override
+	public void saveCodeCollection(ArrayList<Object> arr) {
+		// TODO Auto-generated method stub
+		for(Iterator<Object> i=arr.iterator();i.hasNext();){
+			Object object = i.next();
+			posSubDao.saveCode(object);
+			}
+	}
+
+	@Override
+	public List<Object> getSycCodeList(String ename, Object object, String date) {
+		// TODO Auto-generated method stub
+		return posSubDao.getSycCodeList(ename, object, date);
+	}
+
+	@Override
+	public List<Object> getSycDaysList(String ename, Object object,
+			String date, int days) {
+		// TODO Auto-generated method stub
+		return posSubDao.getSycDaysList(ename, object, date, days);
+	}
+
+	@Override
+	public List<OperationInfo> getSycLocalDateList(String ename, Object object) {
+		// TODO Auto-generated method stub
+		return posSubDao.getSycLocalDateList(ename, object);
+	}
+
+	@Override
+	public List<Object> getPosAccntList(String ename, Object object) {
+		// TODO Auto-generated method stub
+		return posSubDao.getPosAccntList(ename,object);
+	}
+
+	@Override
+	public List<Object> getPosSyncAccntList(String ename,PosAccntSync posAccntSync,String type) {
+		// TODO Auto-generated method stub
+		return posSubDao.getPosSyncAccntList(ename, posAccntSync,type);
+	}
+
+	@Override
+	public List<Object> getHotelAnalysis(long hotelGroupId, long hotelId,
+			String biz_date) {
+		// TODO Auto-generated method stub
+		return posSubDao.getHotelAnalysis(hotelGroupId, hotelId, biz_date);
+	}
+
+	@Override
+	public Object getCodeDetailHistory(String ename,Object object) {
+		// TODO Auto-generated method stub
+		return posSubDao.getCodeDetailHistory(ename, object);
+	}
+
+	@Override
+	public String updatePosAuditProcess(long hotelGroupId, long hotelId) {
+		// TODO Auto-generated method stub
+		return posSubDao.updatePosAuditProcess(hotelGroupId, hotelId);
+	}
+
+	@Override
+	public List<Object> getSycPmsCodeList(String ename, Object object,
+			String date, String type) {
+		// TODO Auto-generated method stub
+		return posSubDao.getSycPmsCodeList(ename, object, date, type);
+	}
+
+	@Override
+	public List<ReportCenter> getReportCenterByCategory(long hotelGroupId,	long hotelId, String category) {
+		return posSubDao.getReportCenterByCategory(hotelGroupId, hotelId, category);
+	}
+
+	@Override
+	public String updatePosAuditUpdatePosBizdate(long hotelGroupId, long hotelId) {
+		// TODO Auto-generated method stub
+		return posSubDao.updatePosAuditUpdatePosBizdate(hotelGroupId, hotelId);
+	}
+
+	@Override
+	public List<Object> getPosAccntContainHistoryList(String ename,
+			Object object) {
+		// TODO Auto-generated method stub
+		return posSubDao.getPosAccntContainHistoryList(ename, object);
+	}
+
+	@Override
+	public List<Object> getHotelAnalysisShift(long hotelGroupId, long hotelId,
+			String biz_date,String flag) {
+		// TODO Auto-generated method stub
+		return posSubDao.getHotelAnalysisShift(hotelGroupId, hotelId, biz_date, flag);
+	}
+
+}

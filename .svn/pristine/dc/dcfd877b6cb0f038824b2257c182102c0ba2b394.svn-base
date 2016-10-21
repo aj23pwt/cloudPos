@@ -1,0 +1,119 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<!-- Generated 2015-3-23 14:26:22 by Hibernate Tools 3.4.0.CR1 -->
+<hibernate-mapping>
+    <class name="com.greencloud.entity.PosPccodeTable" table="pos_pccode_table">
+        <id name="id" type="java.lang.Long">
+            <column name="id" />
+            <generator class="identity" />
+        </id>
+        <property name="hotelGroupId" type="long">
+            <column name="hotel_group_id"  />
+        </property>
+        <property name="hotelId" type="long">
+            <column name="hotel_id"  />
+        </property>
+        <property name="code"  type="string">
+            <column name="code" length="30"  >
+            </column>
+        </property>
+        <property name="type"  type="string">
+            <column name="type" length="6">
+            </column>
+        </property>
+        <property name="pccode"  type="string">
+            <column name="pccode" length="6"  >
+            </column>
+        </property>
+        <property name="descript"  type="string">
+            <column name="descript" length="60">
+            </column>
+        </property>
+        <property name="descriptEn"  type="string">
+            <column name="descript_en" length="30">
+            </column>
+        </property>
+        <property name="sta"  type="string">
+            <column name="sta" length="6"  >
+            </column>
+        </property>
+        <property name="mode"  type="string">
+            <column name="mode" length="6"  >
+            </column>
+        </property>
+        <property name="amount" type="big_decimal">
+            <column name="amount" precision="12"  >
+            </column>
+        </property>
+        <property name="minId" type="big_decimal">
+            <column name="min_id" precision="12"  >
+            </column>
+        </property>
+        <property name="area"  type="string">
+            <column name="area" length="6"  />
+        </property>
+        <property name="regcode"  type="string">
+            <column name="regcode" length="6"  />
+        </property>
+        <property name="x" type="java.lang.Integer">
+            <column name="x"  />
+        </property>
+        <property name="y" type="java.lang.Integer">
+            <column name="y"  />
+        </property>
+        <property name="width" type="java.lang.Integer">
+            <column name="width"  />
+        </property>
+        <property name="height" type="java.lang.Integer">
+            <column name="height"  />
+        </property>
+        <property name="tag"  type="string">
+            <column name="tag" length="6"  >
+            </column>
+        </property>
+        <property name="mapcode"  type="string">
+            <column name="mapcode" length="6"  />
+        </property>
+        <property name="modi"  type="string">
+            <column name="modi" length="6" />
+        </property>
+        <property name="reason"  type="string">
+            <column name="reason" length="30">
+            </column>
+        </property>
+        <property name="placecode"  type="string">
+            <column name="placecode" length="6" />
+        </property>
+        <property name="isGroup"  type="string">
+            <column name="is_group" length="2"  >
+            </column>
+        </property>
+        <property name="groupCode"  type="string">
+            <column name="group_code" length="30"  />
+        </property>
+        <property name="codeType"  type="string">
+            <column name="code_type" length="30" />
+        </property>
+        <property name="isHalt"  type="string">
+            <column name="is_halt" length="2"  >
+            </column>
+        </property>
+        <property name="listOrder" type="java.lang.Integer">
+            <column name="list_order"  >
+            </column>
+        </property>
+          <property name="createUser"  type="string">
+            <column name="create_user" length="20" />
+        </property>
+        <property name="createDatetime" type="timestamp">
+            <column name="create_datetime" length="0" />
+        </property>
+        <property name="modifyUser"  type="string">
+            <column name="modify_user" length="20" />
+        </property>
+        <property name="modifyDatetime" type="timestamp">
+            <column name="modify_datetime" length="0" />
+        </property>
+    </class>
+</hibernate-mapping>

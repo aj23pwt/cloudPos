@@ -1,0 +1,25 @@
+﻿<?xml version="1.0" encoding="utf-8"?> 
+<update xmlns="http://ns.adobe.com/air/framework/update/description/2.5"> 
+<versionNumber>2.0.1</versionNumber> 
+<versionLabel>V2.0.1</versionLabel>
+<navigateurl>http://fir.im/iaux</navigateurl>
+<remoteDebugEnabled>F</remoteDebugEnabled>
+<remoteDebugAddress>127.0.0.1</remoteDebugAddress>
+<description>
+V2.0.1
+1、名人票券接口
+2、单号生成规则:P+营业点代码+日期6位+流水号4位
+3、本地清机夜审前 进行 云和本地单号数据对比,不同的重新上传check
+4、本地夜审清机 执行本营业点的关账记录,记录通过任务上传云端,PMS夜审前进行营业点关账记录检查
+5、
+   APP1远程调用查询  宾客、协议单位、会员卡
+   APP2远程调用查询  宾客、协议单位、会员卡
+
+</description>
+
+<des>
+
+
+</des>
+</update>
+

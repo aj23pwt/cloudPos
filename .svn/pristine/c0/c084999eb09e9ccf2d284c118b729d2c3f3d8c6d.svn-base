@@ -1,0 +1,245 @@
+package com.greencloud.dao.impl;
+import com.aua.util.SQLHelper;
+import com.aua.dao.impl.BaseDaoImpl;
+
+import static com.aua.util.StringHelper.*;
+
+import java.util.Date;
+import java.util.List;
+
+import com.greencloud.entity.PosSortAll;
+import com.greencloud.dao.IPosSortAllDao;
+
+import org.springframework.dao.DataAccessException;
+
+   /**
+   * operate PosSortAll into db
+   *@author 
+   *@version 1.0
+   *@date 2015-03-20 16:10
+   */
+  public class PosSortAllDaoImpl extends BaseDaoImpl implements IPosSortAllDao{
+
+  /**
+   *save posSortAll object  method
+   *@param posSortAll PosSortAll 
+   *@throws DataAccessException 
+   *@author  
+   *@version 1.0
+   *@date 2015-03-20 16:10
+   */
+  public void save(PosSortAll posSortAll) throws DataAccessException {
+       super.save(posSortAll);
+  }
+  
+  /**
+   *update posSortAll method
+   *@param posSortAll PosSortAll
+   *@throws DataAccessException 
+   *@author 
+   *@version 1.0
+   *@date 2015-03-20 16:10
+   */
+  public void update(PosSortAll posSortAll) throws DataAccessException{
+     super.update(posSortAll);
+  }
+  
+   /**
+   *save or update posSortAll object method
+   *@param posSortAll PosSortAll
+   *@throws DataAccessException
+   *@author  
+   *@version 1.0
+   *@date 2015-03-20 16:10
+   */
+  public void saveOrUpdate(PosSortAll posSortAll) throws DataAccessException{
+     super.saveOrUpdate(posSortAll);
+  }
+  
+   /**
+   *query posSortAll collection method
+   *@param posSortAll PosSortAll send query vo 
+   *@param firstResult 
+   *@param maxResults 
+   *@throws DataAccessException 
+   *@author 
+   *@version 1.0
+   *@date 2015-03-20  16:10
+   */
+  public List<PosSortAll> list(PosSortAll posSortAll,int firstResult ,int maxResults)throws DataAccessException{
+  	 SQLHelper sh = new SQLHelper("SELECT obj FROM PosSortAll obj WHERE 1=1 ");
+  	 spellSQL(sh,posSortAll);
+  	 sh.appendSql(" ORDER BY obj.id");
+  	 sh.setFirstResult(firstResult);
+  	 sh.setMaxResults(maxResults);
+  	 return find(sh);
+  }
+  
+   /**
+   *query collection method  
+   *@param posSortAll PosSortAll send query vo 
+   *@throws DataAccessException
+   *@author 
+   *@version 1.0
+   *@date 2015-03-20 16:10
+   */
+  public List<PosSortAll> list(PosSortAll posSortAll)throws DataAccessException{
+  	 SQLHelper sh = new SQLHelper("SELECT obj FROM PosSortAll obj WHERE 1=1 ");
+  	 spellSQL(sh,posSortAll);
+  	 sh.appendSql(" ORDER BY obj.listOrder,obj.code");
+  	 return find(sh);
+  }
+  
+  /**
+   *count obj amount
+   *@param posSortAll PosSortAll query vo
+   *@throws DataAccessException
+   *@author 
+   *@date 2015-03-20 16:10
+   */
+  public int count(PosSortAll posSortAll)throws DataAccessException
+  {
+    SQLHelper sh = new SQLHelper("SELECT count(obj) FROM PosSortAll obj WHERE 1=1 ");
+    spellSQL(sh,posSortAll);
+    return count(sh);
+  }
+  
+   /**
+   *query a posSortAll by id 
+   *@param id 
+   *@throws DataAccessException 
+   *@author 
+   *@date 2015-03-20 16:10
+   */
+  public PosSortAll load(Long id)throws DataAccessException
+  {
+    return load(PosSortAll.class ,id);
+  }
+  
+  /*
+   *basic spell SQL method 
+   *@param posSortAll query vo
+   *@throws DataAccessException 
+   *@author weihuawon
+   *@date 2015-03-20 16:10
+   */
+  private void spellSQL(SQLHelper sh,PosSortAll posSortAll)
+  {
+    if(posSortAll != null){
+    	if(posSortAll.getId()!= null){
+            sh.appendSql(" AND obj.id = ? ");
+            sh.insertValue(posSortAll.getId());
+         }
+         if(posSortAll.getHotelGroupId()!= null){
+            sh.appendSql(" AND obj.hotelGroupId = ? ");
+            sh.insertValue(posSortAll.getHotelGroupId());
+         }
+         if(posSortAll.getHotelId()!= null){
+            sh.appendSql(" AND obj.hotelId = ? ");
+            sh.insertValue(posSortAll.getHotelId());
+         }
+        if(isNotNull(posSortAll.getCode())){
+           sh.appendSql(" AND obj.code = ? ");
+           sh.insertValue(posSortAll.getCode().trim());
+        }
+        if(isNotNull(posSortAll.getDescript())){
+           sh.appendSql(" AND obj.descript = ? ");
+           sh.insertValue(posSortAll.getDescript().trim());
+        }
+        if(isNotNull(posSortAll.getDescriptEn())){
+           sh.appendSql(" AND obj.descriptEn = ? ");
+           sh.insertValue(posSortAll.getDescriptEn().trim());
+        }
+        if(isNotNull(posSortAll.getPluCode())){
+           sh.appendSql(" AND obj.pluCode = ? ");
+           sh.insertValue(posSortAll.getPluCode().trim());
+        }
+        if(isNotNull(posSortAll.getCondst())){
+           sh.appendSql(" AND obj.condst = ? ");
+           sh.insertValue(posSortAll.getCondst().trim());
+        }
+        if(isNotNull(posSortAll.getTocode())){
+           sh.appendSql(" AND obj.tocode = ? ");
+           sh.insertValue(posSortAll.getTocode().trim());
+        }
+        if(isNotNull(posSortAll.getIsHalt())){
+           sh.appendSql(" AND obj.isHalt = ? ");
+           sh.insertValue(posSortAll.getIsHalt().trim());
+        }
+       if(posSortAll.getListOrder()!= null){
+           sh.appendSql(" AND obj.listOrder = ? ");
+           sh.insertValue(posSortAll.getListOrder());
+        }
+        if(isNotNull(posSortAll.getCodeType())){
+           sh.appendSql(" AND obj.codeType = ? ");
+           sh.insertValue(posSortAll.getCodeType().trim());
+        }
+        if(isNotNull(posSortAll.getGroupCode())){
+           sh.appendSql(" AND obj.groupCode = ? ");
+           sh.insertValue(posSortAll.getGroupCode().trim());
+        }
+        if(isNotNull(posSortAll.getIsGroup())){
+           sh.appendSql(" AND obj.isGroup = ? ");
+           sh.insertValue(posSortAll.getIsGroup().trim());
+        }
+        if(isNotNull(posSortAll.getCreateUser())){
+            sh.appendSql(" AND obj.createUser = ? ");
+            sh.insertValue(posSortAll.getCreateUser().trim());
+         }
+        if(posSortAll.getCreateDatetime()!= null){
+            sh.appendSql(" AND obj.createDatetime = ? ");
+            sh.insertValue(posSortAll.getCreateDatetime());
+         }
+         if(isNotNull(posSortAll.getModifyUser())){
+            sh.appendSql(" AND obj.modifyUser = ? ");
+            sh.insertValue(posSortAll.getModifyUser().trim());
+         }
+        if(posSortAll.getModifyDatetime()!= null){
+            sh.appendSql(" AND obj.modifyDatetime = ? ");
+            sh.insertValue(posSortAll.getModifyDatetime());
+         }
+    }
+  }
+
+@Override
+public List<PosSortAll> findPosSortAll(Long hotelGroupId, Long hotelId,
+		Date modifyDatetime) {
+	SQLHelper sh = new SQLHelper("SELECT obj FROM PosSortAll obj WHERE 1=1 ");
+	sh.appendSql(" AND obj.hotelGroupId=? ");
+	sh.insertValue(hotelGroupId);
+	if (hotelId != null) {
+		sh.appendSql(" AND (obj.hotelId =? OR obj.hotelId IS NULL) ");
+		sh.insertValue(hotelId);
+	} else {
+		sh.appendSql(" AND obj.hotelId IS NULL ");
+	}
+	if (modifyDatetime != null) {
+		sh.appendSql(" AND obj.modifyDatetime>? ");
+		sh.insertValue(modifyDatetime);
+	}
+	return find(sh);
+}
+
+	@Override
+	public List<PosSortAll> listPosSortAllByPcode(Long hotelGroupId, Long hotelId,String pcCode) throws DataAccessException {
+		SQLHelper sh = new SQLHelper("SELECT obj FROM PosSortAll obj WHERE 1=1 ");
+		sh.appendSql(" AND obj.hotelGroupId=? ");
+		sh.insertValue(hotelGroupId);
+		sh.appendSql(" AND obj.hotelId =?  ");
+		sh.insertValue(hotelId);
+		sh.appendSql(" AND obj.isHalt ='F'  ");
+		if (pcCode != null && !pcCode.equals("")) {
+			sh.appendSql(" AND obj.pluCode in "+pcCode+"");
+		}
+		return find(sh);
+	}
+
+	@Override
+	public List<PosSortAll> getPosSortAllList(Long hotelGroupId, Long hotelId) {
+		String sql = "SELECT p2.descript des2,p1.code code,p1.descript des1 "
+				+ " FROM pos_sort_all p1,(SELECT descript FROM code_base WHERE hotel_group_id='"+hotelGroupId+"' AND hotel_id='"+hotelId+"' AND parent_code='pos_note') p2 "
+				+ " WHERE hotel_group_id='"+hotelGroupId+"' AND hotel_id='"+hotelId+"'";
+		SQLHelper sh = new SQLHelper(sql);
+		return findByNativeSQL(sh);
+	}
+}

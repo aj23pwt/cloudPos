@@ -1,0 +1,35 @@
+package com.greencloud.facade;
+
+import java.util.Date;
+import java.util.List;
+
+import com.greencloud.dto.CondstDto;
+import com.greencloud.entity.CodeBase;
+import com.greencloud.entity.PosPccodeAuditFlag;
+import com.greencloud.entity.ReportCenter;
+
+public interface IPosSystemFacade {
+	public List<Object> getDataBySql(String sql);
+	public void updateDataBySql(String sql);
+	public List<CodeBase> getCodeBaseByParentCode(String parentCode);
+	public Object getCodeDetail(Object object);
+	public Object getCodeDetailHistory(String ename,Object object);
+	public List<Object> getCodeList(String ename,Object object);
+	public String getHotelTree(Boolean filterR);
+	public List<CondstDto> getCondstDto(String pccode,String sortCode);
+	public List<Object> getHotelAnalysis(String biz_date);
+	public List<Object> getHotelAnalysisShift(String biz_date,String flag);
+	public String updatePosAuditProcess();
+	public List<ReportCenter> getReportCenterByCategory(String category);
+	public String getsysListMetaId(String code,String type);
+	public String getSyncProperties();
+	public void saveSyncProperties(String properties);
+	public String saveSyncSpringQuartz(String tasks);
+	public String getUserPosAuthTreeDto();
+	public String getUserPosAuthTreeDtoByUser(String userCode);
+	public Date setCashier(String cashier); 
+	public String getCondstTreeDto(String pccode,String sortCode);
+	public String getPosRemarkTreeDto(String pccode,String sortCode);
+	public void updatePosPccodeAuditFlag(String pcid);
+	public List<PosPccodeAuditFlag> getPosPccodeAuditFlagList(PosPccodeAuditFlag posPccodeAuditFlag);
+}

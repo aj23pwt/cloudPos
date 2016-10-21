@@ -1,0 +1,16 @@
+package com.greencloud.facade;
+
+import com.greencloud.dto.UserDto;
+
+
+public interface IPosSycFacade {
+	public  void getRes ()  ;
+	public  void getCode()  ;
+	public  void saveMaster() ;
+	public  void getPmsCode()  ;
+	public  void getPmsCodeByFlag(String flag)  ;
+	public  void saveSyncMaster() ;
+	public String updatePosAuditUpdatePosBizdate();
+	public  void uploadPosPccodeAuditFlag();
+	public String updatePosServerRegisterAuditFlag(String url,String serverCode,UserDto user);
+}

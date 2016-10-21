@@ -1,0 +1,79 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+    <class name="com.greencloud.entity.PosClose" table="pos_close" >
+        <id name="id" type="java.lang.Long">
+            <column name="id" />
+            <generator class="identity" />
+        </id>
+        <property name="hotelGroupId" type="java.lang.Long">
+            <column name="hotel_group_id" />
+        </property>
+        <property name="hotelId" type="java.lang.Long">
+            <column name="hotel_id" />
+        </property>
+        <property name="accnt" type="string">
+            <column name="accnt" />
+        </property>
+          <property name="billno" type="string">
+            <column name="billno" />
+        </property>
+        <property name="closeFlag" type="string">
+            <column name="close_flag" length="2">
+            </column>
+        </property>
+        <property name="charge" type="big_decimal">
+            <column name="charge" precision="12" />
+        </property>
+        <property name="pay" type="big_decimal">
+            <column name="pay" precision="12" />
+        </property>
+    <property name="transType" type="string">
+            <column name="trans_type" />
+        </property>
+        <property name="transAccnt" type="string">
+            <column name="trans_accnt">
+            </column>
+        </property>
+        <property name="genBizDate" type="timestamp">
+            <column name="gen_biz_date" length="0">
+            </column>
+        </property>
+        <property name="genUser" type="string">
+            <column name="gen_user" length="20" />
+        </property>
+        <property name="genCashier" type="string">
+            <column name="gen_cashier" />
+        </property>
+        <property name="genDatetime" type="timestamp">
+            <column name="gen_datetime" length="0" />
+        </property>
+        <property name="delBizDate" type="timestamp">
+            <column name="del_biz_date" length="0">
+            </column>
+        </property>
+        <property name="delUser" type="string">
+            <column name="del_user" length="20" />
+        </property>
+        <property name="delCashier" type="string">
+            <column name="del_cashier" />
+        </property>
+        <property name="delDatetime" type="timestamp">
+            <column name="del_datetime" length="0" />
+        </property>
+         <property name="tableno" type="string">
+            <column name="tableno" length="20">
+            </column>
+        </property>
+         <property name="auditUser" type="string">
+            <column name="audit_user" length="200">
+            </column>
+        </property>
+        
+         <property name="auditRemark" type="string">
+            <column name="audit_remark" length="200">
+            </column>
+        </property>
+    </class>
+</hibernate-mapping>

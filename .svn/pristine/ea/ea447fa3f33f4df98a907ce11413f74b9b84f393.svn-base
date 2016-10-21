@@ -1,0 +1,617 @@
+package com.greencloud.service.impl;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
+
+import org.springframework.dao.DataAccessException;
+
+import com.aua.dao.IBaseDao;
+import com.aua.service.impl.BaseServiceImpl;
+import com.aua.util.Container;
+import com.greencloud.dao.ICodeBaseDao;
+import com.greencloud.dao.IPosHibernateDao;
+import com.greencloud.dao.IPosPccodeNoteDao;
+import com.greencloud.dao.IPosPluAllDao;
+import com.greencloud.dao.IPosPluPrinterDao;
+import com.greencloud.dao.IPosSortAllDao;
+import com.greencloud.dao.ISysOptionDao;
+import com.greencloud.dto.PosPluAllTreeDto;
+import com.greencloud.dto.PosPluNoteDto;
+import com.greencloud.entity.CodeBase;
+import com.greencloud.entity.PosPccodeNote;
+import com.greencloud.entity.PosPluAll;
+import com.greencloud.entity.PosPluPrinter;
+import com.greencloud.entity.PosSortAll;
+import com.greencloud.entity.SysOption;
+import com.greencloud.service.IPosPluAllService;
+import com.greencloud.util.UserManager;
+
+public class PosPluAllServiceImpl extends BaseServiceImpl implements
+		IPosPluAllService {
+	// dao
+	private IPosPluAllDao posPluAllDao;
+	private ICodeBaseDao codeBaseDao;
+	private IPosSortAllDao posSortAllDao;
+	private IPosHibernateDao posHibernateDao;
+	private IPosPccodeNoteDao posPccodeNoteDao;
+    private ISysOptionDao  sysOptionDao;
+    private IPosPluPrinterDao posPluPrinterDao;
+	  public void setPosPluPrinterDao(IPosPluPrinterDao posPluPrinterDao) {
+		this.posPluPrinterDao = posPluPrinterDao;
+	}
+	public void setSysOptionDao(ISysOptionDao sysOptionDao) {
+		this.sysOptionDao = sysOptionDao;
+	}
+	public void setPosHibernateDao(IPosHibernateDao posHibernateDao) {
+		this.posHibernateDao = posHibernateDao;
+	}
+
+	public void setPosSortAllDao(IPosSortAllDao posSortAllDao) {
+		this.posSortAllDao = posSortAllDao;
+	}
+
+	public void setCodeBaseDao(ICodeBaseDao codeBaseDao) {
+		this.codeBaseDao = codeBaseDao;
+	}
+
+	public void setPosPccodeNoteDao(IPosPccodeNoteDao posPccodeNoteDao) {
+		this.posPccodeNoteDao = posPccodeNoteDao;
+	}
+
+	/**
+	 * save posPluAll object method
+	 *
+	 * @param posPluAll
+	 *            PosPluAll
+	 * @throws DataAccessException
+	 * @author
+	 * @version 1.0
+	 * @date 2015-03-23 16:31
+	 */
+	public void savePosPluAll(PosPluAll posPluAll) throws DataAccessException {
+		if (log.isDebugEnabled()) {
+			log.debug("start savePosPluAll method");
+		}
+		posPluAllDao.save(posPluAll);
+		if (log.isDebugEnabled()) {
+			log.debug("end savePosPluAll method");
+		}
+	}// end save method
+
+	/**
+	 * update posPluAll method
+	 *
+	 * @param posPluAll
+	 *            PosPluAll
+	 * @throws DataAccessException
+	 * @author
+	 * @version 1.0
+	 * @date 2015-03-23 16:31
+	 */
+	public void updatePosPluAll(PosPluAll posPluAll) throws DataAccessException {
+		if (log.isDebugEnabled()) {
+			log.debug("start updatePosPluAll method");
+		}
+		posPluAllDao.update(posPluAll);
+		if (log.isDebugEnabled()) {
+			log.debug("end updatePosPluAll method");
+		}
+	}// end update method
+
+	/**
+	 * save or update posPluAll object method
+	 *
+	 * @param posPluAll
+	 *            PosPluAll
+	 * @throws DataAccessException
+	 * @author
+	 * @version 1.0
+	 * @date 2015-03-23 16:31
+	 */
+	public void saveOrUpdatePosPluAll(PosPluAll posPluAll)
+			throws DataAccessException {// start saveOrUpdate method
+
+		if (log.isDebugEnabled()) {
+			log.debug("start saveOrUpdatePosPluAll method");
+		}
+
+		posPluAllDao.saveOrUpdate(posPluAll);
+
+		if (log.isDebugEnabled()) {
+			log.debug("end saveOrUpdatePosPluAll method");
+		}
+
+	}// end saveOrUpdate method
+
+	/**
+	 * query a container obj
+	 *
+	 * @param posPluAll
+	 *            PosPluAll query vo
+	 * @param firstResult
+	 * @param maxResults
+	 * @throws DataAccessException
+	 * @author weihuawon
+	 * @date 2015-03-23 16:31
+	 */
+	public Container<PosPluAll> findPosPluAll(PosPluAll posPluAll,
+			int firstResult, int maxResults) throws DataAccessException {
+		if (log.isDebugEnabled()) {
+			log.debug("start findPosPluAll method");
+		}
+		Container<PosPluAll> container = new Container<PosPluAll>();
+		List<PosPluAll> list = posPluAllDao.list(posPluAll, firstResult,
+				maxResults);
+		container.setResults(list);
+		container.setTotalRows(posPluAllDao.count(posPluAll));
+		if (log.isDebugEnabled()) {
+			log.debug("end findPosPluAll method");
+		}
+		return container;
+	}// end find method
+
+	/**
+	 * count obj amount
+	 *
+	 * @param posPluAll
+	 *            PosPluAll query vo
+	 * @throws DataAccessException
+	 * @author
+	 * @date 2015-03-23 16:31
+	 */
+	public int countPosPluAll(PosPluAll posPluAll) throws DataAccessException {
+		return posPluAllDao.count(posPluAll);
+	}// end count method
+
+	/**
+	 * query a posPluAll by id
+	 *
+	 * @param id
+	 * @throws DataAccessException
+	 * @author
+	 * @date 2015-03-23 16:31
+	 */
+	public PosPluAll findPosPluAllById(Long id) throws DataAccessException {
+		PosPluAll posPluAll = posPluAllDao.load(id);
+		return posPluAll;
+	}// end findPosPluAllById method
+
+	/**
+	 * query posPluAll collection method
+	 *
+	 * @param posPluAll
+	 *            PosPluAll send query vo
+	 * @throws DataAccessException
+	 * @author
+	 * @version 1.0
+	 * @date 2015-03-23 16:31
+	 */
+	public List<PosPluAll> listPosPluAll(PosPluAll posPluAll)
+			throws DataAccessException {
+		List<PosPluAll> list = posPluAllDao.list(posPluAll);
+		return list;
+	}// end list method
+
+	/**
+	 * query posPluAll collection method
+	 *
+	 * @param posPluAll
+	 *            PosPluAll send query vo
+	 * @param firstResult
+	 * @param maxResults
+	 * @throws DataAccessException
+	 * @author
+	 * @version 1.0
+	 * @date 2015-03-23 16:31
+	 */
+	public List<PosPluAll> listPosPluAll(PosPluAll posPluAll, int firstResult,
+			int maxResults) throws DataAccessException {
+		List<PosPluAll> list = posPluAllDao.list(posPluAll, firstResult,
+				maxResults);
+		return list;
+	}
+
+	/**
+	 * Spring
+	 * 
+	 * @param posPluAllDao
+	 * @author weihuawon
+	 * @date 2015年M3月d23�?16:31
+	 */
+	public void setPosPluAllDao(IPosPluAllDao posPluAllDao) {
+		this.posPluAllDao = posPluAllDao;
+	}
+
+	@Override
+	protected IBaseDao getDao() {
+		return this.posPluAllDao;
+	}
+
+	@Override
+	public String getTpPluAllTreeDto(Long hotelGroupId, long hotelId) {
+		StringBuffer sb = new StringBuffer("");
+		sb.append("<node label='" + "所有" + "' value='*' checked='1'>");
+		sb.append("\n");
+
+		List<PosPluAllTreeDto> list = new ArrayList<PosPluAllTreeDto>();
+		CodeBase codeBase = new CodeBase();
+		codeBase.setHotelGroupId(hotelGroupId);
+		codeBase.setHotelId(hotelId);
+		codeBase.setParentCode("pos_note");
+		codeBase.setIsHalt("F");
+		List<CodeBase> clist = codeBaseDao.list(codeBase);
+		if (clist != null && clist.size() > 0) {
+			for (Iterator<CodeBase> i = clist.iterator(); i.hasNext();) {
+				CodeBase codeBaseGet = i.next();
+				sb.append("<node label='" + codeBaseGet.getDescript()
+						+ "' value='" + codeBaseGet.getCode() + "*"
+						+ "' checked='1'>");
+				sb.append("\n");
+
+				PosSortAll posSortAll = new PosSortAll();
+				posSortAll.setHotelGroupId(hotelGroupId);
+				posSortAll.setHotelId(hotelId);
+				posSortAll.setPluCode(codeBaseGet.getCode());
+				List<PosSortAll> slist = posSortAllDao.list(posSortAll);
+				if (slist != null && slist.size() > 0) {
+					List<PosPluAllTreeDto> listl2 = new ArrayList<PosPluAllTreeDto>();
+					for (Iterator<PosSortAll> j = slist.iterator(); j.hasNext();) {
+						PosSortAll tpSortAllGet = j.next();
+						sb.append("<node label='" + tpSortAllGet.getDescript()
+								+ "' value='" + tpSortAllGet.getCode()
+								+ "' checked='1'>");
+						sb.append("\n");
+						sb.append("</node>");
+					}
+				}
+				sb.append("</node>");
+			}
+		}
+		sb.append("</node>");
+		return sb.toString();
+	}
+
+	@Override
+	public void updateParamGroup(Object object, long hotelGroupId, long hotelId) {
+		if (hotelId == 0l) {
+			posHibernateDao.updateParamGroup(object, hotelGroupId);
+		} else {
+			posPluAllDao.updateCode(object);
+		}
+
+	}
+
+	@Override
+	public List<PosPluAll> listPosPluAllById(PosPluAll posPluAll)
+			throws DataAccessException {
+		List<PosPluAll> list = posPluAllDao.listById(posPluAll);
+		return list;
+	}
+
+	@Override
+	public List<PosPluAll> listPosPluAllBySort(long hotelGroupId, long hotelId,
+			String sort) throws DataAccessException {
+		return posPluAllDao.listPosPluAllBySort(hotelGroupId, hotelId, sort);
+	}
+
+	@Override
+	public List<PosPluAll> findPosPluAll(Long hotelGroupId, Long hotelId,
+			Date modifyDatetime) {
+		return posPluAllDao
+				.findPosPluAll(hotelGroupId, hotelId, modifyDatetime);
+	}
+
+	@Override
+	public String getTpPluAllTreeDto(Long hotelGroupId, long hotelId,
+			String pccode) {
+		// TODO Auto-generated method stub
+		StringBuffer sb = new StringBuffer("");
+		sb.append("<node label='" + "所有"+ "' value='*' checked='1'>");
+		sb.append("\n");
+		
+		List<PosPluAllTreeDto> list=new ArrayList<PosPluAllTreeDto>();
+		CodeBase codeBase = new CodeBase();
+		codeBase.setHotelGroupId(hotelGroupId);
+		codeBase.setHotelId(hotelId);
+		codeBase.setParentCode("pos_note");
+		List<CodeBase> clist = codeBaseDao.list(codeBase);
+		//该营业点可以使用的菜本
+		PosPccodeNote posPccodeNote = new PosPccodeNote();
+		posPccodeNote.setHotelGroupId(hotelGroupId);
+		posPccodeNote.setHotelId(hotelId);
+		posPccodeNote.setPccode(pccode);
+		List<PosPccodeNote> pccodeNotes = posPccodeNoteDao.list(posPccodeNote);
+		Set<String> set = new HashSet<String>();
+		if(pccodeNotes != null && pccodeNotes.size()>0){
+			for(Iterator<PosPccodeNote> i=pccodeNotes.iterator();i.hasNext();){
+				PosPccodeNote posPccodeNoteGet = i.next();
+				set.add(posPccodeNoteGet.getNoteCode());
+			}
+		}
+		if(clist != null && clist.size()>0){
+			for(Iterator<CodeBase> i=clist.iterator();i.hasNext();){
+				CodeBase codeBaseGet = i.next();
+				if(set.contains(codeBaseGet.getCode())){
+				sb.append("<node label='" + codeBaseGet.getDescript()+ "' value='"+codeBaseGet.getCode()+"*"+"' checked='1'>");
+				sb.append("\n");
+				
+				
+				PosSortAll posSortAll = new PosSortAll();
+				posSortAll.setHotelGroupId(hotelGroupId);
+				posSortAll.setHotelId(hotelId);
+				posSortAll.setPluCode(codeBaseGet.getCode());
+				List<PosSortAll> slist = posSortAllDao.list(posSortAll);
+				if(slist != null && slist.size()>0){
+					List<PosPluAllTreeDto> listl2=new ArrayList<PosPluAllTreeDto>();
+					for(Iterator<PosSortAll> j=slist.iterator();j.hasNext();){
+						PosSortAll tpSortAllGet = j.next();
+						sb.append("<node label='" + tpSortAllGet.getDescript()+ "' value='"+tpSortAllGet.getCode()+"' checked='1'>");
+						sb.append("\n");
+						sb.append("</node>");
+					}
+				}
+				sb.append("</node>");
+			   }
+			}
+		}
+	sb.append("</node>");
+	return sb.toString();
+	}
+
+	@Override
+	public int getMaxPosPluId(String sortCode) {
+		return posPluAllDao.getMaxPosPluId(sortCode);
+	}
+
+	@Override
+	public void updatePluAllPic(Long hotelGroupId, Long hotelId) {
+		
+		SysOption picOption =  sysOptionDao.findSysOptionByCatalogItem("pos", "pos_pic_path", UserManager.getHotelGroupId(), UserManager.getHotelId());	
+		if(picOption != null && picOption.getSetValue() != null && !picOption.getSetValue().equals("")){
+			List<String> list = new ArrayList<String>();
+			
+			File file = new File(picOption.getSetValue());
+			File[] files=file.listFiles();  
+			for(int i=0;i<files.length;i++){
+				if(files[i].isFile()){
+					list.add(files[i].getName());
+				}
+			}
+			if(list != null && list.size()>0){
+				for(Iterator<String> i = list.iterator();i.hasNext();){
+					String fileName = i.next();
+					if(fileName != null && !fileName.equals("")){
+						if(fileName.indexOf(".")>=0){
+							String topName=fileName.substring(0, fileName.indexOf("."));
+							if(topName != null && !topName.equals("")){
+								PosPluAll posPluAll = new PosPluAll();
+								posPluAll.setHotelGroupId(hotelGroupId);
+								posPluAll.setHotelId(hotelId);
+								posPluAll.setCode(topName);
+								List<PosPluAll> tlist = posPluAllDao.list(posPluAll);
+								if(tlist != null && tlist.size()>0){
+									for(Iterator<PosPluAll> j = tlist.iterator();j.hasNext();){
+										PosPluAll tget=j.next();
+										tget.setHasPic("T");
+										tget.setPicPath1(picOption.getSetValue()+"/"+fileName);
+										posPluAllDao.update(tget);
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+		
+	}
+	@Override
+	public String getPosSortAllTreeDto(Long hotelGroupId, Long hotelId) {
+		StringBuffer sb = new StringBuffer("");
+//		sb.append("<node label='" + "所有" + "' value='*' checked='1'>");
+//		sb.append("\n");
+
+		List<PosPluAllTreeDto> list = new ArrayList<PosPluAllTreeDto>();
+		CodeBase codeBase = new CodeBase();
+		codeBase.setHotelGroupId(hotelGroupId);
+		codeBase.setHotelId(hotelId);
+		codeBase.setParentCode("pos_note");
+		codeBase.setIsHalt("F");
+		List<CodeBase> clist = codeBaseDao.list(codeBase);
+		if (clist != null && clist.size() > 0) {
+			for (Iterator<CodeBase> i = clist.iterator(); i.hasNext();) {
+				CodeBase codeBaseGet = i.next();
+				sb.append("<node label='" + codeBaseGet.getDescript()
+						+ "' value='" +  getTasByParent(hotelGroupId, hotelId, codeBaseGet.getCode())
+						+ "' checked='1'>");
+				sb.append("\n");
+
+				PosSortAll posSortAll = new PosSortAll();
+				posSortAll.setHotelGroupId(hotelGroupId);
+				posSortAll.setHotelId(hotelId);
+				posSortAll.setPluCode(codeBaseGet.getCode());
+				List<PosSortAll> slist = posSortAllDao.list(posSortAll);
+				if (slist != null && slist.size() > 0) {
+					List<PosPluAllTreeDto> listl2 = new ArrayList<PosPluAllTreeDto>();
+					for (Iterator<PosSortAll> j = slist.iterator(); j.hasNext();) {
+						PosSortAll tpSortAllGet = j.next();
+						sb.append("<node label='" + tpSortAllGet.getDescript()
+								+ "' value='" + tpSortAllGet.getCode()
+								+ "' checked='1'>");
+						sb.append("\n");
+						sb.append("</node>");
+					}
+				}
+				sb.append("</node>");
+			}
+		}
+//		sb.append("</node>");
+		return sb.toString();
+	}
+	
+	public String getTasByParent(long hotelGroupId,long hotelId,String parent)
+	{
+		StringBuffer sb = new StringBuffer();
+
+		PosSortAll psb = new PosSortAll();
+		psb.setHotelGroupId(hotelGroupId);
+		psb.setHotelId(hotelId);
+		psb.setPluCode(parent);
+		List<PosSortAll> psbList = posSortAllDao.list(psb);
+		if(psbList!=null && psbList.size()>0)
+		{
+			for(Iterator<PosSortAll> ii = psbList.iterator(); ii.hasNext();)
+			{
+				PosSortAll posSortAll = ii.next();
+				if(ii.hasNext())
+				{
+					sb.append(posSortAll.getCode());
+					sb.append(",");
+				}else
+				{
+					sb.append(posSortAll.getCode());
+				}
+			}
+		}
+		return sb.toString();
+	}
+	
+	public String getPluBySort(long hotelGroupId,long hotelId,String sort)
+	{
+		StringBuffer sb = new StringBuffer();
+
+		PosPluAll ppa = new PosPluAll();
+		ppa.setHotelGroupId(hotelGroupId);
+		ppa.setHotelId(hotelId);
+		ppa.setSortCode(sort);
+		List<PosPluAll> ppbList = posPluAllDao.list(ppa);
+		if(ppbList!=null && ppbList.size()>0)
+		{
+			for(Iterator<PosPluAll> ii = ppbList.iterator(); ii.hasNext();)
+			{
+				PosPluAll posPluAll = ii.next();
+				if(ii.hasNext())
+				{
+					sb.append(posPluAll.getCode());
+					sb.append(",");
+				}else
+				{
+					sb.append(posPluAll.getCode());
+				}
+			}
+		}
+		return sb.toString();
+	}
+	
+	@Override
+	public String getPosPluAllTreeDto(Long hotelGroupId, Long hotelId) {
+		StringBuffer sb = new StringBuffer("");
+
+//		List<PosPluAllTreeDto> list = new ArrayList<PosPluAllTreeDto>();
+		CodeBase codeBase = new CodeBase();
+		codeBase.setHotelGroupId(hotelGroupId);
+		codeBase.setHotelId(hotelId);
+		codeBase.setParentCode("pos_note");
+		codeBase.setIsHalt("F");
+		List<CodeBase> clist = codeBaseDao.list(codeBase);
+		if (clist != null && clist.size() > 0) {
+			for (Iterator<CodeBase> i = clist.iterator(); i.hasNext();) {
+				CodeBase codeBaseGet = i.next();
+				sb.append("<node label='" + codeBaseGet.getDescript()
+						+ "' value='" +  codeBaseGet.getCode()
+						+ "' checked='0'>");
+				sb.append("\n");
+
+				PosSortAll posSortAll = new PosSortAll();
+				posSortAll.setHotelGroupId(hotelGroupId);
+				posSortAll.setHotelId(hotelId);
+				posSortAll.setPluCode(codeBaseGet.getCode());
+				List<PosSortAll> slist = posSortAllDao.list(posSortAll);
+				if (slist != null && slist.size() > 0) {
+//					List<PosPluAllTreeDto> listl2 = new ArrayList<PosPluAllTreeDto>();
+					for (Iterator<PosSortAll> j = slist.iterator(); j.hasNext();) {
+						PosSortAll tpSortAllGet = j.next();
+						sb.append("<node label='" + tpSortAllGet.getDescript()
+								+ "' value='" + tpSortAllGet.getCode()+"*" // getPluBySort(hotelGroupId, hotelId, tpSortAllGet.getCode())
+								+ "' checked='0'>");
+						sb.append("\n");
+						
+						PosPluAll posPluAll = new PosPluAll();
+						posPluAll.setHotelGroupId(hotelGroupId);
+						posPluAll.setHotelId(hotelId);
+						posPluAll.setSortCode(tpSortAllGet.getCode());
+						List<PosPluAll> pList = posPluAllDao.list(posPluAll);
+						if(pList!=null && pList.size()>0)
+						{
+							for(Iterator<PosPluAll> k = pList.iterator();k.hasNext();)
+							{
+								PosPluAll posPluAllGet = k.next();
+								sb.append("<node label='" + posPluAllGet.getDescript()
+										+ "' value='" +posPluAllGet.getCode()
+										+ "' checked='0'>");
+								sb.append("\n");
+								sb.append("</node>");
+							}
+						}
+						sb.append("</node>");
+					}
+				}
+				sb.append("</node>");
+			}
+		}
+		return sb.toString();
+	}
+	@Override
+	public List<PosSortAll> getPosSortAllList(Long hotelGroupId, Long hotelId) {
+		return posSortAllDao.getPosSortAllList(hotelGroupId,hotelId);
+	}
+	@Override
+	public void updatePosPluFlag(Long hotelGroupId, Long hotelId,String selSort, String strFlag,String num) {
+		//整个菜类修改，先判断posPluAll菜项表中是否还有 posPluPrinter表中不存在的菜项 有的话 先保存
+		posPluPrinterDao.syncPosPluPrinter(hotelGroupId, hotelId);
+		posPluAllDao.updatePosPluFlag(hotelGroupId,hotelId,selSort,strFlag,num);
+	}
+	@Override
+	public List<PosPluAll> getPosPluByText(Long hotelGroupId, Long hotelId,String ctext) {
+		return posPluAllDao.getPosPluByText(hotelGroupId,hotelId,ctext);
+	}
+	@Override
+	public String getFlagByCode(Long hotelGroupId, Long hotelId, String pcode) {
+//		List<PosPluAll> list = posPluAllDao.getFlagByCode(hotelGroupId,hotelId,pcode);
+//		if(list!=null && list.size()>0)
+//		{
+//			for(int i=0;i<list.size();i++)
+//			{
+//				return list.get(0).getFlag();
+//			}
+//		}
+//		return null;
+	    PosPluPrinter posPluPrinter = new PosPluPrinter();
+	    posPluPrinter.setHotelGroupId(hotelGroupId);
+	    posPluPrinter.setHotelId(hotelId);
+	    posPluPrinter.setCode(pcode);
+		List<PosPluPrinter> list = posPluPrinterDao.list(posPluPrinter);
+	    if(list!=null && list.size()>0){
+	    	return list.get(0).getFlag();
+	    }else{
+	    	return null;
+	    }
+	    
+	}
+	@Override
+	public List<PosPluNoteDto> getPosWxPluNote(Long hotelGroupId, Long hotelId,
+			String pccode) {
+		return posPluAllDao.getPosWxPluNote(hotelGroupId, hotelId, pccode);
+	}
+	@Override
+	public List<PosPluNoteDto> getPosWxPluNote(Long hotelGroupId, Long hotelId,
+			String pccode, String sortCode) {
+		// TODO Auto-generated method stub
+		return posPluAllDao.getPosWxPluNote(hotelGroupId, hotelId, pccode, sortCode);
+	}
+}

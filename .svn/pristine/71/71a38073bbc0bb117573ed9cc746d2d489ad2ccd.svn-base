@@ -1,0 +1,662 @@
+package com.greencloud.dao.impl;
+import com.aua.util.SQLHelper;
+import com.aua.dao.impl.BaseDaoImpl;
+
+import static com.aua.util.StringHelper.*;
+
+import java.math.BigDecimal;
+import java.sql.CallableStatement;
+import java.sql.SQLException;
+import java.util.Date;
+import java.util.List;
+
+import com.greencloud.entity.PosMaster;
+import com.greencloud.entity.PosRes;
+import com.greencloud.dao.IPosMasterDao;
+
+import org.springframework.dao.DataAccessException;
+import org.springframework.jdbc.core.CallableStatementCallback;
+
+   /**
+   * operate PosMaster into db
+   *@author 
+   *@version 1.0
+   *@date 2015-04-20 16:24
+   */
+  public class PosMasterDaoImpl extends BaseDaoImpl implements IPosMasterDao{
+
+  /**
+   *save posMaster object  method
+   *@param posMaster PosMaster 
+   *@throws DataAccessException 
+   *@author  
+   *@version 1.0
+   *@date 2015-04-20 16:24
+   */
+  public void save(PosMaster posMaster) throws DataAccessException {
+       super.save(posMaster);
+  }
+  
+  /**
+   *update posMaster method
+   *@param posMaster PosMaster
+   *@throws DataAccessException 
+   *@author 
+   *@version 1.0
+   *@date 2015-04-20 16:24
+   */
+  public void update(PosMaster posMaster) throws DataAccessException{
+     super.update(posMaster);
+  }
+  
+   /**
+   *save or update posMaster object method
+   *@param posMaster PosMaster
+   *@throws DataAccessException
+   *@author  
+   *@version 1.0
+   *@date 2015-04-20 16:24
+   */
+  public void saveOrUpdate(PosMaster posMaster) throws DataAccessException{
+     super.saveOrUpdate(posMaster);
+  }
+  
+   /**
+   *query posMaster collection method
+   *@param posMaster PosMaster send query vo 
+   *@param firstResult 
+   *@param maxResults 
+   *@throws DataAccessException 
+   *@author 
+   *@version 1.0
+   *@date 2015-04-20  16:24
+   */
+  public List<PosMaster> list(PosMaster posMaster,int firstResult ,int maxResults)throws DataAccessException{
+  	 SQLHelper sh = new SQLHelper("SELECT obj FROM PosMaster obj WHERE 1=1 ");
+  	 spellSQL(sh,posMaster);
+  	 sh.appendSql(" ORDER BY obj.id DESC");
+  	 sh.setFirstResult(firstResult);
+  	 sh.setMaxResults(maxResults);
+  	 return find(sh);
+  }
+  
+   /**
+   *query collection method  
+   *@param posMaster PosMaster send query vo 
+   *@throws DataAccessException
+   *@author 
+   *@version 1.0
+   *@date 2015-04-20 16:24
+   */
+  public List<PosMaster> list(PosMaster posMaster)throws DataAccessException{
+  	 SQLHelper sh = new SQLHelper("SELECT obj FROM PosMaster obj WHERE 1=1 ");
+  	 spellSQL(sh,posMaster);
+  	 sh.appendSql(" ORDER BY obj.id");
+  	 return find(sh);
+  }
+  
+  /**
+   *count obj amount
+   *@param posMaster PosMaster query vo
+   *@throws DataAccessException
+   *@author 
+   *@date 2015-04-20 16:24
+   */
+  public int count(PosMaster posMaster)throws DataAccessException
+  {
+    SQLHelper sh = new SQLHelper("SELECT count(obj) FROM PosMaster obj WHERE 1=1 ");
+    spellSQL(sh,posMaster);
+    return count(sh);
+  }
+  
+   /**
+   *query a posMaster by id 
+   *@param id 
+   *@throws DataAccessException 
+   *@author 
+   *@date 2015-04-20 16:24
+   */
+  public PosMaster load(Long id)throws DataAccessException
+  {
+    return load(PosMaster.class ,id);
+  }
+  
+  /*
+   *basic spell SQL method 
+   *@param posMaster query vo
+   *@throws DataAccessException 
+   *@author weihuawon
+   *@date 2015-04-20 16:24
+   */
+  private void spellSQL(SQLHelper sh,PosMaster posMaster)
+  {
+    if(posMaster != null){
+    	if(posMaster.getId()!= null){
+            sh.appendSql(" AND obj.id = ? ");
+            sh.insertValue(posMaster.getId());
+         }
+         if(posMaster.getHotelGroupId()!= null){
+            sh.appendSql(" AND obj.hotelGroupId = ? ");
+            sh.insertValue(posMaster.getHotelGroupId());
+         }
+         if(posMaster.getHotelId()!= null){
+            sh.appendSql(" AND obj.hotelId = ? ");
+            sh.insertValue(posMaster.getHotelId());
+         }
+        if(isNotNull(posMaster.getAccnt())){
+           sh.appendSql(" AND obj.accnt = ? ");
+           sh.insertValue(posMaster.getAccnt().trim());
+        }
+        if(isNotNull(posMaster.getType1())){
+           sh.appendSql(" AND obj.type1 = ? ");
+           sh.insertValue(posMaster.getType1().trim());
+        }
+        if(isNotNull(posMaster.getType2())){
+           sh.appendSql(" AND obj.type2 = ? ");
+           sh.insertValue(posMaster.getType2().trim());
+        }
+        if(isNotNull(posMaster.getType3())){
+           sh.appendSql(" AND obj.type3 = ? ");
+           sh.insertValue(posMaster.getType3().trim());
+        }
+        if(isNotNull(posMaster.getType4())){
+           sh.appendSql(" AND obj.type4 = ? ");
+           sh.insertValue(posMaster.getType4().trim());
+        }
+        if(isNotNull(posMaster.getType5())){
+           sh.appendSql(" AND obj.type5 = ? ");
+           sh.insertValue(posMaster.getType5().trim());
+        }
+        if(isNotNull(posMaster.getPccode())){
+           sh.appendSql(" AND obj.pccode = ? ");
+           sh.insertValue(posMaster.getPccode().trim());
+        }
+        if(isNotNull(posMaster.getMode())){
+           sh.appendSql(" AND obj.mode = ? ");
+           sh.insertValue(posMaster.getMode().trim());
+        }
+        if(isNotNull(posMaster.getShift())){
+           sh.appendSql(" AND obj.shift = ? ");
+           sh.insertValue(posMaster.getShift().trim());
+        }
+        if(isNotNull(posMaster.getEmpid())){
+           sh.appendSql(" AND obj.empid = ? ");
+           sh.insertValue(posMaster.getEmpid().trim());
+        }
+        if(isNotNull(posMaster.getSta())){
+           sh.appendSql(" AND obj.sta = ? ");
+           sh.insertValue(posMaster.getSta().trim());
+        }
+        if(isNotNull(posMaster.getOsta())){
+           sh.appendSql(" AND obj.osta = ? ");
+           sh.insertValue(posMaster.getOsta().trim());
+        }
+       if(posMaster.getBizDate()!= null){
+           sh.appendSql(" AND obj.bizDate = ? ");
+           sh.insertValue(posMaster.getBizDate());
+        }
+        if(isNotNull(posMaster.getTableno())){
+           sh.appendSql(" AND obj.tableno = ? ");
+           sh.insertValue(posMaster.getTableno().trim());
+        }
+        if(isNotNull(posMaster.getExttableno())){
+           sh.appendSql(" AND obj.exttableno = ? ");
+           sh.insertValue(posMaster.getExttableno().trim());
+        }
+       if(posMaster.getGsts()!= null){
+           sh.appendSql(" AND obj.gsts = ? ");
+           sh.insertValue(posMaster.getGsts());
+        }
+       if(posMaster.getChildren()!= null){
+           sh.appendSql(" AND obj.children = ? ");
+           sh.insertValue(posMaster.getChildren());
+        }
+       if(isNotNull(posMaster.getPhone())){
+           sh.appendSql(" AND obj.phone = ? ");
+           sh.insertValue(posMaster.getPhone().trim());
+        }
+        if(isNotNull(posMaster.getMarket())){
+           sh.appendSql(" AND obj.market = ? ");
+           sh.insertValue(posMaster.getMarket().trim());
+        }
+        if(isNotNull(posMaster.getSource())){
+           sh.appendSql(" AND obj.source = ? ");
+           sh.insertValue(posMaster.getSource().trim());
+        }
+        if(isNotNull(posMaster.getHaccnt())){
+           sh.appendSql(" AND obj.haccnt = ? ");
+           sh.insertValue(posMaster.getHaccnt().trim());
+        }
+        if(isNotNull(posMaster.getName())){
+           sh.appendSql(" AND obj.name = ? ");
+           sh.insertValue(posMaster.getName().trim());
+        }
+        if(isNotNull(posMaster.getCusno())){
+           sh.appendSql(" AND obj.cusno = ? ");
+           sh.insertValue(posMaster.getCusno().trim());
+        }
+        if(isNotNull(posMaster.getCusinfo())){
+           sh.appendSql(" AND obj.cusinfo = ? ");
+           sh.insertValue(posMaster.getCusinfo().trim());
+        }
+        if(isNotNull(posMaster.getCardno())){
+           sh.appendSql(" AND obj.cardno = ? ");
+           sh.insertValue(posMaster.getCardno().trim());
+        }
+        if(isNotNull(posMaster.getCardinfo())){
+           sh.appendSql(" AND obj.cardinfo = ? ");
+           sh.insertValue(posMaster.getCardinfo().trim());
+        }
+        if(isNotNull(posMaster.getSaleid())){
+           sh.appendSql(" AND obj.saleid = ? ");
+           sh.insertValue(posMaster.getSaleid().trim());
+        }
+        if(isNotNull(posMaster.getSaleinfo())){
+           sh.appendSql(" AND obj.saleinfo = ? ");
+           sh.insertValue(posMaster.getSaleinfo().trim());
+        }
+       if(posMaster.getDsc()!= null){
+           sh.appendSql(" AND obj.dsc = ? ");
+           sh.insertValue(posMaster.getDsc());
+        }
+        if(isNotNull(posMaster.getReason())){
+           sh.appendSql(" AND obj.reason = ? ");
+           sh.insertValue(posMaster.getReason().trim());
+        }
+       if(posMaster.getSrv()!= null){
+           sh.appendSql(" AND obj.srv = ? ");
+           sh.insertValue(posMaster.getSrv());
+        }
+       if(posMaster.getTax()!= null){
+           sh.appendSql(" AND obj.tax = ? ");
+           sh.insertValue(posMaster.getTax());
+        }
+       if(posMaster.getAmount()!= null){
+           sh.appendSql(" AND obj.amount = ? ");
+           sh.insertValue(posMaster.getAmount());
+        }
+       if(posMaster.getAmount1()!= null){
+           sh.appendSql(" AND obj.amount1 = ? ");
+           sh.insertValue(posMaster.getAmount1());
+        }
+       if(posMaster.getAmount2()!= null){
+           sh.appendSql(" AND obj.amount2 = ? ");
+           sh.insertValue(posMaster.getAmount2());
+        }
+       if(posMaster.getAmount3()!= null){
+           sh.appendSql(" AND obj.amount3 = ? ");
+           sh.insertValue(posMaster.getAmount3());
+        }
+       if(posMaster.getAmount4()!= null){
+           sh.appendSql(" AND obj.amount4 = ? ");
+           sh.insertValue(posMaster.getAmount4());
+        }
+       if(posMaster.getAmount5()!= null){
+           sh.appendSql(" AND obj.amount5 = ? ");
+           sh.insertValue(posMaster.getAmount5());
+        }
+       if(posMaster.getMaxamount()!= null){
+           sh.appendSql(" AND obj.maxamount = ? ");
+           sh.insertValue(posMaster.getMaxamount());
+        }
+       if(posMaster.getCharge()!= null){
+           sh.appendSql(" AND obj.charge = ? ");
+           sh.insertValue(posMaster.getCharge());
+        }
+       if(posMaster.getCredit()!= null){
+           sh.appendSql(" AND obj.credit = ? ");
+           sh.insertValue(posMaster.getCredit());
+        }
+       if(posMaster.getBal()!= null){
+           sh.appendSql(" AND obj.bal = ? ");
+           sh.insertValue(posMaster.getBal());
+        }
+       if(isNotNull(posMaster.getBillno())){
+           sh.appendSql(" AND obj.billno = ? ");
+           sh.insertValue(posMaster.getBillno().trim());
+        }
+       if(posMaster.getDscamount()!= null){
+           sh.appendSql(" AND obj.dscamount = ? ");
+           sh.insertValue(posMaster.getDscamount());
+        }
+       if(posMaster.getSrvamount()!= null){
+           sh.appendSql(" AND obj.srvamount = ? ");
+           sh.insertValue(posMaster.getSrvamount());
+        }
+       if(posMaster.getTaxamount()!= null){
+           sh.appendSql(" AND obj.taxamount = ? ");
+           sh.insertValue(posMaster.getTaxamount());
+        }
+        if(isNotNull(posMaster.getPaycode())){
+           sh.appendSql(" AND obj.paycode = ? ");
+           sh.insertValue(posMaster.getPaycode().trim());
+        }
+        if(isNotNull(posMaster.getExtra())){
+           sh.appendSql(" AND obj.extra = ? ");
+           sh.insertValue(posMaster.getExtra().trim());
+        }
+       if(posMaster.getLastnum()!= null){
+           sh.appendSql(" AND obj.lastnum = ? ");
+           sh.insertValue(posMaster.getLastnum());
+        }
+       if(posMaster.getLastrnum()!= null){
+           sh.appendSql(" AND obj.lastrnum = ? ");
+           sh.insertValue(posMaster.getLastrnum());
+        }
+       if(posMaster.getLastpnum()!= null){
+           sh.appendSql(" AND obj.lastpnum = ? ");
+           sh.insertValue(posMaster.getLastpnum());
+        }
+        if(isNotNull(posMaster.getPcrec())){
+           sh.appendSql(" AND obj.pcrec = ? ");
+           sh.insertValue(posMaster.getPcrec().trim());
+        }
+        if(isNotNull(posMaster.getCmscode())){
+           sh.appendSql(" AND obj.cmscode = ? ");
+           sh.insertValue(posMaster.getCmscode().trim());
+        }
+        if(isNotNull(posMaster.getReceiptNo())){
+            sh.appendSql(" AND obj.receiptNo = ? ");
+            sh.insertValue(posMaster.getReceiptNo().trim());
+         }
+        if(posMaster.getReceiptAmount()!= null){
+            sh.appendSql(" AND obj.receiptAmount = ? ");
+            sh.insertValue(posMaster.getReceiptAmount());
+         }
+        if(isNotNull(posMaster.getInfo())){
+           sh.appendSql(" AND obj.info = ? ");
+           sh.insertValue(posMaster.getInfo().trim());
+        }
+        if(isNotNull(posMaster.getToaccnt())){
+           sh.appendSql(" AND obj.toaccnt = ? ");
+           sh.insertValue(posMaster.getToaccnt().trim());
+        }
+        if(isNotNull(posMaster.getAccntinfo())){
+           sh.appendSql(" AND obj.accntinfo = ? ");
+           sh.insertValue(posMaster.getAccntinfo().trim());
+        }
+        if(isNotNull(posMaster.getResno())){
+           sh.appendSql(" AND obj.resno = ? ");
+           sh.insertValue(posMaster.getResno().trim());
+        }
+        if(isNotNull(posMaster.getQrCode())){
+           sh.appendSql(" AND obj.qrCode = ? ");
+           sh.insertValue(posMaster.getQrCode().trim());
+        }
+        if(isNotNull(posMaster.getCreateUser())){
+            sh.appendSql(" AND obj.createUser = ? ");
+            sh.insertValue(posMaster.getCreateUser().trim());
+         }
+        if(posMaster.getCreateDatetime()!= null){
+            sh.appendSql(" AND obj.createDatetime = ? ");
+            sh.insertValue(posMaster.getCreateDatetime());
+         }
+         if(isNotNull(posMaster.getModifyUser())){
+            sh.appendSql(" AND obj.modifyUser = ? ");
+            sh.insertValue(posMaster.getModifyUser().trim());
+         }
+        if(posMaster.getModifyDatetime()!= null){
+            sh.appendSql(" AND obj.modifyDatetime = ? ");
+            sh.insertValue(posMaster.getModifyDatetime());
+         }
+    }
+  }
+
+@Override
+public List<PosMaster> getMasterList(String sql) throws DataAccessException {
+	// TODO Auto-generated method stub
+	 SQLHelper sh = new SQLHelper(sql);
+	return findByNativeSQL(sh, PosMaster.class);
+}
+
+@Override
+public String savePosMaster( final PosMaster posMaster,final String pcid) throws DataAccessException {
+	// TODO Auto-generated method stub
+	String sql = "{CALL up_pos_create_new_posmaster(?,?,?,?,?,?,?,?,?,?,?,?,?,?)}";	
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	Object object = getJdbcTemplate().execute(sql,new CallableStatementCallback(){
+		public Object doInCallableStatement(CallableStatement cs) throws SQLException, DataAccessException 
+		{
+		     cs.setLong(1,posMaster.getHotelGroupId());
+		     cs.setLong(2,posMaster.getHotelId());
+		     cs.setString(3,posMaster.getAccnt());
+		     cs.setString(4,pcid);
+		     cs.setString(5,posMaster.getShift());
+		     cs.setString(6,posMaster.getPccode());
+		     cs.setString(7,String.valueOf(posMaster.getGsts()));
+		     cs.setString(8,posMaster.getTableno());
+		     cs.setString(9,posMaster.getExttableno());
+		     cs.setString(10,"0");
+		     cs.setString(11,posMaster.getCreateUser()); 
+		     cs.setString(12,posMaster.getInfo());
+		     cs.setString(13,posMaster.getEmpid());
+		     cs.registerOutParameter(14,java.sql.Types.VARCHAR);
+		     cs.execute();
+		     return cs.getString(14);
+		}
+	});	
+	return object.toString().trim();
+}
+
+@Override
+public String updateResNewMaster(final PosRes res,final PosMaster posMaster,final String pcid)
+		throws DataAccessException {
+	// TODO Auto-generated method stub
+	String sql = "{CALL up_pos_create_res_posmaster(?,?,?,?,?,?,?,?,?,?)}";	
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	Object object = getJdbcTemplate().execute(sql,new CallableStatementCallback(){
+		public Object doInCallableStatement(CallableStatement cs) throws SQLException, DataAccessException 
+		{
+		     cs.setLong(1,res.getHotelGroupId());
+		     cs.setLong(2,res.getHotelId());
+		     cs.setString(3,posMaster.getAccnt());
+		     cs.setString(4,res.getAccnt());
+		     cs.setString(5,pcid);
+		     cs.setString(6,posMaster.getTableno());
+		     cs.setString(7,posMaster.getShift());
+		     cs.setString(8,"0");
+		     cs.setString(9,posMaster.getCreateUser());
+		     cs.registerOutParameter(10,java.sql.Types.VARCHAR);
+		     cs.execute();
+		     return cs.getString(10);
+		}
+	});	
+	return object.toString().trim();
+  }
+
+@Override
+public String updateTableNoByAccnt(final long hotelGroupId, final long hotelId,
+		final String bizDate, final String accnt, final String shift, final String oldTableNo,
+		final String newTableNo, final String flag, final String user) {
+	// TODO Auto-generated method stub
+	String sql = "{CALL up_pos_table_change(?,?,?,?,?,?,?,?,?,?)}";	
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	Object object = getJdbcTemplate().execute(sql,new CallableStatementCallback(){
+		public Object doInCallableStatement(CallableStatement cs) throws SQLException, DataAccessException 
+		{
+		     cs.setLong(1,hotelGroupId);
+		     cs.setLong(2,hotelId);
+		     cs.setString(3,bizDate);
+		     cs.setString(4,accnt);
+		     cs.setString(5,shift);
+		     cs.setString(6,oldTableNo);
+		     cs.setString(7,newTableNo);
+		     cs.setString(8,flag);
+		     cs.setString(9,user);
+		     cs.registerOutParameter(10,java.sql.Types.VARCHAR);
+		     cs.execute();
+		     return cs.getString(10);
+		}
+	});	
+	return object.toString().trim();
+}
+
+	@Override
+	public int updatePosModeCalc(final long hotelGroupId, final long hotelId,final Date bizDate,final String accnt, final String mode, final BigDecimal dsc, final BigDecimal srv,final BigDecimal tax) throws DataAccessException {
+		String sql = "Call up_pos_detail_mode_calc(?,?,?,?,?,?,?,?,?)";		
+		final java.sql.Date sqlDate = new java.sql.Date(bizDate.getTime());
+		@SuppressWarnings("unchecked")
+		Object object = getJdbcTemplate().execute(sql,new CallableStatementCallback(){
+			public Object doInCallableStatement(CallableStatement cs) throws SQLException, DataAccessException 
+			{
+			     cs.setLong(1,hotelGroupId);
+			     cs.setLong(2,hotelId);
+			     cs.setDate(3, sqlDate);
+			     cs.setString(4, accnt);
+			     cs.setString(5, mode);
+			     cs.setBigDecimal(6, dsc);
+			     cs.setBigDecimal(7, srv);
+			     cs.setBigDecimal(8, tax);
+			     cs.registerOutParameter(9, java.sql.Types.INTEGER);
+			     cs.execute();
+			     return cs.getString(9);
+			}
+		});	
+		
+		this.flush();
+		return Integer.parseInt(object.toString());
+	}
+
+	@Override
+	public int updatePosCheckOut(final long hotelGroupId, final long hotelId, final Date bizDate,final String cashier, final String accnts, final String billno, final String user)	throws DataAccessException {
+		String sql = "Call up_pos_check_out(?,?,?,?,?,?,?,?)";		
+		final java.sql.Date sqlDate = new java.sql.Date(bizDate.getTime());
+		@SuppressWarnings("unchecked")
+		Object object = getJdbcTemplate().execute(sql,new CallableStatementCallback(){
+			public Object doInCallableStatement(CallableStatement cs) throws SQLException, DataAccessException 
+			{
+			     cs.setLong(1,hotelGroupId);
+			     cs.setLong(2,hotelId);
+			     cs.setDate(3, sqlDate);
+			     cs.setString(4, cashier);
+			     cs.setString(5, accnts);
+			     cs.setString(6, billno);
+			     cs.setString(7, user);
+			     cs.registerOutParameter(8, java.sql.Types.INTEGER);
+			     cs.execute();
+			     return cs.getString(8);
+			}
+		});	
+		
+		this.flush();
+		return Integer.parseInt(object.toString());
+	}
+
+	@Override
+	public String updateCheckoutRevoke(final Long hotelGroupId, final Long hotelId,
+			final String bizDate, final String billno, final String shift,final String flag, final String user) {
+		// TODO Auto-generated method stub
+		String sql = "{CALL up_pos_check_out_revoke(?,?,?,?,?,?,?,?)}";	
+		@SuppressWarnings({ "unchecked", "rawtypes" })
+		Object object = getJdbcTemplate().execute(sql,new CallableStatementCallback(){
+			public Object doInCallableStatement(CallableStatement cs) throws SQLException, DataAccessException 
+			{
+			     cs.setLong(1,hotelGroupId);
+			     cs.setLong(2,hotelId);
+			     cs.setString(3,bizDate);
+			     cs.setString(4,billno);
+			     cs.setString(5,shift);
+			     cs.setString(6,flag);
+			     cs.setString(7,user);
+			     cs.registerOutParameter(8,java.sql.Types.VARCHAR);
+			     cs.execute();
+			     return cs.getString(8);
+			}
+		});	
+		return object.toString().trim();
+	}
+
+	@Override
+	public String updateMasterRevoke(final long hotelGroupId, final long hotelId,
+			final String accnt, final String shift, final String user,final String workStation,final String reason) {
+		// TODO Auto-generated method stub
+		String sql = "{CALL up_pos_master_revoke(?,?,?,?,?,?,?,?)}";	
+		@SuppressWarnings({ "unchecked", "rawtypes" })
+		Object object = getJdbcTemplate().execute(sql,new CallableStatementCallback(){
+			public Object doInCallableStatement(CallableStatement cs) throws SQLException, DataAccessException 
+			{
+			     cs.setLong(1,hotelGroupId);
+			     cs.setLong(2,hotelId);
+			     cs.setString(3,accnt);
+			     cs.setString(4,shift);
+			     cs.setString(5,user);
+			     cs.setString(6,workStation);
+			     cs.setString(7,reason);
+			     cs.registerOutParameter(8,java.sql.Types.VARCHAR);
+			     cs.execute();
+			     return cs.getString(8);
+			}
+		});	
+		return object.toString().trim();
+	}
+
+	@Override
+	public <T> List<T> getPosDetailModeView(long hotelGroupId, long hotelId,
+			String bizDate, String accnts,String flag) {
+		// TODO Auto-generated method stub
+		SQLHelper sh = new SQLHelper();
+		sh.appendSql(" Call up_pos_detail_mode_view(?,?,?,?,?) ");
+		sh.insertValue(hotelGroupId);
+		sh.insertValue(hotelId);
+		sh.insertValue(bizDate);
+		sh.insertValue(accnts);
+		sh.insertValue(flag);
+		return findByNativeSQL(sh);
+	}
+
+	@Override
+	public void updatePosSuspend(long hotelGroupId, long hotelId, String accnt,
+			String shift, String user) {
+		// TODO Auto-generated method stub
+		SQLHelper sh = new SQLHelper();
+		sh.appendSql("  update pos_master set sta='S' , modify_datetime = now(),                           ");
+		sh.appendSql("  modify_user = ?                                                                    ");
+		sh.insertValue(user);
+		sh.appendSql("  where   hotel_group_id = ?                                                         ");
+		sh.insertValue(hotelGroupId);
+		sh.appendSql("  and    hotel_id = ?                                                                ");
+		sh.insertValue(hotelId);
+		sh.appendSql("  and    accnt = ?                                                                   ");
+		sh.insertValue(accnt);
+		sh.appendSql("  AND (sta = 'I' OR sta = 'C')                                                       ");
+		bulkUpdateByNativeSQL(sh);
+		sh.clear();
+		sh.appendSql(" update pos_account set sta='S' , modify_datetime = now(),                          ");
+		sh.appendSql("  modify_user = ?                                                                    ");
+		sh.insertValue(user);
+		sh.appendSql("  where   hotel_group_id = ?                                                         ");
+		sh.insertValue(hotelGroupId);
+		sh.appendSql("  and    hotel_id = ?                                                                ");
+		sh.insertValue(hotelId);
+		sh.appendSql("  and    accnt = ?                                                                   ");
+		sh.insertValue(accnt);
+		sh.appendSql("  and   sta = 'I' AND number = '1'                                                   ");
+		bulkUpdateByNativeSQL(sh);
+		sh.clear();
+		sh.appendSql(" update pos_account set sta='X' , modify_datetime = now(),                          ");
+		sh.appendSql("  modify_user = ?  ,                                                                  ");
+		sh.insertValue(user);
+		sh.appendSql("  shift = ?                                                                       ");
+		sh.insertValue(shift);
+		sh.appendSql("  where   hotel_group_id = ?                                                         ");
+		sh.insertValue(hotelGroupId);
+		sh.appendSql("  and    hotel_id = ?                                                                 ");
+		sh.insertValue(hotelId);
+		sh.appendSql("  and    accnt = ?                                                                    ");
+		sh.insertValue(accnt);
+		sh.appendSql("  and    sta = 'I' AND number = '2'                                                   ");
+		bulkUpdateByNativeSQL(sh);
+		sh.clear();
+		sh.appendSql(" update pos_detail set billno='S'                                                    ");
+		sh.appendSql("  where   hotel_group_id = ?                                                          ");
+		sh.insertValue(hotelGroupId);
+		sh.appendSql("  and    hotel_id = ?                                                                 ");
+		sh.insertValue(hotelId);
+		sh.appendSql("  and    accnt = ?                                                                    ");
+		sh.insertValue(accnt);
+		sh.appendSql("  and    sta = 'I' ;                                                                   ");
+		bulkUpdateByNativeSQL(sh);
+		sh.clear();
+	}
+	
+}

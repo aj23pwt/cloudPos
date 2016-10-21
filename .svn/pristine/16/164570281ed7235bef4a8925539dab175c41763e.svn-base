@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans default-autowire="byName">
+       <!-- 本地下载云portal库基础表(用户、权限、账单、报表、费用付款码等等)  tomcat启动后延迟5秒 执行 -->
+    <bean id="pmsCodeTrigger" class="org.springframework.scheduling.quartz.SimpleTriggerBean">    
+       <property name="jobDetail">    
+             <ref bean="jobtaskSyncPmsCodeData"/>  
+      </property>  
+       <property name="startDelay">    
+           <value>5000</value>    
+       </property>    
+       <property name="repeatInterval">    
+           <value>0</value>    
+      </property>    
+      <property name="repeatCount">    
+           <value>0</value>    
+      </property>    
+    </bean>  
+ <!-- 本地下载云portal库餐饮基础代码表(营业点、桌号、菜谱、套菜、烧法等等)   tomcat启动后 延迟2秒执行 -->
+    <bean id="posCodeTrigger" class="org.springframework.scheduling.quartz.SimpleTriggerBean">    
+       <property name="jobDetail">    
+             <ref bean="jobtaskSyncPosCodeData"/>  
+      </property>  
+       <property name="startDelay">    
+           <value>2000</value>    
+       </property>    
+       <property name="repeatInterval">    
+           <value>0</value>    
+      </property>    
+      <property name="repeatCount">    
+           <value>0</value>    
+      </property>    
+    </bean>  
+    
+	<!-- 本地下载云portal库基础表(用户、权限、账单、报表、费用付款码等等)  tomcat启动后 一天做一次   (app2中手动:数据更新 每天23点执行) -->
+		
+        <bean id="jobSyncPmsCodeData" class="com.greencloud.facade.impl.PosSycFacadeImpl">
+        	<property name="serverType" value="${serverType}"></property>
+        </bean>
+        <bean id="jobtaskSyncPmsCodeData" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+            <property name="targetObject">
+                <ref bean="jobSyncPmsCodeData"/>
+            </property>
+            <property name="targetMethod">
+                <value>getPmsCode</value>
+            </property>
+            <property name="concurrent" value="false" />
+        </bean>  
+        <bean id="doSyncPmsCodeData" class="org.springframework.scheduling.quartz.CronTriggerBean">
+            <property name="jobDetail">
+                <ref bean="jobtaskSyncPmsCodeData"/>
+            </property>
+            <property name="cronExpression">
+                <value>0 0 23 * * ?</value>
+            </property>
+        </bean>
+        
+        <!-- 本地下载云portal库餐饮基础代码表(营业点、桌号、菜谱、套菜、烧法等等)  tomcat启动后 一小时检查一次   -->
+		
+        <bean id="jobSyncPosCodeData" class="com.greencloud.facade.impl.PosSycFacadeImpl">
+        	<property name="serverType" value="${serverType}"></property>
+        </bean>
+        <bean id="jobtaskSyncPosCodeData" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+            <property name="targetObject">
+                <ref bean="jobSyncPosCodeData"/>
+            </property>
+            <property name="targetMethod">
+                <value>getCode</value>
+            </property>
+            <property name="concurrent" value="false" />
+        </bean>  
+        <bean id="doSyncPosCodeData" class="org.springframework.scheduling.quartz.CronTriggerBean">
+            <property name="jobDetail">
+                <ref bean="jobtaskSyncPosCodeData"/>
+            </property>
+            <property name="cronExpression">
+                <value>0 0 0/1 * * ?</value>
+            </property>
+        </bean>
+        
+        <!-- 云订单同步到本地(预订主单、预定金、预订菜式)  每60秒检查一次 -->
+        
+        <bean id="jobSyncResData" class="com.greencloud.facade.impl.PosSycFacadeImpl">
+        	<property name="serverType" value="${serverType}"></property>
+        </bean>
+        <bean id="jobtaskSyncResData" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+            <property name="targetObject">
+                <ref bean="jobSyncResData"/>
+            </property>
+            <property name="targetMethod">
+                <value>getRes</value>
+            </property>
+            <property name="concurrent" value="false" />
+        </bean>  
+        <bean id="doSyncResData" class="org.springframework.scheduling.quartz.CronTriggerBean">
+            <property name="jobDetail">
+                <ref bean="jobtaskSyncResData"/>
+            </property>
+            <property name="cronExpression">
+                <value>0/60 * * * * ?</value>
+            </property>
+        </bean>
+
+		<!-- 定时数据跨库同步，上传posMaster相关表同步服务器  每30秒检查一次 -->
+		
+        <bean id="jobSyncData" class="com.greencloud.facade.impl.PosSycFacadeImpl">
+        	<property name="serverType" value="${serverType}"></property>
+        </bean>
+        <bean id="jobtaskSyncData" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+            <property name="targetObject">
+                <ref bean="jobSyncData"/>
+            </property>
+            <property name="targetMethod">
+                <value>saveSyncMaster</value>
+            </property>
+            <property name="concurrent" value="false" />
+        </bean>  
+        <bean id="doSyncData" class="org.springframework.scheduling.quartz.CronTriggerBean">
+            <property name="jobDetail">
+                <ref bean="jobtaskSyncData"/>
+            </property>
+            <property name="cronExpression">
+                <value>0/30 * * * * ?</value>
+            </property>
+        </bean>
+        
+        	<!-- 定时数据跨库同步，上传营业点的夜审完成标志表同步服务器 18点-24点 每分钟检查一次 -->
+		
+        <bean id="jobUploadPosPccodeAuditFlag" class="com.greencloud.facade.impl.PosSycFacadeImpl">
+        	<property name="serverType" value="${serverType}"></property>
+        </bean>
+        <bean id="jobtaskUploadPosPccodeAuditFlag" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+            <property name="targetObject">
+                <ref bean="jobUploadPosPccodeAuditFlag"/>
+            </property>
+            <property name="targetMethod">
+                <value>uploadPosPccodeAuditFlag</value>
+            </property>
+            <property name="concurrent" value="false" />
+        </bean>  
+        <bean id="doUploadPosPccodeAuditFlag" class="org.springframework.scheduling.quartz.CronTriggerBean">
+            <property name="jobDetail">
+                <ref bean="jobtaskUploadPosPccodeAuditFlag"/>
+            </property>
+            <property name="cronExpression">
+                <value>0 0/2 18-23 * * ?</value>
+            </property>
+        </bean>
+        <!-- 
+              格式: [秒] [分] [小时] [日] [月] [周] [年]
+			0 0 12 * * ?           每天12点触发 
+			0 15 10 ? * *          每天10点15分触发 
+			0 15 10 * * ?          每天10点15分触发  
+			0 15 10 * * ? *        每天10点15分触发  
+			0 15 10 * * ? 2005     2005年每天10点15分触发 
+			0 * 14 * * ?           每天下午的 2点到2点59分每分触发 
+			0 0/5 14 * * ?         每天下午的 2点到2点59分(整点开始，每隔5分触发)  
+			0 0/5 14,18 * * ?        每天下午的 18点到18点59分(整点开始，每隔5分触发)
+			0 0-5 14 * * ?            每天下午的 2点到2点05分每分触发 
+			0 10,44 14 ? 3 WED        3月分每周三下午的 2点10分和2点44分触发 
+			0 15 10 ? * MON-FRI       从周一到周五每天上午的10点15分触发 
+			0 15 10 15 * ?            每月15号上午10点15分触发 
+			0 15 10 L * ?             每月最后一天的10点15分触发 
+			0 15 10 ? * 6L            每月最后一周的星期五的10点15分触发 
+			0 15 10 ? * 6L 2002-2005    从2002年到2005年每月最后一周的星期五的10点15分触发
+			0 15 10 ? * 6#3                        每月的第三周的星期五开始触发 
+			0 0 12 1/5 * ?            每月的第一个中午开始每隔5天触发一次 
+			0 11 11 11 11 ?           每年的11月11号 11点11分触发(光棍节)
+         -->
+		
+        <bean id="startQuertz" lazy-init="false" autowire="no" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+            <property name="triggers">
+                <list>
+					<!--
+					<ref bean="doSyncPmsCodeData"/>
+					<ref bean="doSyncPosCodeData"/>
+					<ref bean="doSyncResData"/>
+					<ref bean="doSyncData"/> 
+					<ref bean="posCodeTrigger"/> 
+					<ref bean="pmsCodeTrigger"/>-->
+                </list>
+            </property>
+        </bean>
+        
+</beans>

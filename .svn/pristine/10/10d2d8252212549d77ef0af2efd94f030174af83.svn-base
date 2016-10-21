@@ -1,0 +1,26 @@
+package com.greencloud.facade;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import com.greencloud.entity.PosIp;
+import com.greencloud.entity.PosModeDef;
+import com.greencloud.entity.PosSortAll;
+
+public interface IPosCodeFacade {
+	public List<PosSortAll> getPosSortAll();
+
+	public void saveCode(Object object);
+	public void saveCodeGroup(Object object, String hotels);
+	public void updateCodeGroup(Object object);
+	public void updateCode(Object object);
+	public void deleteCode(Object object);
+	public void updateCodeSta(Object object);
+	public void saveCodeCollection(ArrayList<Object> arr);
+	public String checkDetailByCode(Object object,boolean isGroup);
+	
+	public void saveModeDeatil(PosModeDef object);
+	 
+	public void updatePosip(PosIp posIp);
+	public List<PosIp> getPosIpAll(PosIp posip);
+}

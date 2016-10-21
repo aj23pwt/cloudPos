@@ -1,0 +1,366 @@
+package com.greencloud.controller;
+
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.UUID;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import net.coobird.thumbnailator.Thumbnails;
+
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
+import org.springframework.web.multipart.commons.CommonsMultipartResolver;
+import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
+
+import com.greencloud.constant.BizExceptionConstant;
+import com.greencloud.dao.impl.PosPluAllDaoImpl;
+import com.greencloud.entity.CodeDir;
+import com.greencloud.entity.PosPluAll;
+import com.greencloud.entity.SysOption;
+import com.greencloud.entity.UploadFile;
+import com.greencloud.exception.BizException;
+import com.greencloud.service.ICodeDirService;
+import com.greencloud.service.IPosPluAllService;
+import com.greencloud.service.ISysOptionService;
+import com.greencloud.service.IUploadFileService;
+import com.greencloud.util.UserManager;
+import com.greencloud.utils.CompressPicUtil;
+import com.greencloud.utils.PropertiesUtil4Sync;
+
+@Controller
+@RequestMapping(value = "/posFileController")
+public class PosFileController extends MultiActionController {
+
+	private CommonsMultipartResolver multipartResolver;
+	private IPosPluAllService posPluAllService;
+
+	public void setPosPluAllService(IPosPluAllService posPluAllService) {
+		this.posPluAllService = posPluAllService; 
+	}
+
+	public void setCodeDirService(ICodeDirService codeDirService) {
+		this.codeDirService = codeDirService;
+	}
+ 
+	private IUploadFileService uploadFileService;
+	private ISysOptionService sysOptionService;
+	private ICodeDirService codeDirService;
+
+	public void setSysOptionService(ISysOptionService sysOptionService) {
+		this.sysOptionService = sysOptionService;
+	}
+
+	public void setUploadFileService(IUploadFileService uploadFileService) {
+		this.uploadFileService = uploadFileService;
+	}
+
+	@ResponseBody
+	@RequestMapping(value = "/fileupload")
+	public ModelAndView fileupload(HttpServletRequest request,
+			HttpServletResponse response) throws Exception {
+
+		multipartResolver = new CommonsMultipartResolver(request.getSession()
+				.getServletContext());
+		multipartResolver.setResolveLazily(true);
+		multipartResolver.setDefaultEncoding("utf-8");
+
+		if (multipartResolver.isMultipart(request)) {
+
+			Long hotelId = UserManager.getHotelId();
+			if (request.getParameter("hotelId") != null) {
+				hotelId = Long.valueOf(request.getParameter("hotelId"));
+			}
+			Long hotelGroupId = UserManager.getHotelGroupId();
+			if (request.getParameter("hotelGroupId") != null) {
+				hotelGroupId = Long.valueOf(request
+						.getParameter("hotelGroupId"));
+			}
+			MultipartHttpServletRequest multipartRequest = multipartResolver
+					.resolveMultipart(request);
+			StringBuffer ids = new StringBuffer();
+			for (Iterator<String> it = multipartRequest.getFileNames(); it
+					.hasNext();) {
+				String key = (String) it.next();
+				MultipartFile file = multipartRequest.getFile(key);
+				String name = file.getOriginalFilename();
+			    String FilePath = "/home/pos/" + hotelGroupId.toString() + "/"+ hotelId.toString() + "/";
+				SysOption picOption =  sysOptionService.findSysOptionByCatalogItem("pos", "pos_pic_path",Long.parseLong(PropertiesUtil4Sync
+						.getProperty("hotelGroupId")), Long.parseLong(PropertiesUtil4Sync.getProperty("hotelId")));
+				if(picOption != null && picOption.getSetValue() != null && !picOption.getSetValue().equals("")){
+					FilePath = picOption.getSetValue()+"/";
+				}		    
+				File dir = new File(FilePath);
+				File smallDir = new File(FilePath+"smallPic/");
+				File middleDir = new File(FilePath+"middlePic/");
+				if (!dir.exists()) {
+					dir.mkdirs();
+				}
+				if (!smallDir.exists()) {
+					smallDir.mkdirs();
+				}
+				if (!middleDir.exists()) {
+					middleDir.mkdirs();
+				}
+				File newFile = new File(dir, name);
+				if (!newFile.exists()) {
+					newFile.createNewFile();
+				}
+				file.transferTo(newFile);
+				//处理到新的目录
+				Thumbnails.of(newFile)   
+		            .scale(0.12f)  
+		            .toFile(FilePath+"smallPic/"+name); 
+				Thumbnails.of(newFile)   
+	            .scale(0.25f)  
+	            .toFile(FilePath+"middlePic/"+name);
+				ids.append(name.substring(1, name.indexOf(".")));
+			}
+			response.getWriter().print(ids);
+		}
+		return null;
+	}
+	//图片上传完成后执行三种尺寸的图片生成
+	public void morePicGenerates(String oldSavePath,String newImgName){
+		CompressPicUtil mypic = new CompressPicUtil();
+		String inPicPath = oldSavePath + newImgName;
+		System.out.println("输入的图片大小：" + mypic.getPicSize(inPicPath) / 1024 + "KB");
+		int width = mypic.getPicWidth(inPicPath);
+		int height = mypic.getPicHeight(inPicPath);
+		System.out.println("width=" + width + ",height=" + height);
+		if (width > 1000) {
+			height = (1000 * height / width);
+			width = 1000;
+		}
+		System.out.println("width2=" + width + ",height2=" + height);
+		mypic.compressPic(oldSavePath, oldSavePath+"/smallPic", newImgName, newImgName, width, height, true);
+
+	}
+	@ResponseBody
+	@RequestMapping(value = "/filePosPic")
+	public ModelAndView filePosPic(HttpServletRequest request,
+			HttpServletResponse response) throws Exception {
+
+		String path = request.getParameter("path");
+		System.out.println(path);
+		response.reset();
+		response.setContentType("application/x-msdownload");
+		response.setHeader("Content-Disposition", "attachment; filename="
+				+ path);
+
+		OutputStream out = response.getOutputStream();
+		String separator = System.getProperty("file.separator");
+
+		File file = new File(path);
+		if (file.exists()) {
+			FileInputStream in = null;
+			try {
+				in = new FileInputStream(file);
+				byte[] buffer = new byte[1024];
+				int result = 0;
+				while ((result = in.read(buffer)) != -1) {
+					out.write(buffer, 0, result);
+				}
+			} catch (IOException e) {
+				throw e;
+			} finally {
+				in.close();
+				out.close();
+			}
+		}
+		return null;
+	}
+	@ResponseBody
+	@RequestMapping(value = "/downloadFiles")
+	public ModelAndView downloadFiles(HttpServletRequest request,
+			HttpServletResponse response) throws ServletException, IOException {
+		request.setCharacterEncoding("UTF-8");
+		String hotelId = request.getParameter("hotelId");
+		String hotelGroupId = request.getParameter("hotelGroupId");
+		PosPluAll posPlu = new PosPluAll();
+		posPlu.setHotelGroupId(Long.parseLong(hotelGroupId));
+		posPlu.setHotelId(Long.parseLong(hotelId));
+		List<PosPluAll> posPluAllList = posPluAllService.listPosPluAll(posPlu);
+		if (posPluAllList != null && posPluAllList.size() > 0) {
+			List<File> files = new ArrayList<File>();
+			long fileLength = 0;
+			for (PosPluAll posPluAll : posPluAllList) {
+				if (!(posPluAll.getPicPath1() == null)
+						&& !(posPluAll.getPicPath1() == "")) {
+					String filePath = posPluAll.getPicPath1();
+					File file = new File(filePath);
+					if(file.length()>0){
+					  files.add(file);
+					  fileLength += file.length();
+					}
+				}
+			}
+			String fileName = UUID.randomUUID().toString() + ".zip";
+			// 在服务器端创建打包下载的临时文件
+			SysOption picOption =  sysOptionService.findSysOptionByCatalogItem("pos", "pos_pic_path",Long.parseLong(hotelGroupId), Long.parseLong(hotelId));
+			String outFilePath = "/home/pos/"+fileName;
+			if(picOption != null && picOption.getSetValue() != null && !picOption.getSetValue().equals("")){
+				 outFilePath = picOption.getSetValue() +"/"+ fileName;
+			}		    
+			File file = new File(outFilePath);
+			// 文件输出流
+			FileOutputStream outStream = new FileOutputStream(file);
+			// 压缩流
+			ZipOutputStream toClient = new ZipOutputStream(outStream);
+			zipFile(files, toClient);
+			toClient.close();
+			outStream.close();
+			this.downloadZip(file,outFilePath, response);
+		}
+		return null;
+	}
+
+	/**
+	 * 压缩文件列表中的文件
+	 * 
+	 * @param files
+	 * @param outputStream
+	 * @throws IOException
+	 */
+	public static void zipFile(List<File> files, ZipOutputStream outputStream)
+			throws IOException, ServletException {
+		try {
+			int size = files.size();
+			// 压缩列表中的文件
+			for (int i = 0; i < size; i++) {
+				File file = (File) files.get(i);
+				zipFile(file, outputStream);
+			}
+		} catch (IOException e) {
+			throw e;
+		}
+	}
+
+	/**
+	 * 将文件写入到zip文件中
+	 * 
+	 * @param inputFile
+	 * @param outputstream
+	 * @throws Exception
+	 */
+	public static void zipFile(File inputFile, ZipOutputStream outputstream)
+			throws IOException, ServletException {
+		try {
+			if (inputFile.exists()) {
+				if (inputFile.isFile()) {
+					FileInputStream inStream = new FileInputStream(inputFile);
+					BufferedInputStream bInStream = new BufferedInputStream(
+							inStream);
+					ZipEntry entry = new ZipEntry(inputFile.getName());
+					outputstream.putNextEntry(entry);
+
+					final int MAX_BYTE = 10 * 1024 * 1024; // 最大的流为10M
+					long streamTotal = 0; // 接受流的容量
+					int streamNum = 0; // 流需要分开的数量
+					int leaveByte = 0; // 文件剩下的字符数
+					byte[] inOutbyte; // byte数组接受文件的数据
+
+					streamTotal = bInStream.available(); // 通过available方法取得流的最大字符数
+					streamNum = (int) Math.floor(streamTotal / MAX_BYTE); // 取得流文件需要分开的数量
+					leaveByte = (int) streamTotal % MAX_BYTE; // 分开文件之后,剩余的数量
+
+					if (streamNum > 0) {
+						for (int j = 0; j < streamNum; ++j) {
+							inOutbyte = new byte[MAX_BYTE];
+							// 读入流,保存在byte数组
+							bInStream.read(inOutbyte, 0, MAX_BYTE);
+							outputstream.write(inOutbyte, 0, MAX_BYTE); // 写出流
+						}
+					}
+					// 写出剩下的流数据
+					inOutbyte = new byte[leaveByte];
+					bInStream.read(inOutbyte, 0, leaveByte);
+					outputstream.write(inOutbyte);
+					outputstream.closeEntry(); // Closes the current ZIP entry
+												// and positions the stream for
+												// writing the next entry
+					bInStream.close(); // 关闭
+					inStream.close();
+				}
+			} else {
+				throw new ServletException("文件不存在！");
+			}
+		} catch (IOException e) {
+			throw e;
+		}
+	}
+
+	/**
+	 * 下载打包的文件
+	 * 
+	 * @param file
+	 * @param response
+	 */
+	public void downloadZip(File file,String outFilePath, HttpServletResponse response) {
+		try {
+			// 以流的形式下载文件。
+			BufferedInputStream fis = new BufferedInputStream(
+					new FileInputStream(file.getPath()));
+			byte[] buffer = new byte[fis.available()];
+			fis.read(buffer);
+			fis.close();
+			// 清空response
+			response.reset();
+			OutputStream toClient = new BufferedOutputStream(
+					response.getOutputStream());
+			
+			response.setContentType("application/octet-stream");
+			response.setHeader("Content-Disposition", "attachment;filename="
+					+ file.getName());
+			toClient.write(buffer);
+			toClient.flush();
+			toClient.close();
+			//file.delete(); // 将生成的服务器端文件删除
+			File oldFile = new File(outFilePath);
+			oldFile.delete();
+		} catch (IOException ex) {
+			ex.printStackTrace();
+		}
+	}
+
+	public static String toUtf8String(String s) {
+		StringBuffer sb = new StringBuffer();
+		for (int i = 0; i < s.length(); i++) {
+			char c = s.charAt(i);
+			if (c >= 0 && c <= 255) {
+				sb.append(c);
+			} else {
+				byte[] b;
+				try {
+					b = Character.toString(c).getBytes("utf-8");
+				} catch (Exception ex) {
+					b = new byte[0];
+				}
+				for (int j = 0; j < b.length; j++) {
+					int k = b[j];
+					if (k < 0)
+						k += 256;
+					sb.append("%" + Integer.toHexString(k).toUpperCase());
+				}
+			}
+		}
+		return sb.toString();
+	}
+
+}

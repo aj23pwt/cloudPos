@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<!-- Generated 2014-10-31 9:50:26 by Hibernate Tools 3.4.0.CR1 -->
+<hibernate-mapping>
+    <class name="com.greencloud.entity.PosStoreClass" table="pos_store_class" >
+        <id name="id" type="java.lang.Long">
+            <column name="id" />
+            <generator class="identity" />
+        </id>
+        <property name="hotelGroupId" type="long">
+            <column name="hotel_group_id" not-null="true" />
+        </property>
+        <property name="hotelId" type="long">
+            <column name="hotel_id" not-null="true" />
+        </property>
+        <property name="code" type="string">
+            <column name="code" length="10" not-null="true">
+                <comment>&#231;&#137;&#169;&#229;&#147;&#129;&#231;&#177;&#187;&#229;&#136;&#171;&#231;&#188;&#150;&#231;&#160;&#129;</comment>
+            </column>
+        </property>
+        <property name="name" type="string">
+            <column name="name" length="24" not-null="true">
+                <comment>&#230;&#143;&#143;&#232;&#191;&#176;</comment>
+            </column>
+        </property>
+        <property name="engName" type="string">
+            <column name="eng_name" length="24">
+                <comment>&#232;&#139;&#177;&#230;&#150;&#135;&#230;&#143;&#143;&#232;&#191;&#176;</comment>
+            </column>
+        </property>
+        <property name="createUser" type="string">
+            <column name="create_user" length="20" not-null="true" />
+        </property>
+        <property name="createDatetime" type="timestamp">
+            <column name="create_datetime" length="0" not-null="true" />
+        </property>
+        <property name="modifyUser" type="string">
+            <column name="modify_user" length="20" not-null="true" />
+        </property>
+        <property name="modifyDatetime" type="timestamp">
+            <column name="modify_datetime" length="0" not-null="true" />
+        </property>
+        <property name="isGroup" type="string">
+            <column name="is_group" length="2">
+                <comment>T=yes F=no</comment>
+            </column>
+        </property>
+        <property name="groupCode" type="string">
+            <column name="group_code" length="30" />
+        </property>
+        <property name="codeType" type="string">
+            <column name="code_type" length="30" />
+        </property>
+    </class>
+</hibernate-mapping>

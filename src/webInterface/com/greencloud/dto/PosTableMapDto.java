@@ -1,0 +1,112 @@
+package com.greencloud.dto;
+
+public class PosTableMapDto {
+	//属性比较特殊 因为和存储过程匹配,过程未重构 所以只能先适应过程（up_pos_table_map）
+	//2016.1.7 修改 匹配新过程up_pos_table_map_interface
+    private String hotel_group_id;
+    private String hotel_id;
+    private String pccode;
+    private String pccode_descript;
+    private String type;
+    private String type_descript;
+    private String tableno;
+    private String tblname;
+    private String sta;
+    private String staDesc;
+    private String accnt;
+    private String arrtime;
+    private String pcrec;
+    private String tblchk;
+    private String base;
+	public String getHotel_group_id() {
+		return hotel_group_id;
+	}
+	public void setHotel_group_id(String hotel_group_id) {
+		this.hotel_group_id = hotel_group_id;
+	}
+	public String getHotel_id() {
+		return hotel_id;
+	}
+	public void setHotel_id(String hotel_id) {
+		this.hotel_id = hotel_id;
+	}
+	public String getPccode() {
+		return pccode;
+	}
+	public void setPccode(String pccode) {
+		this.pccode = pccode;
+	}
+	public String getPccode_descript() {
+		return pccode_descript;
+	}
+	public void setPccode_descript(String pccode_descript) {
+		this.pccode_descript = pccode_descript;
+	}
+	public String getType() {
+		return type;
+	}
+	public void setType(String type) {
+		this.type = type;
+	}
+	public String getType_descript() {
+		return type_descript;
+	}
+	public void setType_descript(String type_descript) {
+		this.type_descript = type_descript;
+	}
+	public String getTableno() {
+		return tableno;
+	}
+	public void setTableno(String tableno) {
+		this.tableno = tableno;
+	}
+	public String getTblname() {
+		return tblname;
+	}
+	public void setTblname(String tblname) {
+		this.tblname = tblname;
+	}
+	public String getSta() {
+		return sta;
+	}
+	public void setSta(String sta) {
+		this.sta = sta;
+	}
+	public String getStaDesc() {
+		return staDesc;
+	}
+	public void setStaDesc(String staDesc) {
+		this.staDesc = staDesc;
+	}
+	public String getAccnt() {
+		return accnt;
+	}
+	public void setAccnt(String accnt) {
+		this.accnt = accnt;
+	}
+	public String getArrtime() {
+		return arrtime;
+	}
+	public void setArrtime(String arrtime) {
+		this.arrtime = arrtime;
+	}
+	public String getPcrec() {
+		return pcrec;
+	}
+	public void setPcrec(String pcrec) {
+		this.pcrec = pcrec;
+	}
+	public String getTblchk() {
+		return tblchk;
+	}
+	public void setTblchk(String tblchk) {
+		this.tblchk = tblchk;
+	}
+	public String getBase() {
+		return base;
+	}
+	public void setBase(String base) {
+		this.base = base;
+	}
+    
+}

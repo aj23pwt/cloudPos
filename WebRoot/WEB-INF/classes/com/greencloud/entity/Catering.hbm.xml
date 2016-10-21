@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping>
+    <class name="com.greencloud.entity.Catering" table="catering">
+        <id name="id" type="java.lang.Long">
+            <column name="id" />
+            <generator class="identity" />
+        </id>
+        <property name="hotelGroupId" type="java.lang.Long">
+            <column name="hotel_group_id" />
+        </property>
+        <property name="hotelId" type="java.lang.Long">
+            <column name="hotel_id" />
+        </property>
+         <property name="rsvType" type="string">
+            <column name="rsv_type" />
+        </property>
+        <property name="rsvId" type="java.lang.Long">
+            <column name="rsv_id" />
+        </property>
+         <property name="rsvName" type="string">
+            <column name="rsv_name" />
+        </property>
+         <property name="catNo" type="string">
+            <column name="cat_no" />
+        </property>
+        <property name="theme" type="string">
+            <column name="theme" />
+        </property>
+         <property name="board" type="string">
+            <column name="board" />
+        </property>
+        <property name="category" type="string">
+            <column name="category" />
+        </property>
+        <property name="sta" type="string">
+            <column name="sta" />
+        </property>
+        <property name="dateBegin" type="timestamp">
+            <column name="date_begin"/>
+        </property>
+        <property name="dateEnd" type="timestamp">
+            <column name="date_end"/>
+        </property>
+        <property name="peopleNumber" type="java.lang.Long">
+            <column name="people_number"/>
+        </property>
+        <property name="tables" type="java.lang.Long">
+            <column name="tables"/>
+        </property>
+        <property name="cateringPlace" type="string">
+            <column name="catering_place" />
+        </property>
+         <property name="rate" type="big_decimal">
+            <column name="rate"/>
+        </property>
+       	<property name="resRate" type="big_decimal">
+            <column name="res_rate"/>
+        </property>
+        <property name="comRate" type="big_decimal">
+            <column name="com_rate"/>
+        </property>
+        <property name="remark" type="string">
+            <column name="remark"/>
+        </property>
+         <property name="salesman" type="string">
+            <column name="salesman"/>
+        </property>
+         <property name="linkman" type="string">
+            <column name="linkman"/>
+        </property>
+         <property name="phone" type="string">
+            <column name="phone"/>
+        </property>
+         <property name="companyId" type="java.lang.Long">
+            <column name="company_id"/>
+        </property>
+         <property name="extraFlag" type="string">
+            <column name="extra_flag"/>
+        </property>
+        <property name="createUser" type="string">
+            <column name="create_user" length="20" />
+        </property>
+        <property name="createDatetime" type="timestamp">
+            <column name="create_datetime" length="0" />
+        </property>
+        <property name="modifyUser" type="string">
+            <column name="modify_user" length="20" />
+        </property>
+        <property name="modifyDatetime" type="timestamp">
+            <column name="modify_datetime" length="0" />
+        </property>
+    </class>
+</hibernate-mapping>

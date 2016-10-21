@@ -1,0 +1,221 @@
+package com.greencloud.dao.impl;
+import static com.aua.util.StringHelper.isNotNull;
+
+import java.util.List;
+
+import org.springframework.dao.DataAccessException;
+
+import com.aua.dao.impl.BaseDaoImpl;
+import com.aua.util.SQLHelper;
+import com.greencloud.dao.IPosPluPrinterDao;
+import com.greencloud.entity.PosPluPrinter;
+
+   /**
+   * operate PosPluPrinter into db
+   *@author 
+   *@version 1.0
+   *@date 2015-11-21 10:55
+   */
+  public class PosPluPrinterDaoImpl extends BaseDaoImpl implements IPosPluPrinterDao{
+
+  /**
+   *save posPluPrinter object  method
+   *@param posPluPrinter PosPluPrinter 
+   *@throws DataAccessException 
+   *@author  
+   *@version 1.0
+   *@date 2015-11-21 10:55
+   */
+  public void save(PosPluPrinter posPluPrinter) throws DataAccessException {
+       super.save(posPluPrinter);
+  }
+  
+  /**
+   *update posPluPrinter method
+   *@param posPluPrinter PosPluPrinter
+   *@throws DataAccessException 
+   *@author 
+   *@version 1.0
+   *@date 2015-11-21 10:55
+   */
+  public void update(PosPluPrinter posPluPrinter) throws DataAccessException{
+     super.update(posPluPrinter);
+  }
+  
+   /**
+   *save or update posPluPrinter object method
+   *@param posPluPrinter PosPluPrinter
+   *@throws DataAccessException
+   *@author  
+   *@version 1.0
+   *@date 2015-11-21 10:55
+   */
+  public void saveOrUpdate(PosPluPrinter posPluPrinter) throws DataAccessException{
+     super.saveOrUpdate(posPluPrinter);
+  }
+  
+   /**
+   *query posPluPrinter collection method
+   *@param posPluPrinter PosPluPrinter send query vo 
+   *@param firstResult 
+   *@param maxResults 
+   *@throws DataAccessException 
+   *@author 
+   *@version 1.0
+   *@date 2015-11-21  10:55
+   */
+  public List<PosPluPrinter> list(PosPluPrinter posPluPrinter,int firstResult ,int maxResults)throws DataAccessException{
+  	 SQLHelper sh = new SQLHelper("SELECT obj FROM PosPluPrinter obj WHERE 1=1 ");
+  	 spellSQL(sh,posPluPrinter);
+  	 sh.appendSql(" ORDER BY obj.id DESC");
+  	 sh.setFirstResult(firstResult);
+  	 sh.setMaxResults(maxResults);
+  	 return find(sh);
+  }
+  
+   /**
+   *query collection method  
+   *@param posPluPrinter PosPluPrinter send query vo 
+   *@throws DataAccessException
+   *@author 
+   *@version 1.0
+   *@date 2015-11-21 10:55
+   */
+  public List<PosPluPrinter> list(PosPluPrinter posPluPrinter)throws DataAccessException{
+  	 SQLHelper sh = new SQLHelper("SELECT obj FROM PosPluPrinter obj WHERE 1=1 ");
+  	 spellSQL(sh,posPluPrinter);
+  	 sh.appendSql(" ORDER BY obj.id DESC");
+  	 return find(sh);
+  }
+  
+  /**
+   *count obj amount
+   *@param posPluPrinter PosPluPrinter query vo
+   *@throws DataAccessException
+   *@author 
+   *@date 2015-11-21 10:55
+   */
+  public int count(PosPluPrinter posPluPrinter)throws DataAccessException
+  {
+    SQLHelper sh = new SQLHelper("SELECT count(obj) FROM PosPluPrinter obj WHERE 1=1 ");
+    spellSQL(sh,posPluPrinter);
+    return count(sh);
+  }
+  
+   /**
+   *query a posPluPrinter by id 
+   *@param id 
+   *@throws DataAccessException 
+   *@author 
+   *@date 2015-11-21 10:55
+   */
+  public PosPluPrinter load(Long id)throws DataAccessException
+  {
+    return load(PosPluPrinter.class ,id);
+  }
+  
+  /*
+   *basic spell SQL method 
+   *@param posPluPrinter query vo
+   *@throws DataAccessException 
+   *@author weihuawon
+   *@date 2015-11-21 10:55
+   */
+  private void spellSQL(SQLHelper sh,PosPluPrinter posPluPrinter)
+  {
+    if(posPluPrinter != null){
+    	if(posPluPrinter.getId()!= null){
+            sh.appendSql(" AND obj.id = ? ");
+            sh.insertValue(posPluPrinter.getId());
+         }
+         if(posPluPrinter.getHotelGroupId()!= null){
+            sh.appendSql(" AND obj.hotelGroupId = ? ");
+            sh.insertValue(posPluPrinter.getHotelGroupId());
+         }
+         if(posPluPrinter.getHotelId()!= null){
+            sh.appendSql(" AND obj.hotelId = ? ");
+            sh.insertValue(posPluPrinter.getHotelId());
+         }
+        if(isNotNull(posPluPrinter.getCode())){
+           sh.appendSql(" AND obj.code = ? ");
+           sh.insertValue(posPluPrinter.getCode().trim());
+        }
+        if(isNotNull(posPluPrinter.getSortCode())){
+           sh.appendSql(" AND obj.sortCode = ? ");
+           sh.insertValue(posPluPrinter.getSortCode().trim());
+        }
+        if(isNotNull(posPluPrinter.getDescript())){
+           sh.appendSql(" AND obj.descript = ? ");
+           sh.insertValue(posPluPrinter.getDescript().trim());
+        }
+        if(isNotNull(posPluPrinter.getDescriptEn())){
+           sh.appendSql(" AND obj.descriptEn = ? ");
+           sh.insertValue(posPluPrinter.getDescriptEn().trim());
+        }
+        if(isNotNull(posPluPrinter.getFlag())){
+           sh.appendSql(" AND obj.flag = ? ");
+           sh.insertValue(posPluPrinter.getFlag().trim());
+        }
+        if(isNotNull(posPluPrinter.getCreateUser())){
+            sh.appendSql(" AND obj.createUser = ? ");
+            sh.insertValue(posPluPrinter.getCreateUser().trim());
+         }
+        if(posPluPrinter.getCreateDatetime()!= null){
+            sh.appendSql(" AND obj.createDatetime = ? ");
+            sh.insertValue(posPluPrinter.getCreateDatetime());
+         }
+         if(isNotNull(posPluPrinter.getModifyUser())){
+            sh.appendSql(" AND obj.modifyUser = ? ");
+            sh.insertValue(posPluPrinter.getModifyUser().trim());
+         }
+        if(posPluPrinter.getModifyDatetime()!= null){
+            sh.appendSql(" AND obj.modifyDatetime = ? ");
+            sh.insertValue(posPluPrinter.getModifyDatetime());
+         }
+    }
+  }
+
+@Override
+public void syncPosPluPrinter(Long hotelGroupId, Long hotelId,String user,String selSort,String strFlag, String num)
+		throws DataAccessException {
+	String sql = "";
+    PosPluPrinter posPluPrinter = new PosPluPrinter();
+    posPluPrinter.setHotelGroupId(hotelGroupId);
+    posPluPrinter.setHotelId(hotelId);
+    if(num.equals("S"))
+    {
+    	posPluPrinter.setSortCode(selSort);
+    	posPluPrinter.setCode("all");
+    	List<PosPluPrinter> plist = this.list(posPluPrinter);
+	    if(plist!=null && plist.size()>0){
+	    	sql ="update pos_plu_printer a,pos_sort_all b set a.descript = b.descript,a.descript_en = b.descript_en,a.flag = CONCAT(SUBSTRING(flag,1,10),'"+strFlag+"',SUBSTRING(flag,18,LENGTH(flag))),a.modify_user = '"+user+"',a.modify_datetime = now() where a.hotel_group_id = '"+hotelGroupId+"' and a.hotel_id = '"+hotelId+"' and b.hotel_group_id = '"+hotelGroupId+"' and b.hotel_id = '"+hotelId+"' and a.sort_code = b.code and a.sort_code = '"+selSort+"' and a.code = 'all';";
+	    }else{
+	    	sql ="insert pos_plu_printer(hotel_group_id,hotel_id,sort_code,code,descript,descript_en,flag,create_user,create_datetime,modify_user,modify_datetime)"
+				+"select '"+hotelGroupId+"','"+hotelId+"',code,'all',descript,descript_en,CONCAT('0000000000','"+strFlag+"','000'),'"+user+"',now(),'"+user+"',now() from pos_sort_all where hotel_group_id = 2 and hotel_id = 9 and code = '"+selSort+"'; ";
+	    }
+    }else if(num.equals("P"))
+    {
+    	posPluPrinter.setCode(selSort);
+    	List<PosPluPrinter> plist = this.list(posPluPrinter);
+	    if(plist!=null && plist.size()>0){
+	    	sql ="update pos_plu_printer a,pos_plu_all b set a.descript = b.descript,a.descript_en = b.descript_en,a.flag = CONCAT(a.SUBSTRING(flag,1,10),'"+strFlag+"',SUBSTRING(a.flag,18,LENGTH(flag))),a.modify_user = '"+user+"',a.modify_datetime = now() where a.hotel_group_id = '"+hotelGroupId+"' and a.hotel_id = '"+hotelId+"' and b.hotel_group_id = '"+hotelGroupId+"' and b.hotel_id = '"+hotelId+"' and a.code = b.code and a.code = '"+selSort+"';";
+	    }else{
+	    	sql ="insert pos_plu_printer(hotel_group_id,hotel_id,sort_code,code,descript,descript_en,flag,create_user,create_datetime,modify_user,modify_datetime)"
+				+"		select '"+hotelGroupId+"','"+hotelId+"',sort_code,code,descript,descript_en,CONCAT(SUBSTRING(flag,1,10),'"+strFlag+"',SUBSTRING(flag,18,LENGTH(flag))),'"+user+"',now(),'"+user+"',now() from pos_plu_all where hotel_group_id = 2 and hotel_id = 9 and code = '"+selSort+"'; ";
+	    }
+    }
+    
+//	String sql  = " INSERT INTO  pos_plu_printer (hotel_group_id,hotel_id,sort_code,`code`,descript,descript_en,flag,create_user,create_datetime,modify_user,modify_datetime)   "
+//			+ "   SELECT hotel_group_id,hotel_id,sort_code,`code`,descript,descript_en,flag,create_user,create_datetime,modify_user,modify_datetime FROM pos_plu_all  WHERE  "
+//			+ " hotel_group_id = '"+hotelGroupId+"' and hotel_id= '"+hotelId+"' AND `code` NOT IN (SELECT code FROM pos_plu_printer) ";
+//	SQLHelper sh = new SQLHelper(sql);
+//	bulkUpdateByNativeSQL(sh);
+//	sql = " UPDATE pos_plu_printer a ,pos_plu_all b  SET a.descript=b.descript ,a.descript_en=b.descript_en ,a.sort_code = b.sort_code  WHERE a.hotel_group_id = b.hotel_group_id AND a.hotel_id = b.hotel_id AND a.sort_code = b.sort_code AND a.code = b.code ";
+
+	SQLHelper sh = new SQLHelper(sql);
+	sh.clear();
+	sh.appendSql(sql);
+	bulkUpdateByNativeSQL(sh);
+}
+
+}

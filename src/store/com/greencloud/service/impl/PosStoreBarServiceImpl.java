@@ -1,0 +1,178 @@
+package com.greencloud.service.impl;
+import com.aua.util.Container;
+import com.aua.dao.IBaseDao;
+import com.aua.service.impl.BaseServiceImpl;
+
+import java.util.List;
+
+import com.greencloud.entity.PosStoreBar;
+import com.greencloud.dao.IPosStoreBarDao;
+import com.greencloud.service.IPosStoreBarService;
+import com.greencloud.util.UserManager;
+
+import org.springframework.dao.DataAccessException;
+public class PosStoreBarServiceImpl extends BaseServiceImpl implements IPosStoreBarService
+{
+   //dao 
+   private IPosStoreBarDao posStoreBarDao;
+   
+  /**
+   *save posStoreBar object  method
+   *@param posStoreBar PosStoreBar 
+   *@throws DataAccessException 
+   *@author  
+   *@version 1.0
+   *@date 2015-12-16 10:15
+   */
+  public void savePosStoreBar(PosStoreBar posStoreBar) throws DataAccessException{
+     	if(log.isDebugEnabled()){
+			log.debug("start savePosStoreBar method");
+		}
+         posStoreBarDao.save(posStoreBar);
+     	if(log.isDebugEnabled()){
+			log.debug("end savePosStoreBar method");
+		}
+  }//end save method
+  
+   /**
+   *update posStoreBar method
+   *@param posStoreBar PosStoreBar
+   *@throws DataAccessException 
+   *@author 
+   *@version 1.0
+   *@date 2015-12-16 10:15
+   */
+  public void updatePosStoreBar(PosStoreBar posStoreBar) throws DataAccessException{ 
+  	    if(log.isDebugEnabled()){
+			log.debug("start updatePosStoreBar method");
+		}
+        posStoreBarDao.update(posStoreBar);
+        if(log.isDebugEnabled()){
+			log.debug("end updatePosStoreBar method");
+		}
+  }//end update method
+  
+   /**
+   *save or update posStoreBar object method
+   *@param posStoreBar PosStoreBar
+   *@throws DataAccessException
+   *@author  
+   *@version 1.0
+   *@date 2015-12-16 10:15
+   */
+  public void saveOrUpdatePosStoreBar(PosStoreBar posStoreBar) throws DataAccessException{//start saveOrUpdate method
+      
+        if(log.isDebugEnabled()){
+			log.debug("start saveOrUpdatePosStoreBar method");
+		}
+		
+        posStoreBarDao.saveOrUpdate(posStoreBar);
+        
+        if(log.isDebugEnabled()){
+			log.debug("end saveOrUpdatePosStoreBar method");
+		}
+		
+  }//end saveOrUpdate method
+
+  /**
+   *query a container obj
+   *@param posStoreBar PosStoreBar query vo
+   *@param firstResult
+   *@param maxResults 
+   *@throws DataAccessException 
+   *@author weihuawon
+   *@date 2015-12-16 10:15
+   */
+  public Container<PosStoreBar> findPosStoreBar(PosStoreBar posStoreBar,int firstResult ,int maxResults)throws DataAccessException{
+        if(log.isDebugEnabled()){
+			log.debug("start findPosStoreBar method");
+		}
+        Container<PosStoreBar> container = new Container<PosStoreBar>();
+        List<PosStoreBar> list = posStoreBarDao.list(posStoreBar, firstResult , maxResults);
+        container.setResults(list);
+        container.setTotalRows(posStoreBarDao.count(posStoreBar));
+        if(log.isDebugEnabled()){
+			log.debug("end findPosStoreBar method");
+		}
+       return container;
+  }//end find method
+
+  /**
+   *count obj amount
+   *@param posStoreBar PosStoreBar query vo
+   *@throws DataAccessException
+   *@author 
+   *@date 2015-12-16 10:15
+   */
+  public int countPosStoreBar(PosStoreBar posStoreBar)throws DataAccessException{
+    return posStoreBarDao.count(posStoreBar);
+  }//end count method
+  
+   /**
+   *query a posStoreBar by id 
+   *@param id 
+   *@throws DataAccessException 
+   *@author 
+   *@date 2015-12-16 10:15
+   */
+  public PosStoreBar findPosStoreBarById(Long id)throws DataAccessException{
+    PosStoreBar  posStoreBar = posStoreBarDao.load(id);
+    return posStoreBar;
+  }//end findPosStoreBarById method
+  
+    /**
+   *query posStoreBar collection method
+   *@param posStoreBar PosStoreBar send query vo 
+   *@throws DataAccessException 
+   *@author 
+   *@version 1.0
+   *@date 2015-12-16  10:15
+   */
+  public List<PosStoreBar> listPosStoreBar(PosStoreBar  posStoreBar)
+		throws DataAccessException {
+	  List<PosStoreBar> list = posStoreBarDao.list(posStoreBar);
+      return list;
+  }//end list method
+  
+   /**
+   *query posStoreBar collection method
+   *@param posStoreBar PosStoreBar send query vo 
+   *@param firstResult 
+   *@param maxResults 
+   *@throws DataAccessException 
+   *@author 
+   *@version 1.0
+   *@date 2015-12-16  10:15
+   */
+  public List<PosStoreBar> listPosStoreBar(PosStoreBar posStoreBar,int firstResult ,int maxResults)throws DataAccessException{
+	   List<PosStoreBar> list = posStoreBarDao.list(posStoreBar, firstResult ,maxResults);
+	   return list;
+  }
+  
+  /**
+   * Spring 
+   * @param  posStoreBarDao 
+   * @author weihuawon
+   * @date 2015年M12月d16�?10:15
+   */
+  public void setPosStoreBarDao(IPosStoreBarDao posStoreBarDao){ 
+     this.posStoreBarDao = posStoreBarDao;
+  }//end setPosStoreBarDao method
+  
+  @Override
+  protected IBaseDao getDao(){
+    return this.posStoreBarDao;
+  }//end getDao method
+
+@Override
+public List<Object> updateAndGetPosStoreInventory(Long hotelGroupId, Long hotelId) {
+	String sql = "CALL pos_store_inventory_proc(" + hotelGroupId + "," + hotelId + ");";
+	posStoreBarDao.updateDataBySql(sql);
+//	posStoreBarDao.updateDataBySql(hotelGroupId,hotelGroupId);
+	sql = "SELECT * FROM pos_store_inventory WHERE 1=1 ";
+	sql += " AND hotel_group_id = "	+ hotelGroupId;
+	sql += " AND hotel_id = " + hotelId;
+	return posStoreBarDao.getDataBySql(sql);
+	
+}
+}//end class PosStoreBarServiceImpl

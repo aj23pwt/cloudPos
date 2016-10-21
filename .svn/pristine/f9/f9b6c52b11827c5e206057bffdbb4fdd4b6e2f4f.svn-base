@@ -1,0 +1,914 @@
+package com.greencloud.controller;
+
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
+import java.util.UUID;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.ModelAndView;
+
+import com.alibaba.fastjson.JSON;
+import com.greencloud.dto.PosCodeDto;
+import com.greencloud.dto.PosPluNoteDto;
+import com.greencloud.dto.PosResDto;
+import com.greencloud.dto.PosResOrderDto;
+import com.greencloud.dto.PosTableMapDto;
+import com.greencloud.entity.CodeBase;
+import com.greencloud.entity.PosConddtl;
+import com.greencloud.entity.PosPay;
+import com.greencloud.entity.PosPccode;
+import com.greencloud.entity.PosPluAll;
+import com.greencloud.entity.PosRes;
+import com.greencloud.entity.PosResOrder;
+import com.greencloud.entity.PosWebInterfaceLog;
+import com.greencloud.entity.SysOption;
+import com.greencloud.service.IPosPayService;
+import com.greencloud.service.IPosPluAllService;
+import com.greencloud.service.IPosResOrderService;
+import com.greencloud.service.IPosResService;
+import com.greencloud.service.IPosSubService;
+import com.greencloud.service.IPosWebInterfaceLogService;
+import com.greencloud.service.ISysOptionService;
+import com.greencloud.util.DateUtil;
+import com.greencloud.util.ModelUtil;
+import com.greencloud.util.StringUtil;
+import com.greencloud.utils.PropertiesUtil4Sync;
+import com.sun.xml.bind.v2.runtime.unmarshaller.XsiNilLoader.Array;
+
+@Controller
+@RequestMapping(value = "/posWx")
+public class PosWXController {
+
+	private IPosPluAllService posPluAllService;
+	private IPosSubService posSubService;
+	private IPosResService  posResService;
+	private IPosResOrderService posResOrderService ;
+	private IPosPayService posPayService;
+	private IPosWebInterfaceLogService posWebInterfaceLogService;
+	
+	public void setPosWebInterfaceLogService(
+			IPosWebInterfaceLogService posWebInterfaceLogService) {
+		this.posWebInterfaceLogService = posWebInterfaceLogService;
+	}
+
+	public void setPosPayService(IPosPayService posPayService) {
+		this.posPayService = posPayService;
+	}
+
+	public void setPosResOrderService(IPosResOrderService posResOrderService) {
+		this.posResOrderService = posResOrderService;
+	}
+
+	public void setPosResService(IPosResService posResService) {
+		this.posResService = posResService;
+	}
+
+	public void setPosSubService(IPosSubService posSubService) {
+		this.posSubService = posSubService;
+	}
+
+	public void setPosPluAllService(IPosPluAllService posPluAllService) {
+		this.posPluAllService = posPluAllService;
+	}
+	private ISysOptionService sysOptionService;
+
+	public void setSysOptionService(ISysOptionService sysOptionService) {
+		this.sysOptionService = sysOptionService;
+	}
+//菜本获取
+	@ResponseBody
+	@RequestMapping(value = "/getPosWxPluNote")
+//	public ModelAndView getPosWxPluNote (@RequestParam(value = "hotelGroupId", required = true) String hotelGroupId,
+//								    @RequestParam(value = "hotelId", required = true) String hotelId,
+//									@RequestParam(value = "pccode", required = true) String pccode,
+//	                                HttpServletResponse response) throws Exception {
+	public void getPosWxPluNote(HttpServletRequest request,HttpServletResponse response){
+		ResponseWxJson j = new ResponseWxJson();
+		try {
+			String hotelGroupId = request.getParameter("hotelGroupId");
+			String hotelId = request.getParameter("hotelId");
+			String pccode = request.getParameter("pccode");
+			List<PosPluNoteDto> list = new ArrayList<PosPluNoteDto>();
+			if(request.getParameter("sortCode")!=null && request.getParameter("sortCode")!=""){
+			   list = posPluAllService.getPosWxPluNote(java.lang.Long.parseLong(hotelGroupId),java.lang.Long.parseLong( hotelId), pccode, request.getParameter("sortCode"));
+			}else{
+	           list = posPluAllService.getPosWxPluNote(java.lang.Long.parseLong(hotelGroupId),java.lang.Long.parseLong( hotelId), pccode);
+			}
+	        if(list != null && list.size()>0){
+	        	j.setStatus("0");
+	  			j.setData(list);
+	  		}
+	  		else{
+	  			j.setStatus("0");
+	  		    j.setData("未找到对应的数据!");
+	  		}
+		}catch (Exception e) {
+			j.setStatus("-1");
+  		    j.setData("请求异常!");
+		} 
+		
+  		BaseHttpResponseController.OutputJson(j, response);
+	}
+//营业点获取
+	@ResponseBody
+	@RequestMapping(value = "/getPosWxPccode")
+	public void getPosWxPccode(HttpServletRequest request,HttpServletResponse response){
+		ResponseWxJson j = new ResponseWxJson();
+		try {
+			String hotelGroupId = request.getParameter("hotelGroupId");
+			String hotelId = request.getParameter("hotelId");
+	        PosPccode posPccode = new PosPccode();
+	        posPccode.setHotelGroupId(java.lang.Long.parseLong(hotelGroupId));
+	        posPccode.setHotelId(java.lang.Long.parseLong(hotelId));
+	        List<Object> data = posSubService.getCodeList("PosPccode", posPccode);
+	        List<PosCodeDto> list = new ArrayList<PosCodeDto>();
+	        if(data!=null && data.size()>0){
+	        	for (Iterator<Object> i = data.iterator(); i.hasNext();) {
+	        		Object obj = i.next();
+	        		PosCodeDto posCodeDto = new PosCodeDto();
+	        		posCodeDto.setCode((String) ModelUtil.getPropertyValue(obj, "code"));
+	        		posCodeDto.setDescript((String) ModelUtil.getPropertyValue(obj, "descript"));
+	        		String remark = (String) ModelUtil.getPropertyValue(obj, "remark") ;
+	        		if(StringUtil.isNotEmpty(remark)){
+	        			String[] info  = remark.split("/");
+	        			posCodeDto.setPhone(info[0]);
+		        		posCodeDto.setAddress(info[1]);
+		        		posCodeDto.setSpecialities(info[2]);
+	        		}else{
+	        			posCodeDto.setPhone("");
+		        		posCodeDto.setAddress("");
+		        		posCodeDto.setSpecialities("");
+	        		}
+	        		String exp4 = (String) ModelUtil.getPropertyValue(obj, "exp4");
+	        		if(StringUtil.isNotEmpty(exp4)){
+	        			posCodeDto.setReminder(exp4);
+	        		}else{
+	        			posCodeDto.setReminder("");
+	        		}
+	        		list.add(posCodeDto);
+				}
+	        }
+	        if(list != null && list.size()>0){
+	        	j.setStatus("0");
+	  			j.setData(list);
+	  		}
+	  		else{
+	  			j.setStatus("0");
+	  		    j.setData("未找到对应的数据!");
+	  		}
+		}catch (Exception e) {
+			j.setStatus("-1");
+  		    j.setData("请求异常!");
+		} 
+		
+  		BaseHttpResponseController.OutputJson(j, response);
+	}
+//做法代码获取
+	@ResponseBody
+	@RequestMapping(value = "/getPosWxPluConddtl")
+	public void getPosWxPluConddtl(HttpServletRequest request,HttpServletResponse response){
+		ResponseWxJson j = new ResponseWxJson();
+		try {
+			String hotelGroupId = request.getParameter("hotelGroupId");
+			String hotelId = request.getParameter("hotelId");
+	        PosConddtl posConddtl = new PosConddtl();
+	        posConddtl.setHotelGroupId(java.lang.Long.parseLong(hotelGroupId));
+	        posConddtl.setHotelId(java.lang.Long.parseLong(hotelId));
+	        List<Object> data = posSubService.getCodeList("PosConddtl", posConddtl);
+	        List<PosCodeDto> list = new ArrayList<PosCodeDto>();
+	        if(data!=null && data.size()>0){
+	        	for (Iterator<Object> i = data.iterator(); i.hasNext();) {
+	        		Object obj = i.next();
+	        		PosCodeDto posCodeDto = new PosCodeDto();
+	        		posCodeDto.setCode((String) ModelUtil.getPropertyValue(obj, "code"));
+	        		posCodeDto.setDescript((String) ModelUtil.getPropertyValue(obj, "descript"));
+	        		list.add(posCodeDto);
+				}
+	        }
+	        if(list != null && list.size()>0){
+	        	j.setStatus("0");
+	  			j.setData(list);
+	  		}
+	  		else{
+	  			j.setStatus("0");
+	  		    j.setData("未找到对应的数据!");
+	  		}
+		}catch (Exception e) {
+			j.setStatus("-1");
+  		    j.setData("请求异常!");
+		} 
+  		BaseHttpResponseController.OutputJson(j, response);
+	}
+	//获取桌号资源
+	@ResponseBody
+	@RequestMapping(value = "/getPosWxPccodeTable")
+	public void getPosWxPccodeTable(HttpServletRequest request,HttpServletResponse response){
+		ResponseWxJson j = new ResponseWxJson();
+		try {
+			String hotelGroupId = request.getParameter("hotelGroupId");
+			String hotelId = request.getParameter("hotelId");
+			String pccode = request.getParameter("pccode");
+			String shift = request.getParameter("shift");
+			String bizDate = request.getParameter("bizDate");
+			List<PosTableMapDto> data = posResService.getTableMapDto(hotelGroupId, hotelId, bizDate, shift, pccode, "all", "all", "2");
+	        List<PosCodeDto> list = new ArrayList<PosCodeDto>();
+	        for(Iterator<PosTableMapDto> i = data.iterator(); i.hasNext();) {
+	        	PosTableMapDto obj = i.next();
+                   if("0".equalsIgnoreCase(obj.getSta())){
+                	   PosCodeDto posCodeDto = new PosCodeDto();
+   	        		   posCodeDto.setCode(obj.getTableno());
+   	        		   posCodeDto.setDescript(obj.getType_descript());
+   	        		   list.add(posCodeDto);
+   				    }
+			}
+	        if(list != null && list.size()>0){
+	        	j.setStatus("0");
+	  			j.setData(list);
+	  		}
+	  		else{
+	  			j.setStatus("0");
+	  		    j.setData("未找到对应的数据!");
+	  		}
+		}catch (Exception e) {
+			j.setStatus("-1");
+  		    j.setData("请求异常!");
+		} 
+  		BaseHttpResponseController.OutputJson(j, response);
+	}
+	//获取桌号类型代码
+		@ResponseBody
+		@RequestMapping(value = "/getPosTableType")
+		public void getPosTableType(HttpServletRequest request,HttpServletResponse response){
+			ResponseWxJson j = new ResponseWxJson();
+			try {
+				String hotelGroupId = request.getParameter("hotelGroupId");
+				String hotelId = request.getParameter("hotelId");
+		        List<CodeBase> data =  posSubService.getCodeBaseByParentCode(java.lang.Long.parseLong(hotelGroupId),java.lang.Long.parseLong(hotelId),"pos_table_type");
+		        List<PosCodeDto> list = new ArrayList<PosCodeDto>();
+		        if(data!=null && data.size()>0){
+		        	for (Iterator<CodeBase> i = data.iterator(); i.hasNext();) {
+		        		CodeBase obj = i.next();
+		        		PosCodeDto posCodeDto = new PosCodeDto();
+		        		posCodeDto.setCode(obj.getCode());
+		        		posCodeDto.setDescript(obj.getDescript());
+		        		list.add(posCodeDto);
+					}
+		        }
+		        if(list != null && list.size()>0){
+		        	j.setStatus("0");
+		  			j.setData(list);
+		  		}
+		  		else{
+		  			j.setStatus("0");
+		  		    j.setData("未找到对应的数据!");
+		  		}
+			}catch (Exception e) {
+				j.setStatus("-1");
+	  		    j.setData("请求异常!");
+			} 
+	  		BaseHttpResponseController.OutputJson(j, response);
+		}
+	//check 桌号类型资源 是否可用
+		@ResponseBody
+		@RequestMapping(value = "/updatePosWxPccodeCkeckTable")
+		public void updatePosWxPccodeCkeckTable(HttpServletRequest request,HttpServletResponse response){
+			ResponseWxJson j = new ResponseWxJson();
+			try {
+				String hotelGroupId = request.getParameter("hotelGroupId");
+				String hotelId = request.getParameter("hotelId");
+				String pccode = request.getParameter("pccode");
+				String shift = request.getParameter("shift");
+				String bizDate = request.getParameter("bizDate");
+				String tableType = request.getParameter("tableType");
+				List<PosTableMapDto> list = posResService.getTableMapDto(hotelGroupId, hotelId, bizDate, shift, pccode, "all",tableType, "2");
+		        if(list != null && list.size()>0){
+		        	j.setStatus("0");
+		  			j.setData(list.size());
+		  		}
+		  		else{
+		  			j.setStatus("0");
+		  		    j.setData("未找到对应的数据!");
+		  		}
+			}catch (Exception e) {
+				j.setStatus("-1");
+	  		    j.setData("请求异常!");
+			} 
+	  		BaseHttpResponseController.OutputJson(j, response);
+		}
+	//订单建立
+		@ResponseBody
+		@RequestMapping(value = "/addPosWxResMaster")
+		public void addPosWxResMaster(HttpServletRequest request,HttpServletResponse response){
+			ResponseWxJson j = new ResponseWxJson();
+			PosWebInterfaceLog log = new PosWebInterfaceLog();
+			try {
+				// 读取请求内容
+				BufferedReader br = new BufferedReader(new InputStreamReader(
+						request.getInputStream(),"UTF-8"));
+				String line = null;
+				StringBuilder sb = new StringBuilder();
+				while ((line = br.readLine()) != null) {
+					sb.append(line);
+				}
+				String requestData = sb.toString();
+				log.setRequestXml(requestData);
+				PosResDto posResDto = JSON.parseObject(requestData, PosResDto.class);
+				if(posResDto != null){
+					log.setStatus(PosWebInterfaceLog.Status.SUCCESS);
+					log.setHotelGroupId(java.lang.Long.parseLong(posResDto.getHotelGroupId()));
+					log.setHotelId(java.lang.Long.parseLong(posResDto.getHotelId()));
+					j.setStatus("0");
+					j.setData(posResService.saveWxRes(posResDto));
+				}
+			}catch (Exception e) {
+				log.setStatus(PosWebInterfaceLog.Status.FAIL);
+				j.setStatus("-1");
+	  		    j.setData("请求异常!");
+			} 
+			log.setLogType(PosWebInterfaceLog.LogType.UP);
+			log.setModel(PosWebInterfaceLog.Model.SAVE);
+			log.setMessageType(PosWebInterfaceLog.MessageType.POS_RESERVATION);
+			log.setResultXml(JSON.toJSONString(j));
+			posWebInterfaceLogService.savePosWebInterfaceLog(log);
+	  		BaseHttpResponseController.OutputJson(j, response);
+		}
+//订单修改
+		@ResponseBody
+		@RequestMapping(value = "/editPosWxResMaster")
+		public void editPosWxResMaster(HttpServletRequest request,HttpServletResponse response){
+			ResponseWxJson j = new ResponseWxJson();
+			PosWebInterfaceLog log = new PosWebInterfaceLog();
+			try {
+				// 读取请求内容
+				BufferedReader br = new BufferedReader(new InputStreamReader(
+						request.getInputStream(),"UTF-8"));
+				String line = null;
+				StringBuilder sb = new StringBuilder();
+				while ((line = br.readLine()) != null) {
+					sb.append(line);
+				}
+				String requestData = sb.toString();
+				log.setRequestXml(requestData);
+				PosResDto posResDto = JSON.parseObject(requestData, PosResDto.class);
+				if(posResDto != null){
+					log.setStatus(PosWebInterfaceLog.Status.SUCCESS);
+					log.setHotelGroupId(java.lang.Long.parseLong(posResDto.getHotelGroupId()));
+					log.setHotelId(java.lang.Long.parseLong(posResDto.getHotelId()));
+					j.setStatus("0");
+					j.setData(posResService.updateWxRes(posResDto));
+				}
+			}catch (Exception e) {
+				log.setStatus(PosWebInterfaceLog.Status.FAIL);
+				j.setStatus("-1");
+	  		    j.setData("请求异常!");
+			} 
+			log.setLogType(PosWebInterfaceLog.LogType.UP);
+			log.setModel(PosWebInterfaceLog.Model.SAVE);
+			log.setMessageType(PosWebInterfaceLog.MessageType.POS_RESERVATION);
+			log.setResultXml(JSON.toJSONString(j));
+			posWebInterfaceLogService.savePosWebInterfaceLog(log);
+	  		BaseHttpResponseController.OutputJson(j, response);
+		}
+	//微信订单列表查询
+		@ResponseBody
+		@RequestMapping(value = "/getPosWxResMasterList")
+		public void getPosWxResMasterList(HttpServletRequest request,HttpServletResponse response){
+			ResponseWxJson j = new ResponseWxJson();
+			PosWebInterfaceLog log = new PosWebInterfaceLog();
+			try {
+				String hotelGroupId = request.getParameter("hotelGroupId");
+				String hotelId = request.getParameter("hotelId");
+				String openid = request.getParameter("openid");
+				String appid = request.getParameter("appid");
+				String cardno = request.getParameter("cardno");
+				PosRes  posRes = new PosRes();
+				posRes.setHotelGroupId(java.lang.Long.parseLong(hotelGroupId));
+				if(!hotelId.equalsIgnoreCase("0")){
+					posRes.setHotelId(java.lang.Long.parseLong(hotelId));
+				}
+				if(openid !=null && !openid.equals("")){
+					posRes.setType5(openid);;
+				}
+				if(appid !=null && !appid.equals("")){
+					posRes.setType4(appid);
+				}
+				if(cardno!= null && !cardno.equals("")){
+				    posRes.setCardno(cardno);
+				}
+				List<PosRes> data = posResService.listPosRes(posRes);
+				List<PosResDto> list  = new ArrayList<PosResDto>();
+		        if(data != null && data.size()>0){
+		        	for (Iterator<PosRes> i = data.iterator(); i.hasNext();) {
+		        		PosRes obj = i.next();
+		        		PosResDto posResDto = new PosResDto();
+		        		posResDto.setHotelGroupId(obj.getHotelGroupId().toString());
+		        		posResDto.setHotelId(obj.getHotelId().toString());
+		        		posResDto.setAccnt(obj.getAccnt());
+		        		posResDto.setSta(obj.getSta());
+		        		posResDto.setResName(obj.getResName());
+		        		posResDto.setPccode(obj.getPccode());
+		        		posResDto.setShift(obj.getShift());
+		        		posResDto.setBizDate(DateUtil.format(obj.getBizDate(), DateUtil.webFormat));
+		        		posResDto.setResDate(DateUtil.format(obj.getResDate(), DateUtil.webFormat));
+		        		posResDto.setTableType(obj.getTableType());
+		        		posResDto.setTableno(obj.getTableno());
+		        		posResDto.setGsts(obj.getGsts().toString());
+		        		posResDto.setPhone(obj.getPhone());
+		        		posResDto.setArrtime(obj.getArrtime());
+		        		posResDto.setInfo(obj.getInfo());
+		        		posResDto.setCardno(obj.getCardno());
+		        		posResDto.setCardinfo(obj.getCardinfo());
+		        		posResDto.setCreateDatetime(DateUtil.format(obj.getCreateDatetime(),DateUtil.newFormat));
+		        		posResDto.setModifyDatetime(DateUtil.format(obj.getModifyDatetime(),DateUtil.newFormat));
+		        		// 计算微信支付金额
+		        		PosPay posPay  = new PosPay();
+		        		posPay.setHotelGroupId(obj.getHotelGroupId());
+		        		posPay.setHotelId(obj.getHotelId());
+		        		posPay.setAccnt(obj.getAccnt());
+		        		posPay.setSta("I");
+		        		if(openid !=null && !openid.equals("")){
+		        			posPay.setInfo2(openid);;
+						}
+		        		if(appid !=null && !appid.equals("")){
+		        			posPay.setInfo1(appid);
+						}
+		        		List<PosPay> payList = new ArrayList<PosPay>();
+		        		payList = posPayService.listPosPay(posPay);
+		        		if(payList !=null && payList.size()>0){
+		        			posResDto.setPaySta("2");
+		        		    Double payAmount =  0.00 ;
+		        			for (Iterator<PosPay> k = payList.iterator(); k.hasNext();) {
+		        				PosPay pay = k.next();
+		        				payAmount = payAmount + pay.getCredit().doubleValue();
+				        	}
+		        			posResDto.setPayAmount(payAmount.toString());
+		        		}else{
+		        			posResDto.setPaySta("0");
+		        			posResDto.setPayAmount("0");
+		        		}
+ 		        		list.add(posResDto);
+					}
+		        	j.setStatus("0");
+		  			j.setData(list);
+		  		}
+		  		else{
+		  			j.setStatus("0");
+		  		    j.setData("未找到对应的数据!");
+		  		}
+		        log.setHotelGroupId(java.lang.Long.parseLong(hotelGroupId));
+		        log.setHotelId(java.lang.Long.parseLong(hotelId));
+		        log.setStatus(PosWebInterfaceLog.Status.SUCCESS);
+		        log.setResultXml(JSON.toJSONString(list));
+			}catch (Exception e) {
+				j.setStatus("-1");
+	  		    j.setData("请求异常!");
+	  		  log.setStatus(PosWebInterfaceLog.Status.FAIL);
+			} 
+			log.setLogType(PosWebInterfaceLog.LogType.DOWN);
+			log.setModel(PosWebInterfaceLog.Model.SAVE);
+			log.setMessageType(PosWebInterfaceLog.MessageType.POS_RESERVATION);
+			posWebInterfaceLogService.savePosWebInterfaceLog(log);
+	  		BaseHttpResponseController.OutputJson(j, response);
+		}	
+//微信订单明细
+		@ResponseBody
+		@RequestMapping(value = "/getPosWxResMasterDeatil")
+		public void getPosWxResMasterDeatil(HttpServletRequest request,HttpServletResponse response){
+			ResponseWxJson j = new ResponseWxJson();
+			PosWebInterfaceLog log = new PosWebInterfaceLog();
+			try {
+				String hotelGroupId = request.getParameter("hotelGroupId");
+				String hotelId = request.getParameter("hotelId");
+				String openid = request.getParameter("openid");
+				String appid = request.getParameter("appid");
+				String accnt = request.getParameter("accnt");
+				PosRes  posRes = new PosRes();
+				posRes.setHotelGroupId(java.lang.Long.parseLong(hotelGroupId));
+				posRes.setHotelId(java.lang.Long.parseLong(hotelId));
+				posRes.setAccnt(accnt);
+				if(openid !=null && !openid.equals("")){
+					posRes.setType5(openid);;
+				}
+				if(appid !=null && !appid.equals("")){
+					posRes.setType4(appid);
+				}
+				List<PosRes> data = posResService.listPosRes(posRes);
+				PosResOrder  posResOrder = new PosResOrder();
+				posResOrder.setHotelGroupId(java.lang.Long.parseLong(hotelGroupId));
+				posResOrder.setHotelId(java.lang.Long.parseLong(hotelId));
+				posResOrder.setAccnt(accnt);
+				posResOrder.setSta("I");
+				List<PosResOrder> data2 = posResOrderService.listPosResOrder(posResOrder);
+		        if(data != null && data.size()>0){
+		        	//预订主单详情
+		        		PosRes obj = data.get(0);
+		        		PosResDto posResDto = new PosResDto();
+		        		posResDto.setHotelGroupId(obj.getHotelGroupId().toString());
+		        		posResDto.setHotelId(obj.getHotelId().toString());
+		        		posResDto.setAccnt(obj.getAccnt());
+		        		posResDto.setSta(obj.getSta());
+		        		posResDto.setResName(obj.getResName());
+		        		posResDto.setPccode(obj.getPccode());
+		        		posResDto.setShift(obj.getShift());
+		        		posResDto.setBizDate(DateUtil.format(obj.getBizDate(), DateUtil.webFormat));
+		        		posResDto.setResDate(DateUtil.format(obj.getResDate(), DateUtil.webFormat));
+		        		posResDto.setTableType(obj.getTableType());
+		        		posResDto.setTableno(obj.getTableno());
+		        		posResDto.setGsts(obj.getGsts().toString());
+		        		posResDto.setPhone(obj.getPhone());
+		        		posResDto.setArrtime(obj.getArrtime());
+		        		posResDto.setInfo(obj.getInfo());
+		        		posResDto.setCardno(obj.getCardno());
+		        		posResDto.setCardinfo(obj.getCardinfo());
+		        		posResDto.setCreateDatetime(DateUtil.format(obj.getCreateDatetime(),DateUtil.newFormat));
+		        		posResDto.setModifyDatetime(DateUtil.format(obj.getModifyDatetime(),DateUtil.newFormat));
+		        	//预点菜品详情	
+		        		List<PosResOrderDto>  posResOrderDtoList =  new ArrayList<PosResOrderDto>();
+		        		if(data2 != null && data2.size()>0){
+				        	for (Iterator<PosResOrder> i = data2.iterator(); i.hasNext();) {
+				        		PosResOrder resOrder = i.next();
+				        		if(resOrder.getSta().equalsIgnoreCase("I")){
+					        		PosResOrderDto posResOrderDto = new PosResOrderDto();
+					        		posResOrderDto.setNoteCode(resOrder.getNoteCode());
+					        		posResOrderDto.setSortCode(resOrder.getSortCode());
+					        		posResOrderDto.setPluCode(resOrder.getPluCode());
+					        		posResOrderDto.setDescript(resOrder.getDescript());
+					        		posResOrderDto.setFlag(resOrder.getFlag());
+					        		posResOrderDto.setNumber(resOrder.getNumber().toString());
+					        		posResOrderDto.setUnit(resOrder.getUnit());
+					        		posResOrderDto.setPrice(resOrder.getPrice().toString());
+					        		posResOrderDto.setCook(resOrder.getCook());
+					        		posResOrderDto.setRemark(resOrder.getRemark());
+					        		posResOrderDtoList.add(posResOrderDto);
+				        		}
+							}
+				        	posResDto.setPosResOrderDto(posResOrderDtoList);
+				        }
+		        	// 计算微信支付金额
+	        		PosPay posPay  = new PosPay();
+	        		posPay.setHotelGroupId(obj.getHotelGroupId());
+	        		posPay.setHotelId(obj.getHotelId());
+	        		posPay.setAccnt(obj.getAccnt());
+	        		posPay.setSta("I");
+	        		if(openid !=null && !openid.equals("")){
+	        			posPay.setInfo2(openid);;
+					}
+	        		if(appid !=null && !appid.equals("")){
+	        			posPay.setInfo1(appid);
+					}
+	        		List<PosPay> payList = new ArrayList<PosPay>();
+	        		payList = posPayService.listPosPay(posPay);
+	        		if(payList !=null && payList.size()>0){
+	        			posResDto.setPaySta("2");
+	        		    Double payAmount =  0.00 ;
+	        			for (Iterator<PosPay> k = payList.iterator(); k.hasNext();) {
+	        				PosPay pay = k.next();
+	        				payAmount = payAmount + pay.getCredit().doubleValue();
+			        	}
+	        			posResDto.setPayAmount(payAmount.toString());
+	        		}else{
+	        			posResDto.setPaySta("0");
+	        			posResDto.setPayAmount("0");
+	        		}
+	        		//赋值信息 返回dto	
+		        	j.setStatus("0");
+		  			j.setData(posResDto);
+		  			log.setResultXml(JSON.toJSONString(posResDto));
+		  		}
+		  		else{
+		  			j.setStatus("0");
+		  		    j.setData("未找到对应的数据!");
+		  		}
+		        log.setHotelGroupId(posRes.getHotelGroupId());
+		        log.setHotelId(posRes.getHotelId());
+		        log.setStatus(PosWebInterfaceLog.Status.SUCCESS);
+			}catch (Exception e) {
+				j.setStatus("-1");
+	  		    j.setData("请求异常!");
+	  		  log.setStatus(PosWebInterfaceLog.Status.FAIL);
+			} 
+			log.setLogType(PosWebInterfaceLog.LogType.UP);
+			log.setModel(PosWebInterfaceLog.Model.SAVE);
+			log.setMessageType(PosWebInterfaceLog.MessageType.POS_RESERVATION);
+			posWebInterfaceLogService.savePosWebInterfaceLog(log);
+	  		BaseHttpResponseController.OutputJson(j, response);
+		}	
+//微信订单取消
+		@ResponseBody
+		@RequestMapping(value = "/updatePosWxResMaster")
+		public void updatePosWxResMaster(HttpServletRequest request,HttpServletResponse response){
+			ResponseWxJson j = new ResponseWxJson();
+			try {
+				String hotelGroupId = request.getParameter("hotelGroupId");
+				String hotelId = request.getParameter("hotelId");
+				String openid = request.getParameter("openid");
+				String appid = request.getParameter("appid");
+				String accnt = request.getParameter("accnt");
+				PosRes  posRes = new PosRes();
+				posRes.setHotelGroupId(java.lang.Long.parseLong(hotelGroupId));
+				posRes.setHotelId(java.lang.Long.parseLong(hotelId));
+				if(openid !=null && !openid.equals("")){
+					posRes.setType5(openid);;
+				}
+				if(appid !=null && !appid.equals("")){
+					posRes.setType4(appid);
+				}
+				posRes.setAccnt(accnt);
+				List<PosRes> data = posResService.listPosRes(posRes);
+				if(data!= null && data.size()>0){
+				PosRes resMaster = data.get(0);
+		        	if(resMaster.getSta().equalsIgnoreCase("R") || resMaster.getSta().equalsIgnoreCase("G")){
+		        		resMaster.setOsta(resMaster.getSta());
+		        		resMaster.setSta("X");
+		        		posResService.saveOrUpdatePosRes(resMaster);
+		        		j.setStatus("0");
+			  			j.setData("订单取消成功!");
+		        	}else{
+		        		j.setStatus("-1");
+			  			j.setData("订单处于非有效状态,取消失败!");
+		        	}
+		  		}
+		  		else{
+		  			j.setStatus("0");
+		  		    j.setData("未找到对应的数据!");
+		  		}
+			}catch (Exception e) {
+				j.setStatus("-1");
+	  		    j.setData("请求异常!");
+			} 
+	  		BaseHttpResponseController.OutputJson(j, response);
+		}
+//微信订单预付
+		@ResponseBody
+		@RequestMapping(value = "/addPosWxResPay")
+		public void addPosWxResPay(HttpServletRequest request,HttpServletResponse response){
+			ResponseWxJson j = new ResponseWxJson();
+			try {
+				String hotelGroupId = request.getParameter("hotelGroupId");
+				String hotelId = request.getParameter("hotelId");
+				String openid = request.getParameter("openid");
+				String appid = request.getParameter("appid");
+				String accnt = request.getParameter("accnt");
+				String payCode = request.getParameter("payCode");
+				//String payDescript = new String(request.getParameter("payDescript").trim().getBytes("ISO-8859-1"),"utf-8");
+				String payDescript = request.getParameter("payDescript");
+				String foliono = request.getParameter("foliono");
+				String credit = request.getParameter("credit");
+				PosPay  posPay = new PosPay();
+				posPay.setHotelGroupId(java.lang.Long.parseLong(hotelGroupId));
+				posPay.setHotelId(java.lang.Long.parseLong(hotelId));
+				posPay.setAccnt(accnt);
+				posPay.setInumber(1);
+				posPay.setLogdate(new Date());
+				posPay.setPccode(payCode);
+				posPay.setDescript(payDescript);
+				posPay.setCredit(new BigDecimal(credit));
+				posPay.setShift("0");
+				posPay.setSta("I");
+				posPay.setFoliono(foliono);
+				posPay.setBizDate(DateUtil.getToday());
+				if(appid !=null && !appid.equals("")){
+        			posPay.setInfo1(appid);
+				}
+				if(openid !=null && !openid.equals("")){
+        			posPay.setInfo2(openid);
+				}
+			// posSubService.saveCode(posPay);
+			   posPayService.savePosPay(posPay);
+		        		j.setStatus("0");
+			  			j.setData("预定金支付成功!");
+			}catch (Exception e) {
+				j.setStatus("-1");
+	  		    j.setData("请求异常!");
+			} 
+	  		BaseHttpResponseController.OutputJson(j, response);
+		}
+	@ResponseBody
+	@RequestMapping(value = "/filePosPic")
+	public ModelAndView filePosPic(HttpServletRequest request,
+			HttpServletResponse response) throws Exception {
+
+		String path = request.getParameter("path");
+		System.out.println(path);
+		response.reset();
+		response.setContentType("application/x-msdownload");
+		response.setHeader("Content-Disposition", "attachment; filename="
+				+ path);
+
+		OutputStream out = response.getOutputStream();
+		String separator = System.getProperty("file.separator");
+
+		File file = new File(path);
+		if (file.exists()) {
+			FileInputStream in = null;
+			try {
+				in = new FileInputStream(file);
+				byte[] buffer = new byte[1024];
+				int result = 0;
+				while ((result = in.read(buffer)) != -1) {
+					out.write(buffer, 0, result);
+				}
+			} catch (IOException e) {
+				throw e;
+			} finally {
+				in.close();
+				out.close();
+			}
+		}
+		return null;
+	}
+	@ResponseBody
+	@RequestMapping(value = "/downloadFiles")
+	public ModelAndView downloadFiles(HttpServletRequest request,
+			HttpServletResponse response) throws ServletException, IOException {
+		request.setCharacterEncoding("UTF-8");
+		PosPluAll posPlu = new PosPluAll();
+		posPlu.setHotelGroupId(Long.parseLong(PropertiesUtil4Sync
+				.getProperty("hotelGroupId")));
+		posPlu.setHotelId(Long.parseLong(PropertiesUtil4Sync
+				.getProperty("hotelId")));
+		List<PosPluAll> posPluAllList = posPluAllService.listPosPluAll(posPlu);
+		if (posPluAllList != null && posPluAllList.size() > 0) {
+			List<File> files = new ArrayList<File>();
+			long fileLength = 0;
+			for (PosPluAll posPluAll : posPluAllList) {
+				if (!(posPluAll.getPicPath1() == null)
+						&& !(posPluAll.getPicPath1() == "")) {
+					String filePath = posPluAll.getPicPath1();
+					File file = new File(filePath);
+					files.add(file);
+					fileLength += file.length();
+				}
+			}
+			String fileName = UUID.randomUUID().toString() + ".zip";
+			// 在服务器端创建打包下载的临时文件
+			SysOption picOption =  sysOptionService.findSysOptionByCatalogItem("pos", "pos_pic_path",Long.parseLong(PropertiesUtil4Sync
+					.getProperty("hotelGroupId")), Long.parseLong(PropertiesUtil4Sync.getProperty("hotelId")));
+			String outFilePath = "/home/pos/"+fileName;
+			if(picOption != null && picOption.getSetValue() != null && !picOption.getSetValue().equals("")){
+				 outFilePath = picOption.getSetValue() +"/"+ fileName;
+			}		    
+			File file = new File(outFilePath);
+			// 文件输出流
+			FileOutputStream outStream = new FileOutputStream(file);
+			// 压缩流
+			ZipOutputStream toClient = new ZipOutputStream(outStream);
+			zipFile(files, toClient);
+			toClient.close();
+			outStream.close();
+			this.downloadZip(file, response);
+		}
+		return null;
+	}
+
+	/**
+	 * 压缩文件列表中的文件
+	 * 
+	 * @param files
+	 * @param outputStream
+	 * @throws IOException
+	 */
+	public static void zipFile(List<File> files, ZipOutputStream outputStream)
+			throws IOException, ServletException {
+		try {
+			int size = files.size();
+			// 压缩列表中的文件
+			for (int i = 0; i < size; i++) {
+				File file = (File) files.get(i);
+				zipFile(file, outputStream);
+			}
+		} catch (IOException e) {
+			throw e;
+		}
+	}
+
+	/**
+	 * 将文件写入到zip文件中
+	 * 
+	 * @param inputFile
+	 * @param outputstream
+	 * @throws Exception
+	 */
+	public static void zipFile(File inputFile, ZipOutputStream outputstream)
+			throws IOException, ServletException {
+		try {
+			if (inputFile.exists()) {
+				if (inputFile.isFile()) {
+					FileInputStream inStream = new FileInputStream(inputFile);
+					BufferedInputStream bInStream = new BufferedInputStream(
+							inStream);
+					ZipEntry entry = new ZipEntry(inputFile.getName());
+					outputstream.putNextEntry(entry);
+
+					final int MAX_BYTE = 10 * 1024 * 1024; // 最大的流为10M
+					long streamTotal = 0; // 接受流的容量
+					int streamNum = 0; // 流需要分开的数量
+					int leaveByte = 0; // 文件剩下的字符数
+					byte[] inOutbyte; // byte数组接受文件的数据
+
+					streamTotal = bInStream.available(); // 通过available方法取得流的最大字符数
+					streamNum = (int) Math.floor(streamTotal / MAX_BYTE); // 取得流文件需要分开的数量
+					leaveByte = (int) streamTotal % MAX_BYTE; // 分开文件之后,剩余的数量
+
+					if (streamNum > 0) {
+						for (int j = 0; j < streamNum; ++j) {
+							inOutbyte = new byte[MAX_BYTE];
+							// 读入流,保存在byte数组
+							bInStream.read(inOutbyte, 0, MAX_BYTE);
+							outputstream.write(inOutbyte, 0, MAX_BYTE); // 写出流
+						}
+					}
+					// 写出剩下的流数据
+					inOutbyte = new byte[leaveByte];
+					bInStream.read(inOutbyte, 0, leaveByte);
+					outputstream.write(inOutbyte);
+					outputstream.closeEntry(); // Closes the current ZIP entry
+												// and positions the stream for
+												// writing the next entry
+					bInStream.close(); // 关闭
+					inStream.close();
+				}
+			} else {
+				throw new ServletException("文件不存在！");
+			}
+		} catch (IOException e) {
+			throw e;
+		}
+	}
+
+	/**
+	 * 下载打包的文件
+	 * 
+	 * @param file
+	 * @param response
+	 */
+	public void downloadZip(File file, HttpServletResponse response) {
+		try {
+			// 以流的形式下载文件。
+			BufferedInputStream fis = new BufferedInputStream(
+					new FileInputStream(file.getPath()));
+			byte[] buffer = new byte[fis.available()];
+			fis.read(buffer);
+			fis.close();
+			// 清空response
+			response.reset();
+			OutputStream toClient = new BufferedOutputStream(
+					response.getOutputStream());
+			
+			response.setContentType("application/octet-stream");
+			response.setHeader("Content-Disposition", "attachment;filename="
+					+ file.getName());
+			toClient.write(buffer);
+			toClient.flush();
+			toClient.close();
+			file.delete(); // 将生成的服务器端文件删除
+		} catch (IOException ex) {
+			ex.printStackTrace();
+		}
+	}
+
+	public static String toUtf8String(String s) {
+		StringBuffer sb = new StringBuffer();
+		for (int i = 0; i < s.length(); i++) {
+			char c = s.charAt(i);
+			if (c >= 0 && c <= 255) {
+				sb.append(c);
+			} else {
+				byte[] b;
+				try {
+					b = Character.toString(c).getBytes("utf-8");
+				} catch (Exception ex) {
+					b = new byte[0];
+				}
+				for (int j = 0; j < b.length; j++) {
+					int k = b[j];
+					if (k < 0)
+						k += 256;
+					sb.append("%" + Integer.toHexString(k).toUpperCase());
+				}
+			}
+		}
+		return sb.toString();
+	}
+
+}

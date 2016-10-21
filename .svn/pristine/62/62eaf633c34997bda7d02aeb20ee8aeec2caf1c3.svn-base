@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="
+           http://www.springframework.org/schema/beans
+           http://www.springframework.org/schema/beans/spring-beans-2.5.xsd"
+	default-autowire="byName">
+	 <!-- 
+	<bean id="contractAccountService" class="com.greencloud.service.impl.ContractAccountServiceImpl"/>
+	 -->
+	 
+<!-- 	 <bean id="systemService" class="com.greencloud.service.impl.SystemServiceImpl"/> -->
+
+	<bean id="hotelService" class="com.greencloud.service.impl.hotelService"/>
+	
+	<!-- 客户档案查询 -->
+	<bean id="guestBaseService" class="com.greencloud.service.impl.GuestBaseServiceImpl" />
+	<bean id="sysListMetaService" class="com.greencloud.service.impl.SysListMetaServiceImpl" />
+	<!-- 公司档案 -->
+	<bean id="companyBaseService" class="com.greencloud.service.impl.CompanyBaseServiceImpl" />
+	
+	<!-- 综合收银 -->
+	<bean id="posSortAllService" class="com.greencloud.service.impl.PosSortAllServiceImpl"/>
+	<bean id="posSubService" class="com.greencloud.service.impl.PosSubServiceImpl"/>
+	<bean id="posAccessService" class="com.greencloud.service.impl.PosAccessServiceImpl"/>
+	<bean id="posConddtlService" class="com.greencloud.service.impl.PosConddtlServiceImpl"/>
+	<bean id="posCondstService" class="com.greencloud.service.impl.PosCondstServiceImpl"/>
+	<bean id="posCurrentPriceService" class="com.greencloud.service.impl.PosCurrentPriceServiceImpl"/>
+	<bean id="posModeDefService" class="com.greencloud.service.impl.PosModeDefServiceImpl"/>
+	<bean id="posModeNameService" class="com.greencloud.service.impl.PosModeNameServiceImpl"/>
+	<bean id="posPluAllService" class="com.greencloud.service.impl.PosPluAllServiceImpl"/>
+	<bean id="posPluStdService" class="com.greencloud.service.impl.PosPluStdServiceImpl"/>
+	<bean id="posPriceService" class="com.greencloud.service.impl.PosPriceServiceImpl"/>
+	<bean id="posSysReasonService" class="com.greencloud.service.impl.PosSysReasonServiceImpl"/>
+	<bean id="posPccodeService" class="com.greencloud.service.impl.PosPccodeServiceImpl"/>
+    <bean id="posPccodeNoteService" class="com.greencloud.service.impl.PosPccodeNoteServiceImpl"/>
+    <bean id="posPccodeShiftService" class="com.greencloud.service.impl.PosPccodeShiftServiceImpl"/>
+    <bean id="posPccodeTableService" class="com.greencloud.service.impl.PosPccodeTableServiceImpl"/>
+    <bean id="posStationService" class="com.greencloud.service.impl.PosStationServiceImpl"/>
+    <bean id="posResService" class="com.greencloud.service.impl.PosResServiceImpl"/>
+	<bean id="posResOrderService" class="com.greencloud.service.impl.PosResOrderServiceImpl"/>
+	<bean id="posPayService" class="com.greencloud.service.impl.PosPayServiceImpl"/>
+	<bean id="posSycOperation" class="com.greencloud.service.impl.PosSycOperationImpl"/>
+	<bean id="posDetailService" class="com.greencloud.service.impl.PosDetailServiceImpl"/>
+	<bean id="posMasterService" class="com.greencloud.service.impl.PosMasterServiceImpl"/>
+	<bean id="posOrderService" class="com.greencloud.service.impl.PosOrderServiceImpl"/>
+	<bean id="posAccountService" class="com.greencloud.service.impl.PosAccountServiceImpl"/>
+	<bean id="posCloseService" class="com.greencloud.service.impl.PosCloseServiceImpl"/>
+	<bean id="posAccntSyncService" class="com.greencloud.service.impl.PosAccntSyncServiceImpl"/>
+	<bean id="posIpService" class="com.greencloud.service.impl.PosIpServiceImpl"/>
+	<bean id="posTableSyncService" class="com.greencloud.service.impl.PosTableSyncServiceImpl"/>
+	<bean id="userPosAuthService" class="com.greencloud.service.impl.UserPosAuthServiceImpl"/>
+	<bean id="userPosAuthUserAuthService" class="com.greencloud.service.impl.UserPosAuthUserAuthServiceImpl"/>
+	<bean id="posPrinterService" class="com.greencloud.service.impl.PosPrinterServiceImpl"/>
+	<bean id="posPrnscopeService" class="com.greencloud.service.impl.PosPrnscopeServiceImpl"/>
+	<bean id="posDishcardService" class="com.greencloud.service.impl.PosDishcardServiceImpl"/>
+	<bean id="posPluPrinterService" class="com.greencloud.service.impl.PosPluPrinterServiceImpl"/>
+	<!--酒水寄存 -->
+	<bean id="posDrinksConsumeService" class="com.greencloud.service.impl.PosDrinksConsumeServiceImpl"/>
+	<bean id="posDrinksDepositOrderService" class="com.greencloud.service.impl.PosDrinksDepositOrderServiceImpl"/>
+	
+<!-- 	posStore -->
+	<bean id="posStoreArticleService" class="com.greencloud.service.impl.PosStoreArticleServiceImpl"/>
+	<bean id="posStoreClassService" class="com.greencloud.service.impl.PosStoreClassServiceImpl"/>
+	<bean id="posStoreSubclassService" class="com.greencloud.service.impl.PosStoreSubclassServiceImpl"/>
+</beans>

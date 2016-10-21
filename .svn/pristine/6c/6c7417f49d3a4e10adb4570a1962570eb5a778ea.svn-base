@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="
+           http://www.springframework.org/schema/beans
+           http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+           http://www.springframework.org/schema/aop 
+           http://www.springframework.org/schema/aop/spring-aop-2.0.xsd
+           http://www.springframework.org/schema/context 
+           http://www.springframework.org/schema/context/spring-context-3.0.xsd"
+    default-autowire="byName">
+    <context:component-scan base-package="com.greencloud.aspect"/>
+    <aop:aspectj-autoproxy/>
+    
+    
+    
+<!-- 	<bean id="httpRequestHandlerAdapter" class="org.springframework.web.servlet.mvc.HttpRequestHandlerAdapter" /> -->
+	
+	<bean
+		class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="locations" value="classpath*:/config/*.properties" />
+	</bean>
+	<bean id="configProperties" class="com.greencloud.util.ConfigProperties">
+		<property name="version" value="${version}"/>
+	</bean>
+	<!-- 配制消息处理器，就是创建消息处理器时做可以做哪些工作 -->
+	<bean id="messageBrokerConfigProcessor" class="com.greencloud.flex.message.broker.AuditMessageBrokerConfigProcessor" />
+    <!-- 配制消息异常转换器 -->
+	<bean id="businessExceptionTranslator" class="com.greencloud.flex.message.exception.BusinessExceptionTranslator" />
+	<!-- 配制消息拦截器 -->
+    <bean id="auditMessageInterceptor" class="com.greencloud.flex.message.interceptor.AuditMessageInterceptor" >
+	    <property name="singleSession" value="${singleSession}"/>
+	    <property name="needLogin" value="${needLogin}"/>
+    </bean>
+    <bean id="serviceLocator" class="com.greencloud.util.ServiceLocator"/>
+    
+	<!-- 多语言 国际化 -->
+	<bean id="resourceBundle" class="com.greencloud.i18n.FResourceBundleMessageSource">
+		<property name="defaultEncoding" value="UTF-8" />
+<!-- 		<property name="cacheSeconds" value="5" /> -->
+		<property name="basename">
+			<value>classpath:/framework/locale/message</value>
+			<!-- <list> -->
+			<!-- <value>classpath:/locale/message_zh_CN.properties</value> -->
+			<!-- </list> -->
+		</property>
+	</bean>
+	
+</beans>

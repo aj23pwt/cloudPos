@@ -1,0 +1,13 @@
+#SycHttpUrl=http://115.29.165.243:8103/pos
+#SycHttpUrl=http://localhost:8080/pos
+hotelGroupId=3
+hotelId=13
+#unit:TimeUnit.HOURS
+PmsCodeSycTime=24
+#unit:TimeUnit.MINUTES
+CodeSycTime=60
+#unit:TimeUnit.SECONDS
+ResSycTime=120
+MaterSycTime=60
+#unit:TimeUnit.DAYS
+SycDays=2

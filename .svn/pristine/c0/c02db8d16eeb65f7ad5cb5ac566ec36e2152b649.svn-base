@@ -1,0 +1,360 @@
+ALTER table pos_res modify column type1 varchar(100) ;
+ALTER table pos_res modify column type2 varchar(100) ;
+ALTER table pos_res modify column type3 varchar(100) ;
+ALTER table pos_res modify column type4 varchar(100) ;
+ALTER table pos_res modify column type5 varchar(100) ;
+ALTER table pos_res modify column market varchar(10) ;
+ALTER table pos_res modify column source varchar(10) ;
+ALTER table pos_pay modify column foliono varchar(60) ;
+ALTER table pos_master modify column type1 varchar(100) ;
+ALTER table pos_master modify column type2 varchar(100) ;
+ALTER table pos_master modify column type3 varchar(100) ;
+ALTER table pos_master modify column type4 varchar(100) ;
+ALTER table pos_master modify column type5 varchar(100) ;
+ALTER table pos_master modify column market varchar(10) ;
+ALTER table pos_master modify column source varchar(10) ;
+ALTER table pos_master modify column empid varchar(100) ;
+ALTER table pos_master_history modify column type1 varchar(100) ;
+ALTER table pos_master_history modify column type2 varchar(100) ;
+ALTER table pos_master_history modify column type3 varchar(100) ;
+ALTER table pos_master_history modify column type4 varchar(100) ;
+ALTER table pos_master_history modify column type5 varchar(100) ;
+ALTER table pos_master_history modify column market varchar(10) ;
+ALTER table pos_master_history modify column source varchar(10) ;
+ALTER table pos_master_history modify column empid varchar(100) ;
+ALTER table pos_account modify column empid varchar(100) ;
+ALTER table pos_account_history modify column empid varchar(100) ;
+ALTER table pos_detail modify column empid varchar(100) ;
+ALTER table pos_detail_history modify column empid varchar(100) ;
+
+-- 修改账号 长度
+ALTER table pos_accnt_sync modify column accnt varchar(20) ;
+ALTER table pos_account modify column accnt varchar(20) ;
+ALTER table pos_account modify column billno varchar(20) ;
+ALTER table pos_account_history modify column accnt varchar(20) ;
+ALTER table pos_account_history modify column billno varchar(20) ;
+ALTER table pos_audit_master modify column accnt varchar(20) ;
+ALTER table pos_audit_report modify column accnt varchar(20) ;
+ALTER table pos_detail modify column accnt varchar(20) ;
+ALTER table pos_detail modify column billno varchar(20) ;
+ALTER table pos_detail_history modify column accnt varchar(20) ;
+ALTER table pos_detail_history modify column billno varchar(20) ;
+ALTER table pos_detail_dai modify column accnt varchar(20) ;
+ALTER table pos_detail_jie modify column accnt varchar(20) ;
+
+ALTER table pos_dishcard modify column accnt varchar(20) ;
+ALTER table pos_dishcard modify column foliono varchar(20) ;
+ALTER table pos_dishcard_history modify column accnt varchar(20) ;
+ALTER table pos_dishcard_history modify column foliono varchar(20) ;
+ALTER table pos_drinks_consume_history modify column accnt varchar(20) ;
+
+ALTER table pos_master modify column accnt varchar(20) ;
+ALTER table pos_master modify column billno varchar(20) ;
+ALTER table pos_master modify column pcrec varchar(20) ;
+ALTER table pos_master modify column resno varchar(20) ;
+ALTER table pos_master modify column toaccnt varchar(20) ;
+ALTER table pos_master_history modify column accnt varchar(20) ;
+ALTER table pos_master_history modify column billno varchar(20) ;
+ALTER table pos_master_history modify column pcrec varchar(20) ;
+ALTER table pos_master_history modify column resno varchar(20) ;
+ALTER table pos_master_history modify column toaccnt varchar(20) ;
+
+ALTER table pos_order modify column accnt varchar(20) ;
+ALTER table pos_pay modify column accnt varchar(20) ;
+ALTER table pos_pay modify column taccnt varchar(20) ;
+ALTER table pos_pay modify column billno varchar(20) ;
+ALTER table pos_res modify column accnt varchar(20) ;
+ALTER table pos_res modify column toaccnt varchar(20) ;
+ALTER table pos_res_order modify column accnt varchar(20) ;
+
+ALTER table pos_table_map modify column accnt varchar(20) ;
+ALTER table pos_table_map modify column pcrec varchar(20) ;
+
+ALTER table pos_pccode modify column dec_mode varchar(10) ;
+ALTER table pos_pccode modify column exp1 varchar(60) ;
+ALTER table pos_pccode modify column exp2 varchar(60) ;
+ALTER table pos_pccode modify column exp3 varchar(60) ;
+ALTER table pos_pccode modify column exp4 varchar(60) ;
+
+ALTER table pos_account modify column bank varchar(20) ;
+ALTER table pos_account_history modify column bank varchar(20) ;
+
+-- 新加吧台关联比例，默认为1
+-- ALTER table pos_store_plu_article add column rate DECIMAL(10,2) DEFAULT 1 AFTER art_name; 
+-- 修改work_station中mac字段长度
+ALTER TABLE work_station CHANGE mac mac VARCHAR(255) CHARSET utf8 COLLATE utf8_general_ci DEFAULT '' NOT NULL;
+-- ALTER TABLE hotel ADD COLUMN server_name VARCHAR(50) NULL AFTER client_type, ADD COLUMN area1 VARCHAR(50) NULL AFTER server_name, ADD COLUMN area2 VARCHAR(50) NULL AFTER area1;
+-- ALTER table hotel ADD COLUMN client_version varchar(10) DEFAULT ''; 
+ALTER TABLE pos_account MODIFY COLUMN bank VARCHAR(20);
+ALTER TABLE pos_account_history MODIFY COLUMN bank VARCHAR(20);
+-- 新增站点管辖营业点关账记录表
+DROP TABLE IF EXISTS `pos_pccode_audit_flag`;
+CREATE TABLE `pos_pccode_audit_flag` (
+  `hotel_group_id` bigint(16) NOT NULL,
+  `hotel_id` bigint(16) NOT NULL,
+  `id` bigint(16) NOT NULL AUTO_INCREMENT,
+  `pos_pccode` varchar(20) NOT NULL DEFAULT '',
+  `pos_pccode_descript` varchar(60) DEFAULT '',
+  `biz_date` datetime NOT NULL,
+  `biz_date1` datetime NOT NULL,
+  `is_audit` char(2) NOT NULL DEFAULT 'F' COMMENT 'T/F',
+  `audit_user` varchar(20) NOT NULL DEFAULT '',
+  `station_audit` varchar(20) NOT NULL DEFAULT '',
+  `is_rmposted` char(2) DEFAULT 'F' COMMENT 'T/F',
+  `station_rmcheck` varchar(20) DEFAULT '',
+  `station_rmpost` varchar(20) DEFAULT '',
+  `is_exclude_part` char(2) DEFAULT 'F' COMMENT 'T/F',
+  `station_exclude_part` varchar(20) DEFAULT '',
+  `is_can_checkout` char(2) DEFAULT 'T' COMMENT 'T/F',
+  `is_keypart` char(2) DEFAULT 'F' COMMENT 'T/F',
+  `is_year_first_day` char(2) DEFAULT 'F' COMMENT 'T/F',
+  `is_month_first_day` char(2) DEFAULT 'F' COMMENT 'T/F',
+  `is_report_done` char(2) DEFAULT 'T' COMMENT 'T/F',
+  `create_user` varchar(20) DEFAULT NULL,
+  `create_datetime` datetime NOT NULL,
+  `modify_user` varchar(20) NOT NULL,
+  `modify_datetime` datetime NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `hotel_group_id` (`hotel_group_id`,`hotel_id`,`pos_pccode`,`biz_date`)
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8;
+
+-- 新增张基础数据备份表
+DROP TABLE IF EXISTS `pos_master_back`;
+CREATE TABLE `pos_master_back` (
+  `hotel_group_id` BIGINT(16) NOT NULL,
+  `hotel_id` BIGINT(16) NOT NULL,
+  `id` BIGINT(16) NOT NULL,
+  `accnt` VARCHAR(20) DEFAULT NULL,
+  `type1` VARCHAR(100) DEFAULT NULL,
+  `type2` VARCHAR(100) DEFAULT NULL,
+  `type3` VARCHAR(100) DEFAULT NULL,
+  `type4` VARCHAR(100) DEFAULT NULL,
+  `type5` VARCHAR(6) DEFAULT '' COMMENT '客人类别5',
+  `pccode` VARCHAR(10) NOT NULL DEFAULT '' COMMENT '营业点代码 ',
+  `mode` VARCHAR(10) DEFAULT '' COMMENT '模式代码 ',
+  `shift` CHAR(1) NOT NULL DEFAULT '' COMMENT '班别',
+  `empid` VARCHAR(20) DEFAULT '' COMMENT '工号',
+  `sta` CHAR(1) NOT NULL DEFAULT '' COMMENT '状态',
+  `osta` CHAR(1) DEFAULT '' COMMENT ' 上次状态',
+  `biz_date` DATETIME NOT NULL COMMENT '营业日期',
+  `tableno` VARCHAR(10) DEFAULT '' COMMENT '-桌号',
+  `exttableno` VARCHAR(100) DEFAULT '' COMMENT '扩展桌号等',
+  `gsts` INT(11) NOT NULL DEFAULT '0' COMMENT ' 客人数 ',
+  `children` INT(11) DEFAULT '0' COMMENT '儿童数',
+  `phone` VARCHAR(13) DEFAULT NULL,
+  `market` VARCHAR(10) DEFAULT NULL,
+  `source` VARCHAR(10) DEFAULT NULL,
+  `haccnt` VARCHAR(10) DEFAULT '' COMMENT ' 关联客户档案号',
+  `name` VARCHAR(80) DEFAULT '' COMMENT '关联客人姓名',
+  `cusno` VARCHAR(10) DEFAULT '' COMMENT '协议单位号',
+  `cusinfo` VARCHAR(60) DEFAULT '' COMMENT ' 协议单位名称',
+  `cardno` VARCHAR(20) DEFAULT '' COMMENT ' 贵宾卡号',
+  `cardinfo` VARCHAR(60) DEFAULT '' COMMENT ' 贵宾卡名称',
+  `saleid` VARCHAR(10) DEFAULT '' COMMENT '销售代码',
+  `saleinfo` VARCHAR(60) DEFAULT '' COMMENT '销售员信息',
+  `dsc` DECIMAL(12,2) DEFAULT '0.00' COMMENT ' 折扣比率',
+  `reason` VARCHAR(3) DEFAULT '' COMMENT ' 折扣理由',
+  `srv` DECIMAL(12,2) DEFAULT '0.00' COMMENT ' 服务费比率',
+  `tax` DECIMAL(12,2) DEFAULT '0.00' COMMENT '税额',
+  `dscamount` DECIMAL(12,2) DEFAULT '0.00',
+  `srvamount` DECIMAL(12,2) DEFAULT '0.00',
+  `taxamount` DECIMAL(12,2) DEFAULT '0.00',
+  `amount` DECIMAL(12,2) DEFAULT '0.00' COMMENT '菜品金额',
+  `amount1` DECIMAL(12,2) DEFAULT '0.00' COMMENT '菜品分摊额',
+  `amount2` DECIMAL(12,2) DEFAULT '0.00' COMMENT '菜品折扣分摊额',
+  `amount3` DECIMAL(12,2) DEFAULT '0.00' COMMENT '菜品服务费分摊额',
+  `amount4` DECIMAL(12,2) DEFAULT '0.00',
+  `amount5` DECIMAL(12,2) DEFAULT '0.00',
+  `maxamount` DECIMAL(12,2) DEFAULT '0.00' COMMENT '上次打印总金额',
+  `charge` DECIMAL(12,2) DEFAULT '0.00',
+  `credit` DECIMAL(12,2) DEFAULT '0.00',
+  `bal` DECIMAL(12,2) DEFAULT '0.00',
+  `billno` VARCHAR(20) DEFAULT NULL,
+  `paycode` VARCHAR(6) DEFAULT '' COMMENT '付款代码 9001 或9001* 等',
+  `extra` VARCHAR(30) DEFAULT '',
+  `lastnum` INT(11) DEFAULT '0' COMMENT '记录明细行数',
+  `lastrnum` INT(11) DEFAULT '0' COMMENT '记录打印行数',
+  `lastpnum` INT(11) DEFAULT '0' COMMENT '记录打印页数 ',
+  `pcrec` VARCHAR(20) DEFAULT NULL,
+  `cmscode` VARCHAR(10) DEFAULT '' COMMENT '佣金代码',
+  `receipt_no` VARCHAR(50) DEFAULT NULL,
+  `receipt_amount` DECIMAL(12,2) DEFAULT NULL,
+  `info` VARCHAR(200) DEFAULT '' COMMENT '主单备注信息',
+  `toaccnt` VARCHAR(20) DEFAULT NULL,
+  `accntinfo` VARCHAR(60) DEFAULT '' COMMENT '挂账单位信息',
+  `resno` VARCHAR(20) DEFAULT NULL,
+  `qr_code` VARCHAR(512) DEFAULT '' COMMENT '二维码',
+  `create_user` VARCHAR(20) NOT NULL,
+  `create_datetime` DATETIME NOT NULL,
+  `modify_user` VARCHAR(20) NOT NULL,
+  `modify_datetime` DATETIME NOT NULL,
+  KEY `hotel_group_id_2` (`hotel_group_id`,`hotel_id`,`accnt`,`biz_date`),
+  KEY `hotel_group_id_3` (`hotel_group_id`,`hotel_id`,`sta`,`biz_date`),
+  KEY `hotel_group_id_4` (`hotel_group_id`,`hotel_id`,`biz_date`)
+) ENGINE=INNODB DEFAULT CHARSET=utf8 COMMENT='餐饮主单表';
+
+DROP TABLE IF EXISTS `pos_account_back`;
+CREATE TABLE `pos_account_back` (
+  `hotel_group_id` BIGINT(16) NOT NULL,
+  `hotel_id` BIGINT(16) NOT NULL,
+  `id` BIGINT(16) NOT NULL,
+  `accnt` VARCHAR(20) DEFAULT NULL,
+  `number` INT(11) DEFAULT '1' COMMENT '1表示消费，2表示付款',
+  `inumber` INT(11) DEFAULT '1' COMMENT '序号',
+  `subid` INT(11) DEFAULT '0',
+  `shift` CHAR(1) DEFAULT '' COMMENT '班次',
+  `pccode` VARCHAR(10) DEFAULT NULL COMMENT '营业点',
+  `tableno` VARCHAR(10) DEFAULT NULL COMMENT '桌号',
+  `empid` VARCHAR(10) DEFAULT '' COMMENT '工号',
+  `biz_date` DATETIME DEFAULT NULL COMMENT '营业日期',
+  `logdate` DATETIME DEFAULT NULL COMMENT '物理日期',
+  `paycode` VARCHAR(5) NOT NULL DEFAULT '' COMMENT ' 付款代码',
+  `descript` VARCHAR(80) DEFAULT '' COMMENT ' 付款名称',
+  `descript_en` VARCHAR(80) DEFAULT NULL COMMENT ' 英文名',
+  `amount` DECIMAL(12,2) DEFAULT '0.00',
+  `credit` DECIMAL(12,2) NOT NULL DEFAULT '0.00',
+  `bal` DECIMAL(12,2) DEFAULT '0.00',
+  `billno` VARCHAR(20) DEFAULT NULL,
+  `foliono` VARCHAR(20) DEFAULT '',
+  `orderno` VARCHAR(20) DEFAULT '',
+  `sign` VARCHAR(20) DEFAULT '00000000000000000000',
+  `flag` VARCHAR(20) DEFAULT '',
+  `sta` CHAR(1) NOT NULL DEFAULT '',
+  `reason` CHAR(3) DEFAULT '',
+  `info1` VARCHAR(50) DEFAULT '',
+  `info2` VARCHAR(50) DEFAULT '',
+  `bank` VARCHAR(20) DEFAULT NULL,
+  `cardno` VARCHAR(20) DEFAULT '' COMMENT '银行卡号、会员卡号',
+  `dtl_accnt` VARCHAR(20) DEFAULT '',
+  `create_user` VARCHAR(20) NOT NULL,
+  `create_datetime` DATETIME NOT NULL,
+  `modify_user` VARCHAR(20) NOT NULL,
+  `modify_datetime` DATETIME NOT NULL,
+  KEY `hotel_group_id` (`hotel_group_id`,`hotel_id`,`accnt`),
+  KEY `hotel_group_id_2` (`hotel_group_id`,`hotel_id`,`accnt`,`pccode`),
+  KEY `hotel_group_id_3` (`hotel_group_id`,`hotel_id`,`accnt`,`shift`,`pccode`,`tableno`,`biz_date`),
+  KEY `hotel_group_id_4` (`hotel_group_id`,`hotel_id`,`biz_date`,`sta`)
+) ENGINE=INNODB DEFAULT CHARSET=utf8 COMMENT='餐饮账务表';
+
+DROP TABLE IF EXISTS `pos_detail_back`;
+CREATE TABLE `pos_detail_back` (
+  `hotel_group_id` BIGINT(16) NOT NULL,
+  `hotel_id` BIGINT(16) NOT NULL,
+  `id` BIGINT(16) NOT NULL,
+  `accnt` VARCHAR(20) DEFAULT NULL,
+  `inumber` INT(11) DEFAULT '0' COMMENT '序号',
+  `tnumber` INT(11) DEFAULT '0' COMMENT '序号  1234567 已此类推',
+  `anumber` INT(11) DEFAULT '0' COMMENT '退菜关联号 和tnumber 对应',
+  `mnumber` INT(11) DEFAULT '0' COMMENT ' 关联序号,比如inumber号有退菜。退菜项关联的此号码就是上述菜的号码',
+  `type` CHAR(1) DEFAULT '0' COMMENT 'class =1 为正常菜品,class =2 菜的烧法class = 3 为菜的特殊内容,比如退菜理由,换台原因等信息',
+  `billno` VARCHAR(20) DEFAULT NULL,
+  `orderno` VARCHAR(10) DEFAULT '' COMMENT 'order单号 针对自动开单项目类。ORDERNO 号位AUTO  重新计算的时候 用于茶位费,包厢费等自动类型',
+  `sta` CHAR(1) NOT NULL DEFAULT '' COMMENT '状态 I  有效,X 冲销 ',
+  `shift` CHAR(1) NOT NULL DEFAULT '' COMMENT '班次',
+  `empid` VARCHAR(10) DEFAULT '' COMMENT '点菜工号',
+  `biz_date` DATETIME NOT NULL COMMENT '营业日期',
+  `note_code` VARCHAR(10) NOT NULL DEFAULT '' COMMENT '菜本',
+  `sort_code` VARCHAR(10) NOT NULL DEFAULT '' COMMENT '菜类',
+  `code` VARCHAR(10) NOT NULL DEFAULT '' COMMENT '菜代码 付款代码 9001 等',
+  `tocode` VARCHAR(3) DEFAULT '' COMMENT '报表分类项 针对菜名和有金额的内容',
+  `cond_code` VARCHAR(100) DEFAULT '0' COMMENT '物料代码,烧法',
+  `cook` VARCHAR(200) DEFAULT NULL,
+  `printid` INT(11) DEFAULT '0' COMMENT '打印号,用于划菜使用,每天菜都是从1 开始 累计,只针对菜名累加 退菜等这些属性为0 ',
+  `descript` VARCHAR(80) NOT NULL DEFAULT '' COMMENT '菜名',
+  `descript_en` VARCHAR(80) NOT NULL DEFAULT '' COMMENT '菜英文名',
+  `unit` VARCHAR(4) NOT NULL DEFAULT '' COMMENT '单位',
+  `number` DECIMAL(12,2) NOT NULL DEFAULT '0.00' COMMENT '数量',
+  `pinumber` INT(11) DEFAULT '0' COMMENT '打印次数',
+  `price` DECIMAL(12,2) NOT NULL DEFAULT '0.00' COMMENT '单价',
+  `amount` DECIMAL(12,2) NOT NULL DEFAULT '0.00' COMMENT ' 金额',
+  `amount1` DECIMAL(12,2) DEFAULT '0.00' COMMENT '菜品原金额分摊额',
+  `amount2` DECIMAL(12,2) DEFAULT '0.00' COMMENT '菜品折扣分摊额',
+  `amount3` DECIMAL(12,2) DEFAULT '0.00' COMMENT '菜品服务费分摊额',
+  `amount4` DECIMAL(12,2) DEFAULT '0.00',
+  `amount5` DECIMAL(12,2) DEFAULT '0.00' COMMENT '打折比率 如0.15  ',
+  `cost` DECIMAL(12,2) NOT NULL DEFAULT '0.00' COMMENT '成本额  ',
+  `flag` VARCHAR(30) NOT NULL DEFAULT '' COMMENT '菜名flag 属性,针对菜谱来定,判断是菜的属性',
+  `flag1` VARCHAR(30) DEFAULT '0000000000' COMMENT '菜flag1  - 本次点单菜属性 1234567890  先设10   第1 位0 代表模式计算 1单菜折扣,第2位 0 服务费按模式 1按主单 第3位 0服务费不打折 1服务费打折\r\n第4位  0附加税不打折 1附加税打折  第5位 1表示单菜款待   其他具体再定. 付款这些不需要填 第10 最后一位TF 表示是否划菜已上菜',
+  `reason` CHAR(3) DEFAULT '' COMMENT '理由 退菜',
+  `dsc` DECIMAL(12,2) DEFAULT '0.00' COMMENT '折扣总额',
+  `srv` DECIMAL(12,2) DEFAULT '0.00' COMMENT '服务费额',
+  `srv0` DECIMAL(12,2) DEFAULT NULL,
+  `srv_dsc` DECIMAL(12,2) DEFAULT NULL,
+  `tax` DECIMAL(12,2) DEFAULT '0.00' COMMENT '税额',
+  `tax0` DECIMAL(12,2) DEFAULT NULL,
+  `tax_dsc` DECIMAL(12,2) DEFAULT NULL,
+  `tableno` VARCHAR(10) DEFAULT NULL,
+  `siteno` VARCHAR(5) DEFAULT '' COMMENT '座位号',
+  `info` VARCHAR(50) DEFAULT '' COMMENT '信息备注',
+  `cardno` VARCHAR(20) DEFAULT '' COMMENT ' 卡信息信息备注,记录贵宾卡,信用卡等号码,ar账号等',
+  `cardinfo` VARCHAR(50) DEFAULT '' COMMENT '卡信息备注,如客人姓名：+卡余额,    分割符号为 `姓名``余额`, 有特殊需要提供给账单打印使用 余额应是记录查询时余额,需要相减后获得当时余额',
+  `kitchen` VARCHAR(40) DEFAULT '' COMMENT '厨房打印信息 此菜打印到哪些厨房过',
+  `pcid` VARCHAR(20) DEFAULT '' COMMENT ' 记录站点点菜站点 ,可以为空',
+  `empid1` VARCHAR(10) DEFAULT '' COMMENT '服务员号',
+  `empid2` VARCHAR(10) DEFAULT '' COMMENT '划菜工号等',
+  `empid3` VARCHAR(10) DEFAULT '' COMMENT '更改工号',
+  `draw_date` DATETIME DEFAULT NULL COMMENT '划菜时间',
+  `create_user` VARCHAR(20) NOT NULL,
+  `create_datetime` DATETIME NOT NULL,
+  `modify_user` VARCHAR(20) NOT NULL,
+  `modify_datetime` DATETIME NOT NULL,
+  KEY `hotel_group_id` (`hotel_group_id`,`hotel_id`,`accnt`,`inumber`,`type`,`sta`,`biz_date`),
+  KEY `hotel_group_id_2` (`hotel_group_id`,`hotel_id`,`accnt`,`type`,`billno`,`sta`,`shift`,`biz_date`,`code`),
+  KEY `hotel_group_id_3` (`hotel_group_id`,`hotel_id`,`accnt`,`sta`,`code`)
+) ENGINE=INNODB DEFAULT CHARSET=utf8 COMMENT='点菜明细表';
+-- 跨酒店转账配置表
+CREATE TABLE `pos_hotel_transfer` (
+  `hotel_group_id` bigint(16) NOT NULL,
+  `hotel_id` bigint(16) NOT NULL,
+  `id` bigint(16) NOT NULL AUTO_INCREMENT,
+  `transfer_hotel_group_id` bigint(16) NOT NULL,
+  `transfer_hotel_id` bigint(16) NOT NULL,
+  `transfer_hotel_code` varchar(100) DEFAULT NULL,
+  `transfer_hotel_descript` varchar(100) DEFAULT NULL,
+  `transfer_server_ip` varchar(100) DEFAULT NULL,
+  `transaction_pms_code` varchar(10) DEFAULT NULL,
+  `transaction_pms_descript` varchar(100) DEFAULT NULL,
+  `transaction_ar_code` varchar(10) DEFAULT NULL,
+  `transaction_ar_descript` varchar(100) DEFAULT NULL,
+  `create_user` varchar(20) NOT NULL,
+  `create_datetime` datetime NOT NULL,
+  `modify_user` varchar(20) NOT NULL,
+  `modify_datetime` datetime NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
+-- 名人票券记录日志表(本地库)
+CREATE TABLE `ticket_mr_log` (
+  `hotel_group_id` bigint(20) DEFAULT NULL,
+  `hotel_id` bigint(20) DEFAULT NULL,
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `soap_action` varchar(200) DEFAULT NULL,
+  `in_value` text,
+  `out_value` mediumtext,
+  `create_user` varchar(20) DEFAULT NULL,
+  `create_datetime` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `index_create` (`hotel_group_id`,`create_datetime`)
+) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+-- 名人票券使用记录表(本地库)
+CREATE TABLE `ticket_mr_result` (
+  `hotel_group_id` bigint(20) NOT NULL,
+  `hotel_id` bigint(20) NOT NULL,
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `methed_way` int(11) DEFAULT NULL,
+  `FormulaId` varchar(20) DEFAULT NULL,
+  `Tp_Id` varchar(200) DEFAULT NULL,
+  `CategoryId` varchar(20) DEFAULT NULL,
+  `ticketsn` varchar(200) DEFAULT NULL,
+  `no` varchar(50) DEFAULT NULL,
+  `xfcode` varchar(512) DEFAULT NULL,
+  `jycode` varchar(512) NOT NULL,
+  `amount` decimal(12,2) DEFAULT NULL,
+  `trans_result` varchar(512) DEFAULT NULL,
+  `create_datetime` datetime DEFAULT NULL,
+  `strick` varchar(2) DEFAULT NULL,
+  `strick_result` varchar(512) DEFAULT NULL,
+  `modify_datetime` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `index_jy` (`jycode`(255))
+) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+

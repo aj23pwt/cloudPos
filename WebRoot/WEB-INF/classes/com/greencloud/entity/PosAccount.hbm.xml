@@ -1,0 +1,113 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+    <class name="com.greencloud.entity.PosAccount" table="pos_account">
+        <id name="id" type="java.lang.Long">
+            <column name="id" />
+            <generator class="identity" />
+        </id>
+        <property name="hotelGroupId" type="java.lang.Long">
+            <column name="hotel_group_id" />
+        </property>
+        <property name="hotelId" type="java.lang.Long">
+            <column name="hotel_id" />
+        </property>
+        <property name="accnt" type="string">
+            <column name="accnt" length="13" />
+        </property>
+         <property name="number" type="java.lang.Integer">
+            <column name="number"/>
+        </property>
+        <property name="inumber" type="java.lang.Integer">
+            <column name="inumber"/>
+        </property>    
+        <property name="subid" type="java.lang.Integer">
+            <column name="subid"/>
+        </property>
+        <property name="shift" type="string">
+            <column name="shift" length="1" />
+        </property>
+         <property name="pccode" type="string">
+            <column name="pccode" length="10" />
+        </property>
+         <property name="tableno" type="string">
+            <column name="tableno" length="10" />
+        </property>
+        <property name="empid" type="string">
+            <column name="empid" length="100" />
+        </property>
+        <property name="bizDate" type="timestamp">
+            <column name="biz_date" length="0" />
+        </property>
+        <property name="logdate" type="timestamp">
+            <column name="logdate" length="0" />
+        </property>
+        <property name="paycode" type="string">
+            <column name="paycode" length="5" />
+        </property>
+        <property name="descript" type="string">
+            <column name="descript" length="80" />
+        </property>
+        <property name="descriptEn" type="string">
+            <column name="descript_en" length="80" />
+        </property>
+        <property name="amount" type="big_decimal">
+            <column name="amount" precision="12"/>
+        </property>
+        <property name="credit" type="big_decimal">
+            <column name="credit" precision="12"/>
+        </property>
+        <property name="bal" type="big_decimal">
+            <column name="bal" precision="12"/>
+        </property>
+         <property name="billno" type="string">
+            <column name="billno" length="11" />
+        </property>
+         <property name="foliono" type="string">
+            <column name="foliono" length="20" />
+        </property>
+         <property name="orderno" type="string">
+            <column name="orderno" length="20" />
+        </property>
+         <property name="sign" type="string">
+            <column name="sign" length="20" />
+        </property>
+         <property name="flag" type="string">
+            <column name="flag" length="20" />
+        </property>
+         <property name="sta" type="string">
+            <column name="sta" length="1" />
+        </property>
+         <property name="reason" type="string">
+            <column name="reason" length="3" />
+        </property>
+         <property name="info1" type="string">
+            <column name="info1" length="50" />
+        </property>
+         <property name="info2" type="string">
+            <column name="info2" length="50" />
+        </property>
+         <property name="bank" type="string">
+            <column name="bank" length="5" />
+        </property>
+         <property name="cardno"  type="string">
+            <column name="cardno" length="20" />
+        </property>
+         <property name="dtlAccnt"  type="string">
+            <column name="dtl_accnt" length="20" />
+        </property>
+        <property name="createUser" type="string">
+            <column name="create_user" length="20" />
+        </property>
+        <property name="createDatetime" type="timestamp">
+            <column name="create_datetime" length="0" />
+        </property>
+        <property name="modifyUser" type="string">
+            <column name="modify_user" length="20" />
+        </property>
+        <property name="modifyDatetime" type="timestamp">
+            <column name="modify_datetime" length="0" />
+        </property>
+    </class>
+</hibernate-mapping>

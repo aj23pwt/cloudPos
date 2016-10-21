@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	   xmlns:flex="http://www.springframework.org/schema/flex"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="
+           http://www.springframework.org/schema/beans
+           http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+           http://www.springframework.org/schema/flex 
+           http://www.springframework.org/schema/flex/spring-flex-1.0.xsd" default-autowire="byName">
+       
+		<flex:message-broker id="_messageBroker" services-config-path="classpath*:${flex.path}">
+			<flex:mapping pattern="messagebroker/*" />
+			<flex:config-processor ref="messageBrokerConfigProcessor" />
+			<flex:exception-translator ref="businessExceptionTranslator" />
+			<flex:message-interceptor ref="auditMessageInterceptor" />
+			<flex:message-service default-channels="my-polling-amf" />
+		</flex:message-broker>
+       
+       <flex:message-destination id="synchronizer" />  
+       
+       
+<!--        <bean id="systemFacadeService" class="com.greencloud.facade.impl.SystemFacadeServiceImpl"> -->
+<!--         	<flex:remoting-destination /> -->
+<!--        </bean> -->
+
+       <!-- 日志 -->
+		<bean id="logFacadeService" class="com.greencloud.facade.impl.LogFacadeServiceImpl">
+			<flex:remoting-destination/>
+		</bean>
+       <bean id="reportFacadeService" class="com.greencloud.facade.impl.ReportFacadeServiceImpl">
+        	<flex:remoting-destination />
+       </bean>
+       <bean id="auditProcessFacadeService" class="com.greencloud.facade.impl.AuditProcessFacadeServiceImpl">
+        	<flex:remoting-destination />
+       </bean>
+        <!-- 宾客档案 -->
+        <bean id="guestInfoFacadeService" class="com.greencloud.facade.impl.GuestInfoFacadeServiceImpl">
+        	<flex:remoting-destination />
+       </bean>
+        <!-- 协议客户档案 -->
+	   <bean id="companyProfileFacadeService" class="com.greencloud.facade.impl.CompanyProfileFacadeServiceImpl">
+	   		<flex:remoting-destination />
+	   </bean>
+       <!--综合收银 -->
+      <bean id="posCodeFacade" class="com.greencloud.facade.impl.PosCodeFacadeImpl">
+        	<flex:remoting-destination />
+       </bean>
+        <bean id="posSystemFacade" class="com.greencloud.facade.impl.PosSystemFacadeImpl">
+        	<flex:remoting-destination />
+       </bean>
+       <bean id="posPluFacade" class="com.greencloud.facade.impl.PosPluFacadeImpl">
+        	<flex:remoting-destination />
+       </bean>
+        <bean id="posResFacade" class="com.greencloud.facade.impl.PosResFacadeImpl">
+            <flex:remoting-destination />
+       </bean>
+         <bean id="posSycFacade" class="com.greencloud.facade.impl.PosSycFacadeImpl">
+            <flex:remoting-destination />
+       </bean>
+         <bean id="posMasterFacade" class="com.greencloud.facade.impl.PosMasterFacadeImpl">
+            <flex:remoting-destination />
+       </bean>
+        <bean id="posTableFacade" class="com.greencloud.facade.impl.PosTableFacadeImpl">
+            <flex:remoting-destination />
+       </bean>
+        <bean id="posPrinterFacade" class="com.greencloud.facade.impl.PosPrinterFacadeImpl">
+            <flex:remoting-destination />
+       </bean>
+        <bean id="posDrinksDepositFacade" class="com.greencloud.facade.impl.PosDrinksDepositFacadeImpl">
+            <flex:remoting-destination />
+       </bean>
+        <bean id="posStoreFacade" class="com.greencloud.facade.impl.PosStoreFacadeImpl">
+            <flex:remoting-destination />
+       </bean>
+        <bean id="minRenTicketV2Facade" class="com.greencloud.facade.impl.MinRenTicketV2FacadeServiceImpl">
+            <flex:remoting-destination />
+       </bean>
+       <bean name="cardFacadeService" class="com.greencloud.facade.impl.CardFacadeServiceImpl">
+		<flex:remoting-destination />
+	   </bean>
+      
+       <bean id="posToPosFacade" class="com.greencloud.facade.impl.PosToPosFacadeImpl">
+       		<flex:remoting-destination />
+       </bean>
+       
+       <bean id="sysOptionFacadeService" class="com.greencloud.facade.impl.SysOptionFacadeServiceImpl">
+       		<flex:remoting-destination />
+       </bean>
+      
+      <bean id="cateringFacadeService" class="com.greencloud.facade.impl.CateringFacadeServiceImpl">
+       		<flex:remoting-destination />
+       </bean>
+       <!--  bean id="salesManFacadeService" class="com.greencloud.facade.impl.SalesManFacadeServiceImpl">
+       		<flex:remoting-destination />
+       </bean>-->
+       
+</beans>
+

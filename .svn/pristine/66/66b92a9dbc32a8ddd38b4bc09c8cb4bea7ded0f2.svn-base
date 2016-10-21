@@ -1,0 +1,7 @@
+flex.path=/flex/services-config.xml
+singleSession=false
+needLogin=true
+clientType=IHOTEL
+serverType=ipms
+platform.service.endpoint=http://www.gcihotel.com:8082/iPlatform/services/SystemWebService?wsdl
+version=@version@

@@ -1,0 +1,250 @@
+package com.greencloud.controller;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.alibaba.fastjson.JSON;
+import com.greencloud.entity.OperationInfo;
+import com.greencloud.entity.PosPay;
+import com.greencloud.entity.PosRes;
+import com.greencloud.entity.PosResOrder;
+import com.greencloud.service.IPosSubService;
+import com.greencloud.service.IPosSycOperation;
+import com.greencloud.util.DateUtil;
+import com.greencloud.util.StringUtil;
+
+/**
+ * 被本地服务请求,中央数据接收服务
+ * 
+ * @author gc-pwt
+ *
+ */
+@Controller
+@RequestMapping(value = "/PosSycRemoteUpload")
+public class PosSycRemoteUploadController {
+	@Resource
+	private IPosSycOperation posSycOperation;
+	private IPosSubService posSubService;
+
+	public void setPosSubService(IPosSubService posSubService) {
+		this.posSubService = posSubService;
+	}
+
+	public Object getclass(String className) throws InstantiationException,
+			IllegalAccessException, ClassNotFoundException { // className是类名
+		Object obj = Class.forName(className).newInstance(); // 以String类型的className实例化类
+		return obj;
+	}
+
+	@ResponseBody
+	@RequestMapping(value = "/getDatePosMaster")
+	public void getDatePosMaster(
+			@RequestParam(value = "hotelGroupId", required = true) String hotelGroupId,
+			@RequestParam(value = "hotelId", required = true) String hotelId,
+			@RequestParam(value = "type", required = true) String type,
+			@RequestParam(value = "entity", required = true) String entity,
+			HttpServletResponse response) throws Exception {
+		ResponseJson j = new ResponseJson();
+		List<OperationInfo> T = new ArrayList<OperationInfo>();
+		OperationInfo objectInfo = new OperationInfo();
+		objectInfo.setHotelGroupId(java.lang.Long.parseLong(hotelGroupId));
+		objectInfo.setHotelId(java.lang.Long.parseLong(hotelId));
+		// 获得本地需要同步的表的最新时间
+		T = posSubService.getSycLocalDateList(entity, objectInfo);
+		if (T != null) {
+			j.setSuccess(true);
+			j.setMsg(DateUtil.getLongDateString(T.get(0).getModifyDatetime()));
+			System.out.println(entity + "最新同步时间："
+					+ DateUtil.getLongDateString(T.get(0).getModifyDatetime()));
+
+		} else {
+			j.setSuccess(false);
+			j.setMsg("没有符合条件的同步时间");
+			j.setObj(entity);
+		}
+		BaseHttpResponseController.OutputJson(j, response);
+	}
+
+	@ResponseBody
+	@RequestMapping(value = "/savePosMater")
+	public <T> void savePosMater(HttpServletRequest request,
+			HttpServletResponse response) throws IOException {
+
+		// 读取请求内容
+		BufferedReader br = new BufferedReader(new InputStreamReader(
+				request.getInputStream(),"UTF-8"));
+		String line = null;
+		StringBuilder sb = new StringBuilder();
+		while ((line = br.readLine()) != null) {
+			sb.append(line);
+		}
+		String requestData = sb.toString();
+		String entity = requestData.substring(
+				StringUtil.indexOfAnyBut(requestData, "&entity="),
+				requestData.indexOf("&data="));
+		String data = requestData.substring(requestData.indexOf("["));
+		ResponseJson j = new ResponseJson();
+		
+		try {
+			List<String> keyfields = new ArrayList<String>();
+			keyfields.add("hotelGroupId");
+			keyfields.add("hotelId");
+			keyfields.add("accnt");
+			@SuppressWarnings("rawtypes")
+			Class c = null;
+				try {
+					c = Class.forName("com.greencloud.entity."+entity);
+					@SuppressWarnings("unchecked")
+					List<Object> newlist = JSON.parseArray(data,c);
+					posSycOperation.saveData(newlist, false, keyfields);
+					j.setSuccess(true);
+					j.setMsg("同步成功");
+					j.setObj(entity);
+				} catch (ClassNotFoundException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+					j.setSuccess(false);
+					j.setMsg("同步失败");
+					j.setObj(entity);
+				}
+		} catch (Exception e) {
+			e.printStackTrace();
+			j.setSuccess(false);
+			j.setMsg("同步失败");
+			j.setObj(entity);
+		}
+		BaseHttpResponseController.OutputJson(j, response);
+
+	}
+	
+	@ResponseBody
+	@RequestMapping(value = "/savePosRes")
+	public <T> void savePosRes(HttpServletRequest request,
+			HttpServletResponse response) throws IOException {
+
+		// 读取请求内容
+		BufferedReader br = new BufferedReader(new InputStreamReader(
+				request.getInputStream(),"UTF-8"));
+		String line = null;
+		StringBuilder sb = new StringBuilder();
+		while ((line = br.readLine()) != null) {
+			sb.append(line);
+		}
+		String requestData = sb.toString();
+		String entity = requestData.substring(
+				StringUtil.indexOfAnyBut(requestData, "&entity="),
+				requestData.indexOf("&data="));
+		String data = requestData.substring(requestData.indexOf("["));
+		ResponseJson j = new ResponseJson();
+		try {
+			List<String> keyfields = new ArrayList<String>();
+			keyfields.add("hotelGroupId");
+			keyfields.add("hotelId");
+			keyfields.add("accnt");
+			if ("PosRes".equalsIgnoreCase(entity.trim())) {
+				List<PosRes> newlist = JSON
+						.parseArray(data, PosRes.class);
+				posSycOperation.saveData(newlist, false, keyfields);
+			} else if ("PosResOrder".equalsIgnoreCase(entity.trim())) {
+				List<PosResOrder> newlist = JSON.parseArray(data,
+						PosResOrder.class);
+				posSycOperation.saveData(newlist, false, keyfields);
+			}else if ("PosPay".equalsIgnoreCase(entity.trim())) {
+				List<PosPay> newlist = JSON.parseArray(data,
+						PosPay.class);
+				posSycOperation.saveData(newlist, false, keyfields);
+			}
+			j.setSuccess(true);
+			j.setMsg("同步成功");
+			j.setObj(entity);
+		} catch (Exception e) {
+			e.printStackTrace();
+			j.setSuccess(false);
+			j.setMsg("同步失败");
+			j.setObj(entity);
+		}
+		BaseHttpResponseController.OutputJson(j, response);
+
+	}
+	@ResponseBody
+	@RequestMapping(value = "/updatePosAuditUpdatePosBizdate")
+	public void updatePosAuditUpdatePosBizdate(
+		@RequestParam(value = "hotelGroupId", required = true) String hotelGroupId,
+		@RequestParam(value = "hotelId", required = true) String hotelId,
+		@RequestParam(value = "type", required = true) String type,
+		HttpServletResponse response) throws Exception {
+		ResponseJson j = new ResponseJson();
+		try {
+			j.setSuccess(true);
+		    j.setMsg(posSubService.updatePosAuditUpdatePosBizdate(java.lang.Long.parseLong(hotelGroupId),java.lang.Long.parseLong(hotelId)));;
+		} catch(Exception e){
+			j.setSuccess(false);
+			j.setMsg("-1");
+		}
+		BaseHttpResponseController.OutputJson(j, response);
+	}
+	@ResponseBody
+	@RequestMapping(value = "/uploadPosPccodeAuditFlag")
+	public <T> void uploadPosPccodeAuditFlag(HttpServletRequest request,
+			HttpServletResponse response) throws IOException {
+
+		// 读取请求内容
+		BufferedReader br = new BufferedReader(new InputStreamReader(
+				request.getInputStream(),"UTF-8"));
+		String line = null;
+		StringBuilder sb = new StringBuilder();
+		while ((line = br.readLine()) != null) {
+			sb.append(line);
+		}
+		String requestData = sb.toString();
+		String entity = requestData.substring(
+				StringUtil.indexOfAnyBut(requestData, "&entity="),
+				requestData.indexOf("&data="));
+		String data = requestData.substring(requestData.indexOf("["));
+		ResponseJson j = new ResponseJson();
+		try {
+			List<String> keyfields = new ArrayList<String>();
+			keyfields.add("hotelGroupId");
+			keyfields.add("hotelId");
+			keyfields.add("posPccode");
+			keyfields.add("bizDate");
+			@SuppressWarnings("rawtypes")
+			Class c = null;
+				try {
+					c = Class.forName("com.greencloud.entity."+entity);
+					@SuppressWarnings("unchecked")
+					List<Object> newlist = JSON.parseArray(data,c);
+					if(newlist.size()>0){
+					   posSycOperation.saveData(newlist, false, keyfields);
+					}
+					j.setSuccess(true);
+					j.setMsg("同步成功");
+					j.setObj(entity);
+				} catch (ClassNotFoundException e) {
+					e.printStackTrace();
+					j.setSuccess(false);
+					j.setMsg("同步失败");
+					j.setObj(entity);
+				}
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			j.setSuccess(false);
+			j.setMsg("同步失败");
+			j.setObj(entity);
+		}
+		BaseHttpResponseController.OutputJson(j, response);
+	}
+}

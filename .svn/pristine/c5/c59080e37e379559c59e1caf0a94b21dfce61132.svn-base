@@ -1,0 +1,162 @@
+package com.greencloud.service.impl;
+import com.aua.util.Container;
+import com.aua.dao.IBaseDao;
+import com.aua.service.impl.BaseServiceImpl;
+import java.util.List;
+import com.greencloud.entity.UserPosAuth;
+import com.greencloud.dao.IUserPosAuthDao;
+import com.greencloud.service.IUserPosAuthService;
+import org.springframework.dao.DataAccessException;
+public class UserPosAuthServiceImpl extends BaseServiceImpl implements IUserPosAuthService
+{
+   //dao 
+   private IUserPosAuthDao userPosAuthDao;
+   
+  /**
+   *save userPosAuth object  method
+   *@param userPosAuth UserPosAuth 
+   *@throws DataAccessException 
+   *@author  
+   *@version 1.0
+   *@date 2015-10-08 15:21
+   */
+  public void saveUserPosAuth(UserPosAuth userPosAuth) throws DataAccessException{
+     	if(log.isDebugEnabled()){
+			log.debug("start saveUserPosAuth method");
+		}
+         userPosAuthDao.save(userPosAuth);
+     	if(log.isDebugEnabled()){
+			log.debug("end saveUserPosAuth method");
+		}
+  }//end save method
+  
+   /**
+   *update userPosAuth method
+   *@param userPosAuth UserPosAuth
+   *@throws DataAccessException 
+   *@author 
+   *@version 1.0
+   *@date 2015-10-08 15:21
+   */
+  public void updateUserPosAuth(UserPosAuth userPosAuth) throws DataAccessException{ 
+  	    if(log.isDebugEnabled()){
+			log.debug("start updateUserPosAuth method");
+		}
+        userPosAuthDao.update(userPosAuth);
+        if(log.isDebugEnabled()){
+			log.debug("end updateUserPosAuth method");
+		}
+  }//end update method
+  
+   /**
+   *save or update userPosAuth object method
+   *@param userPosAuth UserPosAuth
+   *@throws DataAccessException
+   *@author  
+   *@version 1.0
+   *@date 2015-10-08 15:21
+   */
+  public void saveOrUpdateUserPosAuth(UserPosAuth userPosAuth) throws DataAccessException{//start saveOrUpdate method
+      
+        if(log.isDebugEnabled()){
+			log.debug("start saveOrUpdateUserPosAuth method");
+		}
+		
+        userPosAuthDao.saveOrUpdate(userPosAuth);
+        
+        if(log.isDebugEnabled()){
+			log.debug("end saveOrUpdateUserPosAuth method");
+		}
+		
+  }//end saveOrUpdate method
+
+  /**
+   *query a container obj
+   *@param userPosAuth UserPosAuth query vo
+   *@param firstResult
+   *@param maxResults 
+   *@throws DataAccessException 
+   *@author weihuawon
+   *@date 2015-10-08 15:21
+   */
+  public Container<UserPosAuth> findUserPosAuth(UserPosAuth userPosAuth,int firstResult ,int maxResults)throws DataAccessException{
+        if(log.isDebugEnabled()){
+			log.debug("start findUserPosAuth method");
+		}
+        Container<UserPosAuth> container = new Container<UserPosAuth>();
+        List<UserPosAuth> list = userPosAuthDao.list(userPosAuth, firstResult , maxResults);
+        container.setResults(list);
+        container.setTotalRows(userPosAuthDao.count(userPosAuth));
+        if(log.isDebugEnabled()){
+			log.debug("end findUserPosAuth method");
+		}
+       return container;
+  }//end find method
+
+  /**
+   *count obj amount
+   *@param userPosAuth UserPosAuth query vo
+   *@throws DataAccessException
+   *@author 
+   *@date 2015-10-08 15:21
+   */
+  public int countUserPosAuth(UserPosAuth userPosAuth)throws DataAccessException{
+    return userPosAuthDao.count(userPosAuth);
+  }//end count method
+  
+   /**
+   *query a userPosAuth by id 
+   *@param id 
+   *@throws DataAccessException 
+   *@author 
+   *@date 2015-10-08 15:21
+   */
+  public UserPosAuth findUserPosAuthById(Long id)throws DataAccessException{
+    UserPosAuth  userPosAuth = userPosAuthDao.load(id);
+    return userPosAuth;
+  }//end findUserPosAuthById method
+  
+    /**
+   *query userPosAuth collection method
+   *@param userPosAuth UserPosAuth send query vo 
+   *@throws DataAccessException 
+   *@author 
+   *@version 1.0
+   *@date 2015-10-08  15:21
+   */
+  public List<UserPosAuth> listUserPosAuth(UserPosAuth  userPosAuth)
+		throws DataAccessException {
+	  List<UserPosAuth> list = userPosAuthDao.list(userPosAuth);
+      return list;
+  }//end list method
+  
+   /**
+   *query userPosAuth collection method
+   *@param userPosAuth UserPosAuth send query vo 
+   *@param firstResult 
+   *@param maxResults 
+   *@throws DataAccessException 
+   *@author 
+   *@version 1.0
+   *@date 2015-10-08  15:21
+   */
+  public List<UserPosAuth> listUserPosAuth(UserPosAuth userPosAuth,int firstResult ,int maxResults)throws DataAccessException{
+	   List<UserPosAuth> list = userPosAuthDao.list(userPosAuth, firstResult ,maxResults);
+	   return list;
+  }
+  
+  /**
+   * Spring 
+   * @param  userPosAuthDao 
+   * @author weihuawon
+   * @date 2015年M10月d8�?15:21
+   */
+  public void setUserPosAuthDao(IUserPosAuthDao userPosAuthDao){ 
+     this.userPosAuthDao = userPosAuthDao;
+  }//end setUserPosAuthDao method
+  
+  @Override
+  protected IBaseDao getDao(){
+    return this.userPosAuthDao;
+  }//end getDao method
+}//end class UserPosAuthServiceImpl

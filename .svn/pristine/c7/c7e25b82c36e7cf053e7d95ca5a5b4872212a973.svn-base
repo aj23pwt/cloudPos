@@ -1,0 +1,108 @@
+package com.greencloud.dao;
+import com.aua.dao.IBaseDao;
+
+import java.math.BigDecimal;
+import java.util.Date;
+import java.util.List;
+
+import com.greencloud.entity.PosMaster;
+import com.greencloud.entity.PosRes;
+
+import org.springframework.dao.DataAccessException;
+ /**
+   * operate PosMaster into db
+   *@author 
+   *@version 1.0
+   *@date 2015-04-20 16:24
+   */
+public interface IPosMasterDao extends IBaseDao
+{
+
+  /**
+   *save posMaster object  method
+   *@param posMaster PosMaster 
+   *@throws DataAccessException 
+   *@author  
+   *@version 1.0
+   *@date 2015-04-20 16:24
+   */
+  public void save(PosMaster posMaster) throws DataAccessException;
+
+   /**
+   *update posMaster method
+   *@param posMaster PosMaster
+   *@throws DataAccessException 
+   *@author 
+   *@version 1.0
+   *@date 2015-04-20 16:24
+   */
+  public void update(PosMaster posMaster) throws DataAccessException;
+ 
+   /**
+   *save or update posMaster object method
+   *@param posMaster PosMaster
+   *@throws DataAccessException
+   *@author  
+   *@version 1.0
+   *@date 2015-04-20 16:24
+   */
+  public void saveOrUpdate(PosMaster posMaster) throws DataAccessException;
+  
+   /**
+   *query posMaster collection method
+   *@param posMaster PosMaster send query vo 
+   *@param firstResult 
+   *@param maxResults 
+   *@throws DataAccessException 
+   *@author 
+   *@version 1.0
+   *@date 2015-04-20  16:24
+   */
+  public List<PosMaster> list(PosMaster posMaster,int firstResult ,int maxResults)throws DataAccessException;
+  
+   /**
+   *query collection method  
+   *@param posMaster PosMaster send query vo 
+   *@throws DataAccessException
+   *@author 
+   *@version 1.0
+   *@date 2015-04-20 16:24
+   */
+  public List<PosMaster> list(PosMaster posMaster)throws DataAccessException;
+ 
+  /**
+   *count obj amount
+   *@param posMaster PosMaster query vo
+   *@throws DataAccessException
+   *@author 
+   *@date 2015-04-20 16:24
+   */
+  public int count(PosMaster posMaster)throws DataAccessException;
+  
+   /**
+   *query a posMaster by id 
+   *@param id 
+   *@throws DataAccessException 
+   *@author 
+   *@date 2015-04-20 16:24
+   */
+  public PosMaster load(Long id)throws DataAccessException;
+  
+  public List<PosMaster> getMasterList(String sql )throws DataAccessException;
+  
+  public String savePosMaster (PosMaster posMaster,String pcid) throws DataAccessException;
+  
+  public String updateResNewMaster (PosRes res ,PosMaster posMaster,String pcid) throws DataAccessException;
+  
+  public String  updateTableNoByAccnt (long hotelGroupId,long hotelId, String bizDate,String accnt,String shift,String oldTableNo,String newTableNo,String flag,String user) ;
+  
+  public int updatePosModeCalc (long hotelGroupId, long hotelId,Date bizDate,String accnt,String mode,BigDecimal dsc,BigDecimal srv,BigDecimal tax) throws DataAccessException;
+
+  public int updatePosCheckOut (long hotelGroupId, long hotelId,Date bizDate,String cashier,String accnts,String billno,String user) throws DataAccessException;
+ 
+  public String updateCheckoutRevoke(Long hotelGroupId, Long hotelId,String bizDate,String billno,String shift,String flag,String user);
+  
+  public String updateMasterRevoke(long hotelGroupId,long hotelId,String accnt,String shift,String user);
+  
+  public <T> List<T> getPosDetailModeView(long hotelGroupId,long hotelId,String bizDate,String accnts,String flag );
+}

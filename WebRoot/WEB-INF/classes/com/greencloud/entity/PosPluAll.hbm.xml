@@ -1,0 +1,121 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+    <class name="com.greencloud.entity.PosPluAll" table="pos_plu_all">
+        <id name="id" type="java.lang.Long">
+            <column name="id" />
+            <generator class="identity" />
+        </id>
+        <property name="hotelGroupId" type="java.lang.Long">
+            <column name="hotel_group_id" />
+        </property>
+        <property name="hotelId" type="java.lang.Long">
+            <column name="hotel_id" />
+        </property>
+        <property name="code"  type="string">
+            <column name="code" length="10"/>
+        </property>
+        <property name="sortCode"  type="string">
+            <column name="sort_code" length="10"/>
+        </property>
+        <property name="descript"  type="string">
+            <column name="descript" length="60" />
+        </property>
+        <property name="descriptEn"  type="string">
+            <column name="descript_en" length="30" />
+        </property>
+        <property name="helpcode"  type="string">
+            <column name="helpcode" length="20"/>
+        </property>
+        <property name="price" type="big_decimal">
+            <column name="price" precision="12"/>
+        </property>
+        <property name="unit"  type="string">
+            <column name="unit" length="10"/>
+        </property>
+        <property name="costPrice" type="big_decimal">
+            <column name="cost_price" precision="12"/>
+        </property>
+        <property name="mode"  type="string">
+            <column name="mode" length="2"/>
+        </property>
+        <property name="menu"  type="string">
+            <column name="menu" length="5"/>
+        </property>
+        <property name="flag"  type="string">
+            <column name="flag" length="30"/>
+        </property>
+        <property name="condgp1"  type="string">
+            <column name="condgp1" length="100"/>
+        </property>
+        <property name="tocode"  type="string">
+            <column name="tocode" length="100"/>
+        </property>
+        <property name="timecode"  type="string">
+            <column name="timecode" length="6"/>
+        </property>
+        <property name="ptNum" type="integer">
+            <column name="pt_num" length="10"/>
+        </property>
+         <property name="hasPic"  type="string">
+            <column name="has_pic" length="2" />
+        </property>
+        <property name="picPath1"  type="string">
+            <column name="pic_path1" length="60"/>
+        </property>
+        <property name="isCentral"  type="string">
+            <column name="is_central" length="2"/>
+        </property>
+        <property name="introduction"  type="string">
+            <column name="introduction" length="1024"/>
+        </property>
+        <property name="pluMaterial"  type="string">
+            <column name="plu_material" length="1024"/>
+        </property>
+        <property name="remark"  type="string">
+            <column name="remark" length="60"/>
+        </property>
+          <property name="uidCode"  type="string">
+            <column name="uid_code" length="100"/>
+        </property>
+          <property name="scanCode"  type="string">
+            <column name="scan_code" length="100"/>
+        </property>
+          <property name="subject"  type="string">
+            <column name="subject" length="100"/>
+        </property>
+          <property name="subjectScanCode"  type="string">
+            <column name="subject_scan_code" length="100"/>
+        </property>
+         <property name="codeType"  type="string">
+            <column name="code_type" length="30" />
+        </property>
+        <property name="groupCode"  type="string">
+            <column name="group_code" length="30" />
+        </property> 
+        <property name="isGroup"  type="string">
+        	<column name="is_group" length="2"></column>
+        </property>
+        <property name="isHalt"  type="string">
+            <column name="is_halt" length="2">
+            </column>
+        </property>
+        <property name="listOrder" type="java.lang.Integer">
+            <column name="list_order">
+            </column>
+        </property>
+        <property name="createUser"  type="string">
+            <column name="create_user" length="20" />
+        </property>
+        <property name="createDatetime" type="timestamp">
+            <column name="create_datetime" length="0" />
+        </property>
+        <property name="modifyUser"  type="string">
+            <column name="modify_user" length="20" />
+        </property>
+        <property name="modifyDatetime" type="timestamp">
+            <column name="modify_datetime" length="0" />
+        </property>
+    </class>
+</hibernate-mapping>

@@ -1,0 +1,63 @@
+package com.greencloud.service;
+
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+
+import com.aua.service.IBaseService;
+import com.aua.util.Container;
+import com.greencloud.dto.CateringBatchUpdateDto;
+import com.greencloud.dto.CateringDto;
+import com.greencloud.dto.CateringSearchDto;
+import com.greencloud.dto.CateringTimeItem;
+import com.greencloud.entity.CateringMessage;
+import com.greencloud.entity.CateringPlace;
+import com.greencloud.entity.CateringResource;
+import com.greencloud.entity.CateringResourceMap;
+
+public interface ICateringService  extends IBaseService {
+
+	void deleteCateringPlace(Long hotelGroupId, Long hoteId, CateringPlace cp);
+
+	List<CateringResource> listResrouceByCategory(Long hotelGroupId, Long hotelId,String category);
+
+	void deleteCateringResource(Long hotelGroupId, Long hotelId,CateringResource cr);
+
+	void saveOrUpdateCateringDto(Long hotelGroupId, Long hotelId,CateringDto ctDto);
+
+	List<CateringResourceMap> listResourceMapByCateringId(Long hotelGroupId,Long hotelId, Long cateringId);
+
+	void deleteCateringResourceMap(Long hotelGroupId, Long hotelId,CateringResourceMap crm);
+
+	CateringResourceMap saveOrUpdateCateringResourceMap(Long hotelGroupId, Long hotelId,CateringResourceMap crm);
+
+	CateringResource findCateringResourceByCode(Long hotelGroupId,Long hotelId, String code);
+
+	CateringPlace findCateringPlaceByCode(Long hotelGroupId, Long hotelId,String code);
+
+	List<CateringPlace> listCateringPlace(Long hotelGroupId, Long hotelId,String... places);
+
+	CateringPlace saveOrUpdateCateringPlace(Long hotelGroupId, Long hotelId,CateringPlace cp);
+
+	void updateCancelCatering(Long hotelGroupId, Long hotelId,List<Long> idslong);
+
+	List<CateringMessage> listCateringMessage(Long hotelGroupId, Long hotelId,Long catering);
+
+	void deleteCateringMessage(Long hotelGroupId, Long hotelId,CateringMessage cm);
+
+	void saveOrUpdateCateringMessage(Long hotelGroupId, Long hotelId,List<CateringMessage> msgs);
+
+	void deleteCatering(Long hotelGroupId, Long hotelId, Long catering);
+
+	List<CateringDto> listCateringDtoByIds(Long hotelGroupId, Long hotelId,List<String> ids);
+
+	void updateFixCateringPlace(Long hotelGroupId, Long hotelId,int type,String remark,List<CateringTimeItem> items,Integer interval);
+
+	void updateExtraFlag(Long hotelGroupId, Long hotelId, Long cateringId,Integer index, int number);
+
+	Container<CateringDto> listDtoBySearchDto(Long hotelGroupId, Long hotelId,CateringSearchDto csdto);
+
+	List listItemsBySearchDto(Long hotelGroupId, Long hotelId,CateringSearchDto csdto);
+
+	void updateBatch(Long hotelGroupId, Long hotelId,CateringBatchUpdateDto updateDto, List<String> ids);
+}

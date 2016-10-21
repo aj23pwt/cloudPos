@@ -1,0 +1,171 @@
+package com.greencloud.service.impl;
+import com.aua.util.Container;
+import com.aua.dao.IBaseDao;
+import com.aua.service.impl.BaseServiceImpl;
+
+import java.util.Date;
+import java.util.List;
+
+import com.greencloud.entity.PosIp;
+import com.greencloud.dao.IPosIpDao;
+import com.greencloud.service.IPosIpService;
+
+import org.springframework.dao.DataAccessException;
+public class PosIpServiceImpl extends BaseServiceImpl implements IPosIpService
+{
+   //dao 
+   private IPosIpDao posIpDao;
+   
+  /**
+   *save posIp object  method
+   *@param posIp PosIp 
+   *@throws DataAccessException 
+   *@author  
+   *@version 1.0
+   *@date 2015-07-17 10:21
+   */
+  public void savePosIp(PosIp posIp) throws DataAccessException{
+     	if(log.isDebugEnabled()){
+			log.debug("start savePosIp method");
+		}
+         posIpDao.save(posIp);
+     	if(log.isDebugEnabled()){
+			log.debug("end savePosIp method");
+		}
+  }//end save method
+  
+   /**
+   *update posIp method
+   *@param posIp PosIp
+   *@throws DataAccessException 
+   *@author 
+   *@version 1.0
+   *@date 2015-07-17 10:21
+   */
+  public void updatePosIp(PosIp posIp) throws DataAccessException{ 
+  	    if(log.isDebugEnabled()){
+			log.debug("start updatePosIp method");
+		}
+        posIpDao.update(posIp);
+        if(log.isDebugEnabled()){
+			log.debug("end updatePosIp method");
+		}
+  }//end update method
+  
+   /**
+   *save or update posIp object method
+   *@param posIp PosIp
+   *@throws DataAccessException
+   *@author  
+   *@version 1.0
+   *@date 2015-07-17 10:21
+   */
+  public void saveOrUpdatePosIp(PosIp posIp) throws DataAccessException{//start saveOrUpdate method
+      
+        if(log.isDebugEnabled()){
+			log.debug("start saveOrUpdatePosIp method");
+		}
+		
+        posIpDao.saveOrUpdate(posIp);
+        
+        if(log.isDebugEnabled()){
+			log.debug("end saveOrUpdatePosIp method");
+		}
+		
+  }//end saveOrUpdate method
+
+  /**
+   *query a container obj
+   *@param posIp PosIp query vo
+   *@param firstResult
+   *@param maxResults 
+   *@throws DataAccessException 
+   *@author weihuawon
+   *@date 2015-07-17 10:21
+   */
+  public Container<PosIp> findPosIp(PosIp posIp,int firstResult ,int maxResults)throws DataAccessException{
+        if(log.isDebugEnabled()){
+			log.debug("start findPosIp method");
+		}
+        Container<PosIp> container = new Container<PosIp>();
+        List<PosIp> list = posIpDao.list(posIp, firstResult , maxResults);
+        container.setResults(list);
+        container.setTotalRows(posIpDao.count(posIp));
+        if(log.isDebugEnabled()){
+			log.debug("end findPosIp method");
+		}
+       return container;
+  }//end find method
+
+  /**
+   *count obj amount
+   *@param posIp PosIp query vo
+   *@throws DataAccessException
+   *@author 
+   *@date 2015-07-17 10:21
+   */
+  public int countPosIp(PosIp posIp)throws DataAccessException{
+    return posIpDao.count(posIp);
+  }//end count method
+  
+   /**
+   *query a posIp by id 
+   *@param id 
+   *@throws DataAccessException 
+   *@author 
+   *@date 2015-07-17 10:21
+   */
+  public PosIp findPosIpById(Long id)throws DataAccessException{
+    PosIp  posIp = posIpDao.load(id);
+    return posIp;
+  }//end findPosIpById method
+  
+    /**
+   *query posIp collection method
+   *@param posIp PosIp send query vo 
+   *@throws DataAccessException 
+   *@author 
+   *@version 1.0
+   *@date 2015-07-17  10:21
+   */
+  public List<PosIp> listPosIp(PosIp  posIp)
+		throws DataAccessException {
+	  List<PosIp> list = posIpDao.list(posIp);
+      return list;
+  }//end list method
+  
+   /**
+   *query posIp collection method
+   *@param posIp PosIp send query vo 
+   *@param firstResult 
+   *@param maxResults 
+   *@throws DataAccessException 
+   *@author 
+   *@version 1.0
+   *@date 2015-07-17  10:21
+   */
+  public List<PosIp> listPosIp(PosIp posIp,int firstResult ,int maxResults)throws DataAccessException{
+	   List<PosIp> list = posIpDao.list(posIp, firstResult ,maxResults);
+	   return list;
+  }
+  
+  /**
+   * Spring 
+   * @param  posIpDao 
+   * @author weihuawon
+   * @date 2015年M7月d17�?10:21
+   */
+  public void setPosIpDao(IPosIpDao posIpDao){ 
+     this.posIpDao = posIpDao;
+  }//end setPosIpDao method
+  
+  @Override
+  protected IBaseDao getDao(){
+    return this.posIpDao;
+  }//end getDao method
+
+@Override
+public List<PosIp> findPosIp(Long hotelGroupId, Long hotelId,Date modifyDatetime) {
+	return posIpDao.findPosIp(hotelGroupId, hotelId, modifyDatetime);
+}
+}//end class PosIpServiceImpl

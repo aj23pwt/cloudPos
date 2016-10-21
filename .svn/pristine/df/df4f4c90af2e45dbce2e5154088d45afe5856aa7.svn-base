@@ -1,0 +1,187 @@
+package com.greencloud.controller;
+
+
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletResponse;
+
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.alibaba.fastjson.JSON;
+import com.greencloud.entity.OperationInfo;
+import com.greencloud.service.IPosSubService;
+import com.greencloud.service.IPosSycOperation;
+import com.greencloud.util.DateUtil;
+
+/**
+ * 本地请求至中央,中央返回数据列表
+ * 
+ * @author gc-pwt
+ * @param <T>
+ *
+ */
+@Controller
+@Scope("prototype")
+@RequestMapping(value = "/PosSycRemoteGet")
+public class PosSycRemoteGetController {
+
+	@Resource
+	private IPosSycOperation posSycOperation;
+
+	private IPosSubService posSubService;
+
+	public void setPosSubService(IPosSubService posSubService) {
+		this.posSubService = posSubService;
+	}
+
+	public Object getclass(String className) throws InstantiationException,
+			IllegalAccessException, ClassNotFoundException { // className是类名
+		Object obj = Class.forName(className).newInstance(); // 以String类型的className实例化类
+		return obj;
+	}
+
+	/**
+	 * 中央被http请求，返回预订主单、预定金、预订菜式等信息
+	 * @param type
+	 *            类型：新增、修改
+	 * @param entity
+	 *            实体类名称
+	 * @param date
+	 *            日期
+	 * @param response
+	 * @throws Exception
+	 */
+	@RequestMapping(value = "/getRes")
+	@ResponseBody
+	public void getRes(
+			@RequestParam(value = "hotelGroupId", required = true) String hotelGroupId,
+			@RequestParam(value = "hotelId", required = true) String hotelId,
+			@RequestParam(value = "type", required = true) String type,
+			@RequestParam(value = "entity", required = true) String entity,
+			@RequestParam(value = "date", required = true) String date,
+			@RequestParam(value = "days", required = true) String days,
+			HttpServletResponse response) throws Exception {
+		ResponseJson j = new ResponseJson();
+
+		OperationInfo objectInfo = new OperationInfo();
+		objectInfo.setHotelGroupId(java.lang.Long.parseLong(hotelGroupId));
+		objectInfo.setHotelId(java.lang.Long.parseLong(hotelId));
+		objectInfo.setModifyDatetime(DateUtil.parseDateLongFormat(date));
+		List<Object> T = new ArrayList<Object>();
+		T = posSubService.getSycDaysList(entity, objectInfo, date,Integer.parseInt(days));
+		if (T !=null ) {
+			j.setSuccess(true);
+			j.setMsg("success");
+			j.setObj(JSON.toJSONString(T).toString());
+			
+		}
+		else{
+			j.setSuccess(false);
+			j.setMsg("没有符合条件的同步数据");
+		    j.setObj(entity);
+		}
+		BaseHttpResponseController.OutputJson(j, response);
+
+	}
+
+	/**
+	 * 中央被http请求,返回基本代码、中央设置代码等信息
+	 * @param hotelGroupId
+	 * @param hotelId
+	 * @param type
+	 * @param entity
+	 * @param date
+	 * @param response
+	 * @throws Exception
+	 */
+	@RequestMapping(value = "/getCode")
+	@ResponseBody
+	public void getCode(
+			@RequestParam(value = "hotelGroupId", required = true) String hotelGroupId,
+			@RequestParam(value = "hotelId", required = true) String hotelId,
+			@RequestParam(value = "type", required = true) String type,
+			@RequestParam(value = "entity", required = true) String entity,
+			@RequestParam(value = "date", required = true) String date,
+			HttpServletResponse response) throws Exception {
+		ResponseJson j = new ResponseJson();
+
+		OperationInfo objectInfo = new OperationInfo();
+		objectInfo.setHotelGroupId(java.lang.Long.parseLong(hotelGroupId));
+		objectInfo.setHotelId(java.lang.Long.parseLong(hotelId));
+		//SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+	//	SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+		objectInfo.setModifyDatetime(DateUtil.parseDateNewFormat(date));
+		
+			List<Object> T = new ArrayList<Object>();
+			T = posSubService.getSycCodeList(entity, objectInfo, date);
+			if (T !=null ) {
+				j.setSuccess(true);
+				j.setMsg("success");
+				j.setObj(JSON.toJSONString(T).toString());
+				//System.out.println(JSON.toJSONString(T).toString());
+			}
+			else{
+				j.setSuccess(false);
+				j.setMsg("没有符合条件的同步数据");
+				j.setObj(entity);
+			}
+		
+		BaseHttpResponseController.OutputJson(j, response);
+
+	}
+	/**
+	 * 中央被http请求,返回基本代码、中央设置代码等信息
+	 * @param hotelGroupId
+	 * @param hotelId
+	 * @param type
+	 * @param entity
+	 * @param date
+	 * @param response
+	 * @throws Exception
+	 */
+	@RequestMapping(value = "/getPmsCode")
+	@ResponseBody
+	public void getPmsCode(
+			@RequestParam(value = "hotelGroupId", required = true) String hotelGroupId,
+			@RequestParam(value = "hotelId", required = true) String hotelId,
+			@RequestParam(value = "type", required = true) String type,
+			@RequestParam(value = "entity", required = true) String entity,
+			@RequestParam(value = "date", required = true) String date,
+			HttpServletResponse response) throws Exception {
+		ResponseJson j = new ResponseJson();
+		
+		OperationInfo objectInfo = new OperationInfo();
+		objectInfo.setHotelGroupId(java.lang.Long.parseLong(hotelGroupId));
+		objectInfo.setHotelId(java.lang.Long.parseLong(hotelId));
+			List<Object> T = new ArrayList<Object>();
+			if(type.equalsIgnoreCase("ALL") || type.equalsIgnoreCase("HOTEL") || type.equalsIgnoreCase("GROUP")){
+				T = posSubService.getSycPmsCodeList(entity, objectInfo, date,type);
+			}
+//			else if(type.equalsIgnoreCase("F")){
+//				T = null;
+//			}
+			else if(type.equalsIgnoreCase("TIME")){
+				T = posSubService.getSycCodeList(entity, objectInfo, date);
+			}
+			if(T.size()>0){
+				j.setSuccess(true);
+				j.setMsg("success");
+				j.setObj(JSON.toJSONString(T).toString());
+				//System.out.println(JSON.toJSONString(T).toString());
+			}
+			else{
+				j.setSuccess(false);
+				j.setMsg("没有符合条件的同步数据");
+				j.setObj(entity);
+			}
+		
+		BaseHttpResponseController.OutputJson(j, response);
+
+	}
+}

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<update xmlns="http://ns.adobe.com/air/framework/update/description/2.5">
+
+<versionNumber>1.0.1</versionNumber>
+
+<versionLabel>V1.0.1</versionLabel>
+
+<url>assets.zip</url>
+
+<description> </description>
+
+</update>

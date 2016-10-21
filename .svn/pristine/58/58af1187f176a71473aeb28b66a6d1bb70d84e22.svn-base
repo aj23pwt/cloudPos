@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="
+           http://www.springframework.org/schema/beans
+           http://www.springframework.org/schema/beans/spring-beans-2.5.xsd"
+	default-autowire="byName">
+	
+	 	
+	 	<bean name="codeBaseDao" class="com.greencloud.dao.impl.CodeBaseDaoImpl" />
+	 	<bean name="hotelDao" class="com.greencloud.dao.impl.HotelDaoImpl" />
+	 	<bean name="posHibernateDao" class="com.greencloud.dao.impl.PosHibernateDaoImpl" />
+        <bean name="guestBaseDao" class="com.greencloud.dao.impl.GuestBaseDaoImpl" />
+        <bean name="companyBaseDao" class="com.greencloud.dao.impl.CompanyBaseDaoImpl"/>
+        <bean name="sysOptionDao" class="com.greencloud.dao.impl.SysOptionDaoImpl" />
+        <bean name="salesManBusinessDao" class="com.greencloud.dao.impl.SalesManBusinessDaoImpl"/>
+        <bean name="sysListMetaDao" class="com.greencloud.dao.impl.SysListMetaDaoImpl" />
+	<!-- <bean name="userDao" class="com.greencloud.dao.impl.UserDaoImpl"/> -->
+	<bean name="posSortAllDao" class="com.greencloud.dao.impl.PosSortAllDaoImpl" />
+	<bean name="posSubDao" class="com.greencloud.dao.impl.PosSubDaoImpl" />
+	<bean name="posAccessDao" class="com.greencloud.dao.impl.PosAccessDaoImpl" />
+	<bean name="posConddtlDao" class="com.greencloud.dao.impl.PosConddtlDaoImpl" />
+	<bean name="posCondstDao" class="com.greencloud.dao.impl.PosCondstDaoImpl" />
+	<bean name="posCurrentPriceDao" class="com.greencloud.dao.impl.PosCurrentPriceDaoImpl" />
+	<bean name="posModeDefDao" class="com.greencloud.dao.impl.PosModeDefDaoImpl" />
+	<bean name="posModeNameDao" class="com.greencloud.dao.impl.PosModeNameDaoImpl" />
+	<bean name="posPluAllDao" class="com.greencloud.dao.impl.PosPluAllDaoImpl" />
+	<bean name="posPluStdDao" class="com.greencloud.dao.impl.PosPluStdDaoImpl" />
+	<bean name="posPriceDao" class="com.greencloud.dao.impl.PosPriceDaoImpl" />
+	<bean name="posSysReasonDao" class="com.greencloud.dao.impl.PosSysReasonDaoImpl" />
+	<bean name="posPccodeDao" class="com.greencloud.dao.impl.PosPccodeDaoImpl" />
+	<bean name="posPccodeNoteDao" class="com.greencloud.dao.impl.PosPccodeNoteDaoImpl" />
+	<bean name="posPccodeShiftDao" class="com.greencloud.dao.impl.PosPccodeShiftDaoImpl" />
+	<bean name="posPccodeTableDao" class="com.greencloud.dao.impl.PosPccodeTableDaoImpl" />
+	<bean name="posStationDao" class="com.greencloud.dao.impl.PosStationDaoImpl" />
+	<bean name="posPayDao" class="com.greencloud.dao.impl.PosPayDaoImpl"/>
+    <bean name="posResOrderDao" class="com.greencloud.dao.impl.PosResOrderDaoImpl"/>
+	<bean name="posResDao" class="com.greencloud.dao.impl.PosResDaoImpl"/>
+	<bean name="posDetailDao" class="com.greencloud.dao.impl.PosDetailDaoImpl"/>
+	<bean name="posMasterDao" class="com.greencloud.dao.impl.PosMasterDaoImpl"/>
+	<bean name="posMasterHistoryDao" class="com.greencloud.dao.impl.PosMasterHistoryDaoImpl"/>
+	<bean name="posOrderDao" class="com.greencloud.dao.impl.PosOrderDaoImpl"/>
+	<bean name="posAccountDao" class="com.greencloud.dao.impl.PosAccountDaoImpl"/>
+	<bean name="posCloseDao" class="com.greencloud.dao.impl.PosCloseDaoImpl"/>
+	<bean name="posAccntSyncDao" class="com.greencloud.dao.impl.PosAccntSyncDaoImpl"/>
+	<bean name="posIpDao" class="com.greencloud.dao.impl.PosIpDaoImpl"/>
+	<bean name="posTableSyncDao" class="com.greencloud.dao.impl.PosTableSyncDaoImpl"/>
+	<bean name="userPosAuthDao" class="com.greencloud.dao.impl.UserPosAuthDaoImpl"/>
+	<bean name="userPosAuthUserAuthDao" class="com.greencloud.dao.impl.UserPosAuthUserAuthDaoImpl"/>
+	<bean name="posPrnscopeDao" class="com.greencloud.dao.impl.PosPrnscopeDaoImpl"/>
+	<bean name="posDishcardDao" class="com.greencloud.dao.impl.PosDishcardDaoImpl"/>
+	<bean name="posWebInterfaceLogDao" class="com.greencloud.dao.impl.PosWebInterfaceLogDaoImpl"/>
+	<!--酒水寄存 -->
+	<bean name="posDrinksConsumeDao" class="com.greencloud.dao.impl.PosDrinksConsumeDaoImpl"/>
+	<bean name="posDrinksDepositOrderDao" class="com.greencloud.dao.impl.PosDrinksDepositOrderDaoImpl"/>
+	
+	<bean name="posPrinterDao" class="com.greencloud.dao.impl.PosPrinterDaoImpl"/>
+	<bean name="posPluPrinterDao" class="com.greencloud.dao.impl.PosPluPrinterDaoImpl"/>
+	<bean name="posPserverDao" class="com.greencloud.dao.impl.PosPserverDaoImpl"/>
+	
+<!-- 	posStore -->
+	<bean name="posStoreArticleDao" class="com.greencloud.dao.impl.PosStoreArticleDaoImpl"/>
+	<bean name="posStoreClassDao" class="com.greencloud.dao.impl.PosStoreClassDaoImpl"/>
+	<bean name="posStoreSubclassDao" class="com.greencloud.dao.impl.PosStoreSubclassDaoImpl"/>
+	<bean name="posStoreBarDao" class="com.greencloud.dao.impl.PosStoreBarDaoImpl"/>
+	<bean name="posStoreDetailDao" class="com.greencloud.dao.impl.PosStoreDetailDaoImpl"/>
+	<bean name="posStoreMasterDao" class="com.greencloud.dao.impl.PosStoreMasterDaoImpl"/>
+</beans>
+

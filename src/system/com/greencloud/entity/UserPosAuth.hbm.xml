@@ -1,0 +1,55 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+    <class name="com.greencloud.entity.UserPosAuth" table="user_pos_auth">
+        <id name="id" type="java.lang.Long">
+            <column name="id" />
+            <generator class="identity" />
+        </id>
+        <property name="hotelGroupId" type="java.lang.Long">
+            <column name="hotel_group_id" />
+        </property>
+        <property name="hotelId" type="java.lang.Long">
+            <column name="hotel_id" />
+        </property>
+        <property name="appCode"  type="string">
+            <column name="app_code" />
+        </property>
+         <property name="code"  type="string">
+            <column name="code" />
+        </property>
+         <property name="parentCode" type="string">
+            <column name="parent_code" />
+        </property>
+        <property name="descript" type="string">
+            <column name="descript" />
+        </property>
+         <property name="descriptEn"  type="string">
+            <column name="descript_en" />
+        </property>
+        <property name="authFlag"  type="string">
+            <column name="auth_flag" />
+        </property>
+        <property name="isHalt"  type="string">
+            <column name="is_halt" length="2">
+            </column>
+        </property>
+        <property name="listOrder" type="java.lang.Integer">
+            <column name="list_order">
+            </column>
+        </property>
+        <property name="createUser"  type="string">
+            <column name="create_user" length="20" />
+        </property>
+        <property name="createDatetime" type="timestamp">
+            <column name="create_datetime" length="0" />
+        </property>
+        <property name="modifyUser"  type="string">
+            <column name="modify_user" length="20" />
+        </property>
+        <property name="modifyDatetime" type="timestamp">
+            <column name="modify_datetime" length="0" />
+        </property>
+    </class>
+</hibernate-mapping>

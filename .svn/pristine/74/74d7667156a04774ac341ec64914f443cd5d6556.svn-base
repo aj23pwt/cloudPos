@@ -1,0 +1,162 @@
+package com.greencloud.service.impl;
+import com.aua.util.Container;
+import com.aua.dao.IBaseDao;
+import com.aua.service.impl.BaseServiceImpl;
+import java.util.List;
+import com.greencloud.entity.PosStorePluArticle;
+import com.greencloud.dao.IPosStorePluArticleDao;
+import com.greencloud.service.IPosStorePluArticleService;
+import org.springframework.dao.DataAccessException;
+public class PosStorePluArticleServiceImpl extends BaseServiceImpl implements IPosStorePluArticleService
+{
+   //dao 
+   private IPosStorePluArticleDao posStorePluArticleDao;
+   
+  /**
+   *save posStorePluArticle object  method
+   *@param posStorePluArticle PosStorePluArticle 
+   *@throws DataAccessException 
+   *@author  
+   *@version 1.0
+   *@date 2016-01-21 09:34
+   */
+  public void savePosStorePluArticle(PosStorePluArticle posStorePluArticle) throws DataAccessException{
+     	if(log.isDebugEnabled()){
+			log.debug("start savePosStorePluArticle method");
+		}
+         posStorePluArticleDao.save(posStorePluArticle);
+     	if(log.isDebugEnabled()){
+			log.debug("end savePosStorePluArticle method");
+		}
+  }//end save method
+  
+   /**
+   *update posStorePluArticle method
+   *@param posStorePluArticle PosStorePluArticle
+   *@throws DataAccessException 
+   *@author 
+   *@version 1.0
+   *@date 2016-01-21 09:34
+   */
+  public void updatePosStorePluArticle(PosStorePluArticle posStorePluArticle) throws DataAccessException{ 
+  	    if(log.isDebugEnabled()){
+			log.debug("start updatePosStorePluArticle method");
+		}
+        posStorePluArticleDao.update(posStorePluArticle);
+        if(log.isDebugEnabled()){
+			log.debug("end updatePosStorePluArticle method");
+		}
+  }//end update method
+  
+   /**
+   *save or update posStorePluArticle object method
+   *@param posStorePluArticle PosStorePluArticle
+   *@throws DataAccessException
+   *@author  
+   *@version 1.0
+   *@date 2016-01-21 09:34
+   */
+  public void saveOrUpdatePosStorePluArticle(PosStorePluArticle posStorePluArticle) throws DataAccessException{//start saveOrUpdate method
+      
+        if(log.isDebugEnabled()){
+			log.debug("start saveOrUpdatePosStorePluArticle method");
+		}
+		
+        posStorePluArticleDao.saveOrUpdate(posStorePluArticle);
+        
+        if(log.isDebugEnabled()){
+			log.debug("end saveOrUpdatePosStorePluArticle method");
+		}
+		
+  }//end saveOrUpdate method
+
+  /**
+   *query a container obj
+   *@param posStorePluArticle PosStorePluArticle query vo
+   *@param firstResult
+   *@param maxResults 
+   *@throws DataAccessException 
+   *@author weihuawon
+   *@date 2016-01-21 09:34
+   */
+  public Container<PosStorePluArticle> findPosStorePluArticle(PosStorePluArticle posStorePluArticle,int firstResult ,int maxResults)throws DataAccessException{
+        if(log.isDebugEnabled()){
+			log.debug("start findPosStorePluArticle method");
+		}
+        Container<PosStorePluArticle> container = new Container<PosStorePluArticle>();
+        List<PosStorePluArticle> list = posStorePluArticleDao.list(posStorePluArticle, firstResult , maxResults);
+        container.setResults(list);
+        container.setTotalRows(posStorePluArticleDao.count(posStorePluArticle));
+        if(log.isDebugEnabled()){
+			log.debug("end findPosStorePluArticle method");
+		}
+       return container;
+  }//end find method
+
+  /**
+   *count obj amount
+   *@param posStorePluArticle PosStorePluArticle query vo
+   *@throws DataAccessException
+   *@author 
+   *@date 2016-01-21 09:34
+   */
+  public int countPosStorePluArticle(PosStorePluArticle posStorePluArticle)throws DataAccessException{
+    return posStorePluArticleDao.count(posStorePluArticle);
+  }//end count method
+  
+   /**
+   *query a posStorePluArticle by id 
+   *@param id 
+   *@throws DataAccessException 
+   *@author 
+   *@date 2016-01-21 09:34
+   */
+  public PosStorePluArticle findPosStorePluArticleById(Long id)throws DataAccessException{
+    PosStorePluArticle  posStorePluArticle = posStorePluArticleDao.load(id);
+    return posStorePluArticle;
+  }//end findPosStorePluArticleById method
+  
+    /**
+   *query posStorePluArticle collection method
+   *@param posStorePluArticle PosStorePluArticle send query vo 
+   *@throws DataAccessException 
+   *@author 
+   *@version 1.0
+   *@date 2016-01-21  09:34
+   */
+  public List<PosStorePluArticle> listPosStorePluArticle(PosStorePluArticle  posStorePluArticle)
+		throws DataAccessException {
+	  List<PosStorePluArticle> list = posStorePluArticleDao.list(posStorePluArticle);
+      return list;
+  }//end list method
+  
+   /**
+   *query posStorePluArticle collection method
+   *@param posStorePluArticle PosStorePluArticle send query vo 
+   *@param firstResult 
+   *@param maxResults 
+   *@throws DataAccessException 
+   *@author 
+   *@version 1.0
+   *@date 2016-01-21  09:34
+   */
+  public List<PosStorePluArticle> listPosStorePluArticle(PosStorePluArticle posStorePluArticle,int firstResult ,int maxResults)throws DataAccessException{
+	   List<PosStorePluArticle> list = posStorePluArticleDao.list(posStorePluArticle, firstResult ,maxResults);
+	   return list;
+  }
+  
+  /**
+   * Spring 
+   * @param  posStorePluArticleDao 
+   * @author weihuawon
+   * @date 2016年M1月d21�?09:34
+   */
+  public void setPosStorePluArticleDao(IPosStorePluArticleDao posStorePluArticleDao){ 
+     this.posStorePluArticleDao = posStorePluArticleDao;
+  }//end setPosStorePluArticleDao method
+  
+  @Override
+  protected IBaseDao getDao(){
+    return this.posStorePluArticleDao;
+  }//end getDao method
+}//end class PosStorePluArticleServiceImpl

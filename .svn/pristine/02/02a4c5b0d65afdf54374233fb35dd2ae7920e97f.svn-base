@@ -1,0 +1,12 @@
+SycHttpUrl=http://202.107.192.24:8101/pos
+hotelGroupId=2
+hotelId=24
+#unit:TimeUnit.HOURS
+PmsCodeSycTime=24
+#unit:TimeUnit.MINUTES
+CodeSycTime=60
+#unit:TimeUnit.SECONDS
+ResSycTime=120
+MaterSycTime=60
+#unit:TimeUnit.DAYS
+SycDays=2

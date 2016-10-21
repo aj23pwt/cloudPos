@@ -1,0 +1,216 @@
+package com.greencloud.dao.impl;
+import com.aua.util.SQLHelper;
+import com.aua.dao.impl.BaseDaoImpl;
+
+import static com.aua.util.StringHelper.*;
+
+import java.sql.CallableStatement;
+import java.sql.SQLException;
+import java.util.List;
+
+import com.greencloud.entity.PosStoreBar;
+import com.greencloud.dao.IPosStoreBarDao;
+
+import org.springframework.dao.DataAccessException;
+import org.springframework.jdbc.core.CallableStatementCallback;
+
+   /**
+   * operate PosStoreBar into db
+   *@author 
+   *@version 1.0
+   *@date 2015-12-16 10:15
+   */
+  public class PosStoreBarDaoImpl extends BaseDaoImpl implements IPosStoreBarDao{
+
+  /**
+   *save posStoreBar object  method
+   *@param posStoreBar PosStoreBar 
+   *@throws DataAccessException 
+   *@author  
+   *@version 1.0
+   *@date 2015-12-16 10:15
+   */
+  public void save(PosStoreBar posStoreBar) throws DataAccessException {
+       super.save(posStoreBar);
+  }
+  
+  /**
+   *update posStoreBar method
+   *@param posStoreBar PosStoreBar
+   *@throws DataAccessException 
+   *@author 
+   *@version 1.0
+   *@date 2015-12-16 10:15
+   */
+  public void update(PosStoreBar posStoreBar) throws DataAccessException{
+     super.update(posStoreBar);
+  }
+  
+   /**
+   *save or update posStoreBar object method
+   *@param posStoreBar PosStoreBar
+   *@throws DataAccessException
+   *@author  
+   *@version 1.0
+   *@date 2015-12-16 10:15
+   */
+  public void saveOrUpdate(PosStoreBar posStoreBar) throws DataAccessException{
+     super.saveOrUpdate(posStoreBar);
+  }
+  
+   /**
+   *query posStoreBar collection method
+   *@param posStoreBar PosStoreBar send query vo 
+   *@param firstResult 
+   *@param maxResults 
+   *@throws DataAccessException 
+   *@author 
+   *@version 1.0
+   *@date 2015-12-16  10:15
+   */
+  public List<PosStoreBar> list(PosStoreBar posStoreBar,int firstResult ,int maxResults)throws DataAccessException{
+  	 SQLHelper sh = new SQLHelper("SELECT obj FROM PosStoreBar obj WHERE 1=1 ");
+  	 spellSQL(sh,posStoreBar);
+  	 sh.appendSql(" ORDER BY obj.id DESC");
+  	 sh.setFirstResult(firstResult);
+  	 sh.setMaxResults(maxResults);
+  	 return find(sh);
+  }
+  
+   /**
+   *query collection method  
+   *@param posStoreBar PosStoreBar send query vo 
+   *@throws DataAccessException
+   *@author 
+   *@version 1.0
+   *@date 2015-12-16 10:15
+   */
+  public List<PosStoreBar> list(PosStoreBar posStoreBar)throws DataAccessException{
+  	 SQLHelper sh = new SQLHelper("SELECT obj FROM PosStoreBar obj WHERE 1=1 ");
+  	 spellSQL(sh,posStoreBar);
+  	 sh.appendSql(" ORDER BY obj.id DESC");
+  	 return find(sh);
+  }
+  
+  /**
+   *count obj amount
+   *@param posStoreBar PosStoreBar query vo
+   *@throws DataAccessException
+   *@author 
+   *@date 2015-12-16 10:15
+   */
+  public int count(PosStoreBar posStoreBar)throws DataAccessException
+  {
+    SQLHelper sh = new SQLHelper("SELECT count(obj) FROM PosStoreBar obj WHERE 1=1 ");
+    spellSQL(sh,posStoreBar);
+    return count(sh);
+  }
+  
+   /**
+   *query a posStoreBar by id 
+   *@param id 
+   *@throws DataAccessException 
+   *@author 
+   *@date 2015-12-16 10:15
+   */
+  public PosStoreBar load(Long id)throws DataAccessException
+  {
+    return load(PosStoreBar.class ,id);
+  }
+  
+  /*
+   *basic spell SQL method 
+   *@param posStoreBar query vo
+   *@throws DataAccessException 
+   *@author weihuawon
+   *@date 2015-12-16 10:15
+   */
+  private void spellSQL(SQLHelper sh,PosStoreBar posStoreBar)
+  {
+    if(posStoreBar != null){
+    	if(posStoreBar.getId()!= null){
+            sh.appendSql(" AND obj.id = ? ");
+            sh.insertValue(posStoreBar.getId());
+         }
+         if(posStoreBar.getHotelGroupId()!= null){
+            sh.appendSql(" AND obj.hotelGroupId = ? ");
+            sh.insertValue(posStoreBar.getHotelGroupId());
+         }
+         if(posStoreBar.getHotelId()!= null){
+            sh.appendSql(" AND obj.hotelId = ? ");
+            sh.insertValue(posStoreBar.getHotelId());
+         }
+        if(isNotNull(posStoreBar.getCode())){
+           sh.appendSql(" AND obj.code = ? ");
+           sh.insertValue(posStoreBar.getCode().trim());
+        }
+        if(isNotNull(posStoreBar.getDescript())){
+           sh.appendSql(" AND obj.descript = ? ");
+           sh.insertValue(posStoreBar.getDescript().trim());
+        }
+        if(isNotNull(posStoreBar.getDescriptEn())){
+           sh.appendSql(" AND obj.descriptEn = ? ");
+           sh.insertValue(posStoreBar.getDescriptEn().trim());
+        }
+        if(isNotNull(posStoreBar.getStaffId())){
+           sh.appendSql(" AND obj.staffId = ? ");
+           sh.insertValue(posStoreBar.getStaffId().trim());
+        }
+        if(isNotNull(posStoreBar.getPcCodes())){
+           sh.appendSql(" AND obj.pcCodes = ? ");
+           sh.insertValue(posStoreBar.getPcCodes().trim());
+        }
+        if(isNotNull(posStoreBar.getCreateUser())){
+            sh.appendSql(" AND obj.createUser = ? ");
+            sh.insertValue(posStoreBar.getCreateUser().trim());
+         }
+        if(posStoreBar.getCreateDatetime()!= null){
+            sh.appendSql(" AND obj.createDatetime = ? ");
+            sh.insertValue(posStoreBar.getCreateDatetime());
+         }
+         if(isNotNull(posStoreBar.getModifyUser())){
+            sh.appendSql(" AND obj.modifyUser = ? ");
+            sh.insertValue(posStoreBar.getModifyUser().trim());
+         }
+        if(posStoreBar.getModifyDatetime()!= null){
+            sh.appendSql(" AND obj.modifyDatetime = ? ");
+            sh.insertValue(posStoreBar.getModifyDatetime());
+         }
+    }
+  }
+	
+	@Override
+	public List<Object> getDataBySql(String sql) {
+		// TODO Auto-generated method stub
+		SQLHelper sh = new SQLHelper(sql);
+		return this.findByNativeSQL(sh);
+	}
+
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@Override
+	public void updateDataBySql(final Long hotelGroupId, final Long hotelId) {
+		// TODO Auto-generated method stub
+		
+			String sql  = "{CALL pos_store_inventory_proc(?,?)}";
+		getJdbcTemplate().execute(sql, new CallableStatementCallback() {
+
+			@Override
+			public Object doInCallableStatement(CallableStatement cs)
+					throws SQLException, DataAccessException {
+				cs.setLong(1, hotelGroupId);
+				cs.setLong(2, hotelId);
+				cs.execute();
+				return null;
+			}
+			
+		} );
+		
+	}
+
+	@Override
+	public void updateDataBySql(String sql) {
+		SQLHelper sh = new SQLHelper(sql);
+		this.bulkUpdateByNativeSQL(sh);
+		
+	}
+}

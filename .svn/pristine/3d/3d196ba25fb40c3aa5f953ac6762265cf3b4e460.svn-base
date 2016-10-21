@@ -1,0 +1,41 @@
+package com.greencloud.facade;
+
+import java.util.Date;
+import java.util.List;
+
+import com.greencloud.dto.POSInterfaceArDto;
+import com.greencloud.dto.POSInterfaceCardDto;
+import com.greencloud.dto.POSInterfaceFoDto;
+import com.greencloud.dto.POSInterfaceGuestDto;
+import com.greencloud.dto.PosLinkDto;
+import com.greencloud.dto.PosMasterDto;
+import com.greencloud.entity.PosAccntSync;
+import com.greencloud.entity.PosMaster;
+import com.greencloud.entity.PosRes;
+
+public interface IPosMasterFacade {
+	
+    public String savePosMaster(PosMaster posMaster,String pcid);
+    public String updateResNewMaster (PosRes res ,PosMaster posMaster,String pcid) ;
+    public PosMasterDto getPosMasterDtoByAccnt(String accnt,String tableNo,String sta);
+    public String updateTableNoByAccnt (String bizDate,String accnt,String shift,String oldTableNo,String newTableNo) ;
+    public String updateMasterPcrec(String oldAccnt, String newAccnt, String flag);
+    public PosMasterDto updateGetPosMasterDtoForCo(String accnt,String tableNo,Date bizDate);
+    public String updateCheckoutRevoke(String bizDate,String billno,String shift,String flag,String user);
+    public List<POSInterfaceFoDto> getFoList(String key,String rsvClass);
+    public List<POSInterfaceArDto> getArList(String key);
+    public List<POSInterfaceCardDto> getCardList(String key);
+    public List<POSInterfaceGuestDto> getGuestList(String key);
+    public List<POSInterfaceGuestDto> getCompanyList(String key);
+    
+    
+    public String updateMasterRevoke(Boolean isSure,String accnt,String shift,String user);
+    public <T> List<T> getPosDetailModeView(String bizDate,String accnts,String flag );
+    public void updatePosDec(String accnts,String dec);
+    public void updatePosMode(String accnts,String mode);
+    public void updatePosSuspend(String accnt,String shift, String user);
+    public String  updateMasterMergerTable(String oldAccnt, String newAccnt,String oldTableno, String newTbleno, String flag); 
+    public List<PosAccntSync> getPosAccntSyncList();
+    
+    public List<PosLinkDto> getPosLinkDtot(String accnt,String tableNo,Date bizDate);
+}

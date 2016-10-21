@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<!-- Generated 2014-10-31 9:50:26 by Hibernate Tools 3.4.0.CR1 -->
+<hibernate-mapping>
+    <class name="com.greencloud.entity.PosStoreArticle" table="pos_store_article" >
+        <id name="id" type="java.lang.Long">
+            <column name="id" />
+            <generator class="identity" />
+        </id>
+        <property name="hotelGroupId" type="long">
+            <column name="hotel_group_id" not-null="true" />
+        </property>
+        <property name="hotelId" type="long">
+            <column name="hotel_id" not-null="true" />
+        </property>
+        <property name="code" type="string">
+            <column name="code" length="12" not-null="true" />
+        </property>
+        <property name="name" type="string">
+            <column name="name" length="40" not-null="true" />
+        </property>
+        <property name="unit" type="string">
+            <column name="unit" length="6" not-null="true" />
+        </property>
+        <property name="price" type="big_decimal">
+            <column name="price" precision="12" />
+        </property>
+        <property name="maxQuan" type="big_decimal">
+            <column name="max_quan" precision="12" />
+        </property>
+        <property name="minQuan" type="big_decimal">
+            <column name="min_quan" precision="12" />
+        </property>
+        <property name="sseg" type="string">
+            <column name="sseg" length="12" />
+        </property>
+        <property name="sname" type="string">
+            <column name="sname" length="16" />
+        </property>
+        <property name="cseg" type="string">
+            <column name="cseg" length="12" />
+        </property>
+        <property name="cname" type="string">
+            <column name="cname" length="10" />
+        </property>
+        <property name="oactmode" type="string">
+            <column name="oactmode" length="10" />
+        </property>
+        <property name="actmode" type="string">
+            <column name="actmode" length="10" />
+        </property>
+        <property name="helpcode" type="string">
+            <column name="helpcode" length="60" />
+        </property>
+        <property name="standent" type="string">
+            <column name="standent" length="16" />
+        </property>
+        <property name="band" type="string">
+            <column name="band" length="10" />
+        </property>
+        <property name="warning" type="java.lang.Integer">
+            <column name="warning" />
+        </property>
+        <property name="lpno" type="java.lang.Integer">
+            <column name="lpno" />
+        </property>
+        <property name="lprice" type="big_decimal">
+            <column name="lprice" precision="12" />
+        </property>
+        <property name="unit2" type="string">
+            <column name="unit2" length="6" />
+        </property>
+        <property name="equn2" type="big_decimal">
+            <column name="equn2" precision="12" />
+        </property>
+        <property name="minprice" type="big_decimal">
+            <column name="minprice" precision="12" />
+        </property>
+        <property name="minsup" type="string">
+            <column name="minsup" length="14" />
+        </property>
+        <property name="maxprice" type="big_decimal">
+            <column name="maxprice" precision="12" />
+        </property>
+        <property name="maxsup" type="string">
+            <column name="maxsup" length="14" />
+        </property>
+        <property name="avprice" type="big_decimal">
+            <column name="avprice" precision="12" />
+        </property>
+        <property name="storage" type="string">
+            <column name="storage" length="2" />
+        </property>
+        <property name="quocode" type="string">
+            <column name="quocode" length="3" />
+        </property>
+        <property name="csnumber" type="big_decimal">
+            <column name="csnumber" precision="12" />
+        </property>
+        <property name="csunit" type="string">
+            <column name="csunit" length="4" />
+        </property>
+        <property name="csbili" type="java.lang.Integer">
+            <column name="csbili" />
+        </property>
+        <property name="cstype" type="string">
+            <column name="cstype" length="2" />
+        </property>
+        <property name="safeQuan" type="big_decimal">
+            <column name="safe_quan" precision="12" />
+        </property>
+        <property name="valid" type="java.lang.Character">
+            <column name="valid" length="1" />
+        </property>
+        <property name="ref" type="string">
+            <column name="ref" length="60" />
+        </property>
+        <property name="salePrice" type="big_decimal">
+            <column name="sale_price" precision="12" />
+        </property>
+        <property name="limitnumber" type="big_decimal">
+            <column name="limitnumber" precision="12" />
+        </property>
+        <property name="engName" type="string">
+            <column name="eng_name" length="60" />
+        </property>
+        <property name="engSname" type="string">
+            <column name="eng_sname" length="60" />
+        </property>
+        <property name="engCname" type="string">
+            <column name="eng_cname" length="60" />
+        </property>
+        <property name="createUser" type="string">
+            <column name="create_user" length="20" not-null="true" />
+        </property>
+        <property name="createDatetime" type="timestamp">
+            <column name="create_datetime" length="0" not-null="true" />
+        </property>
+        <property name="modifyUser" type="string">
+            <column name="modify_user" length="20" not-null="true" />
+        </property>
+        <property name="modifyDatetime" type="timestamp">
+            <column name="modify_datetime" length="0" not-null="true" />
+        </property>
+        <property name="isGroup" type="string">
+            <column name="is_group" length="2" >
+                <comment>T=yes F=no</comment>
+            </column>
+        </property>
+        <property name="groupCode" type="string">
+            <column name="group_code" length="30" />
+        </property>
+        <property name="codeType" type="string">
+            <column name="code_type" length="30" />
+        </property>
+    </class>
+</hibernate-mapping>

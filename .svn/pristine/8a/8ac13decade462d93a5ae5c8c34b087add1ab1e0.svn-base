@@ -1,0 +1,249 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="
+           http://www.springframework.org/schema/beans
+           http://www.springframework.org/schema/beans/spring-beans-2.5.xsd 
+           http://www.springframework.org/schema/context 
+           http://www.springframework.org/schema/context/spring-context-3.0.xsd"
+	default-autowire="byName">
+
+	<context:component-scan base-package="com.greencloud" />
+	<bean id="entityInterceptor"
+		class="com.greencloud.hibernate.interceptor.OperationInfoInterceptor" />
+
+	<bean id="sessionFactory"
+		class="org.springframework.orm.hibernate3.LocalSessionFactoryBean">
+		<property name="mappingResources">
+			<list>
+			<!--  
+			<value>com/greencloud/entity/GuestServer.hbm.xml</value>
+			-->
+
+				
+				<value>com/greencloud/entity/CodeDir.hbm.xml</value>
+				<value>com/greencloud/entity/UploadFile.hbm.xml</value>
+				<value>com/greencloud/entity/RepDai.hbm.xml</value>
+				<value>com/greencloud/entity/RepDaiHistory.hbm.xml</value>
+				<value>com/greencloud/entity/RepDaiSd.hbm.xml</value>
+				<value>com/greencloud/entity/RepDaiSdHistory.hbm.xml</value>
+				<value>com/greencloud/entity/RepJie.hbm.xml</value>
+				<value>com/greencloud/entity/RepJieDai.hbm.xml</value>
+				<value>com/greencloud/entity/RepJiedaiHistory.hbm.xml</value>
+				<value>com/greencloud/entity/RepJieHistory.hbm.xml</value>
+				<value>com/greencloud/entity/RepJieSd.hbm.xml</value>
+				<value>com/greencloud/entity/ReportCategory.hbm.xml</value>
+				<value>com/greencloud/entity/ReportCenter.hbm.xml</value>
+				<value>com/greencloud/entity/ReportExpressCode.hbm.xml</value>
+				<value>com/greencloud/entity/ReportExpressDefine.hbm.xml</value>
+				<value>com/greencloud/entity/RepPaySum.hbm.xml</value>
+				<value>com/greencloud/entity/RepPaySumHistory.hbm.xml</value>
+				<value>com/greencloud/entity/RepTrialBalance.hbm.xml</value>
+				<value>com/greencloud/entity/RepTrialBalanceHistory.hbm.xml</value>
+				<value>com/greencloud/entity/RepGrpBusinessD.hbm.xml</value>
+				<value>com/greencloud/entity/RepGrpBusinessM.hbm.xml</value>
+				<value>com/greencloud/entity/RepGrpIncomeD.hbm.xml</value>
+				<value>com/greencloud/entity/RepGrpIncomeM.hbm.xml</value>
+				<value>com/greencloud/entity/ActionHistory.hbm.xml</value>
+				<value>com/greencloud/entity/App.hbm.xml</value>
+				<value>com/greencloud/entity/ArDetail.hbm.xml</value>
+				<value>com/greencloud/entity/AreaCount.hbm.xml</value>
+				<value>com/greencloud/entity/AsyncMessage.hbm.xml</value>
+				<value>com/greencloud/entity/BizMonth.hbm.xml</value>
+				<value>com/greencloud/entity/Calendar.hbm.xml</value>
+				<value>com/greencloud/entity/Cardbin.hbm.xml</value>
+				<value>com/greencloud/entity/CodeArticle.hbm.xml</value>
+				<value>com/greencloud/entity/CodeBankcardLink.hbm.xml</value>
+				<value>com/greencloud/entity/CodeBase.hbm.xml</value>
+				<value>com/greencloud/entity/CodeBrief.hbm.xml</value>
+				<value>com/greencloud/entity/CodeCache.hbm.xml</value>
+				<value>com/greencloud/entity/CodeCancelRule.hbm.xml</value>
+				<value>com/greencloud/entity/CodeCity.hbm.xml</value>
+				<value>com/greencloud/entity/CodeCountry.hbm.xml</value>
+				<value>com/greencloud/entity/CodeCurrency.hbm.xml</value>
+				<value>com/greencloud/entity/CodeDelete.hbm.xml</value>
+				<value>com/greencloud/entity/CodeDepositRule.hbm.xml</value>
+				<value>com/greencloud/entity/CodeDictionary.hbm.xml</value>
+				<value>com/greencloud/entity/CodeDivision.hbm.xml</value>
+				<value>com/greencloud/entity/CodeGreeting.hbm.xml</value>
+				<value>com/greencloud/entity/CodeMaint.hbm.xml</value>
+				<value>com/greencloud/entity/CodePackage.hbm.xml</value>
+				<value>com/greencloud/entity/CodePinYin.hbm.xml</value>
+				<value>com/greencloud/entity/CodeProfileCardType.hbm.xml</value>
+				<value>com/greencloud/entity/CodeProvince.hbm.xml</value>
+				<value>com/greencloud/entity/CodeReason.hbm.xml</value>
+				<value>com/greencloud/entity/CodeRentalPlu.hbm.xml</value>
+				<value>com/greencloud/entity/CodeRentalShowPeriod.hbm.xml</value>
+				<value>com/greencloud/entity/CodeRentalSort.hbm.xml</value>
+				<value>com/greencloud/entity/CodeRoomAssignment.hbm.xml</value>
+				<value>com/greencloud/entity/CodeRound.hbm.xml</value>
+				<value>com/greencloud/entity/CodeRouting.hbm.xml</value>
+				<value>com/greencloud/entity/CodeRsvSpecial.hbm.xml</value>
+				<value>com/greencloud/entity/CodeRsvType.hbm.xml</value>
+				<value>com/greencloud/entity/CodeScenicSpot.hbm.xml</value>
+				<value>com/greencloud/entity/CodeShoppingDistrict.hbm.xml</value>
+				<value>com/greencloud/entity/CodeTown.hbm.xml</value>
+				<value>com/greencloud/entity/CodeTransaction.hbm.xml</value>
+				<value>com/greencloud/entity/CodeHotelSelect.hbm.xml</value>
+				<value>com/greencloud/entity/CodeHotelSelectDetail.hbm.xml</value>
+				<value>com/greencloud/entity/GooglePosition.hbm.xml</value>
+				<value>com/greencloud/entity/Hotel.hbm.xml</value>
+				<value>com/greencloud/entity/HotelAroundTraffic.hbm.xml</value>
+				<value>com/greencloud/entity/HotelGroup.hbm.xml</value>
+				<value>com/greencloud/entity/HotelPromotion.hbm.xml</value>
+				<value>com/greencloud/entity/HotelServiceConfig.hbm.xml</value>
+				<value>com/greencloud/entity/HotelSpecialPrompt.hbm.xml</value>
+				<value>com/greencloud/entity/Ip.hbm.xml</value>
+				<value>com/greencloud/entity/Locale.hbm.xml</value>
+				<value>com/greencloud/entity/RoomDayuseDefine.hbm.xml</value>
+				<value>com/greencloud/entity/SalesChannel.hbm.xml</value>
+				<value>com/greencloud/entity/SearchBar.hbm.xml</value>
+				<value>com/greencloud/entity/SearchItem.hbm.xml</value>
+				<value>com/greencloud/entity/SearchItemBar.hbm.xml</value>
+				<value>com/greencloud/entity/SelectedObject.hbm.xml</value>
+				<value>com/greencloud/entity/ShortcutKey.hbm.xml</value>
+				<value>com/greencloud/entity/Sso.hbm.xml</value>
+				<value>com/greencloud/entity/SysConstraint.hbm.xml</value>
+				<value>com/greencloud/entity/SysConstraintRule.hbm.xml</value>
+				<value>com/greencloud/entity/SysError.hbm.xml</value>
+				<value>com/greencloud/entity/SysExtraId.hbm.xml</value>
+				<value>com/greencloud/entity/SysHelp.hbm.xml</value>
+				<value>com/greencloud/entity/SysListCfg.hbm.xml</value>
+				<value>com/greencloud/entity/SysListMeta.hbm.xml</value>
+				<value>com/greencloud/entity/SysOption.hbm.xml</value>
+				<value>com/greencloud/entity/SysTemplate.hbm.xml</value>
+				<value>com/greencloud/entity/TabToolbar.hbm.xml</value>
+				<value>com/greencloud/entity/Toolbar.hbm.xml</value>
+				<value>com/greencloud/entity/ToolbarFavourite.hbm.xml</value>
+				<value>com/greencloud/entity/User.hbm.xml</value>
+				<value>com/greencloud/entity/UserAuth.hbm.xml</value>
+				<value>com/greencloud/entity/UserAuthBuilding.hbm.xml</value>
+				<value>com/greencloud/entity/UserAuthCache.hbm.xml</value>
+				<value>com/greencloud/entity/UserAuthCfgDeptRole.hbm.xml</value>
+				<value>com/greencloud/entity/UserAuthCfgRoleAuth.hbm.xml</value>
+				<value>com/greencloud/entity/UserAuthCfgRoleRep.hbm.xml</value>
+				<value>com/greencloud/entity/UserAuthCfgUserRole.hbm.xml</value>
+				<value>com/greencloud/entity/UserAuthTemp.hbm.xml</value>
+				<value>com/greencloud/entity/UserAuthTempUser.hbm.xml</value>
+				<value>com/greencloud/entity/UserDept.hbm.xml</value>
+				<value>com/greencloud/entity/UserRole.hbm.xml</value>
+				<value>com/greencloud/entity/UserPwd.hbm.xml</value>
+				<value>com/greencloud/entity/VelocityTemplate.hbm.xml</value>
+				<value>com/greencloud/entity/WorkBtn.hbm.xml</value>
+				<value>com/greencloud/entity/WorkSheet.hbm.xml</value>
+				<value>com/greencloud/entity/WorkSheetBtnCfg.hbm.xml</value>
+				<value>com/greencloud/entity/WorkSheetStatusCfg.hbm.xml</value>
+				<value>com/greencloud/entity/WorkStation.hbm.xml</value>
+				<value>com/greencloud/entity/WorkStationStatus.hbm.xml</value>
+				<value>com/greencloud/entity/WorkStationStatusHistory.hbm.xml</value>
+				<value>com/greencloud/entity/WorkStationVerify.hbm.xml</value>
+				<value>com/greencloud/entity/WorkStatus.hbm.xml</value>
+				<value>com/greencloud/entity/BillDefine.hbm.xml</value>
+				<value>com/greencloud/entity/BillModifyDetail.hbm.xml</value>
+				<value>com/greencloud/entity/BillModifyHead.hbm.xml</value>
+				<value>com/greencloud/entity/BillPrinter.hbm.xml</value>
+				<value>com/greencloud/entity/BillSceneLink.hbm.xml</value>
+				<value>com/greencloud/entity/BillTemplate.hbm.xml</value>
+				<value>com/greencloud/entity/CodeBrandArea.hbm.xml</value>
+				<value>com/greencloud/entity/FormSync.hbm.xml</value>
+				<value>com/greencloud/entity/ReportAudit.hbm.xml</value>
+				<value>com/greencloud/entity/RepAudit.hbm.xml</value>
+				<value>com/greencloud/entity/UserAuthCacheCustom.hbm.xml</value>
+				<value>com/greencloud/entity/UserAuthHotelRange.hbm.xml</value>
+				
+				<value>com/greencloud/entity/AuditFlag.hbm.xml</value>
+				<value>com/greencloud/entity/AuditProcess.hbm.xml</value>
+				
+				<value>com/greencloud/entity/SalesMan.hbm.xml</value>
+				<value>com/greencloud/entity/SalesManBusiness.hbm.xml</value>
+				<!--综合收银 -->
+				<value>com/greencloud/entity/PosSortAll.hbm.xml</value>
+				<value>com/greencloud/entity/PosAccess.hbm.xml</value>
+				<value>com/greencloud/entity/PosConddtl.hbm.xml</value>
+				<value>com/greencloud/entity/PosCondst.hbm.xml</value>
+				<value>com/greencloud/entity/PosCurrentPrice.hbm.xml</value>
+				<value>com/greencloud/entity/PosModeDef.hbm.xml</value>
+				<value>com/greencloud/entity/PosModeName.hbm.xml</value>
+				<value>com/greencloud/entity/PosPluAll.hbm.xml</value>
+				<value>com/greencloud/entity/PosPluStd.hbm.xml</value>
+				<value>com/greencloud/entity/PosPrice.hbm.xml</value>
+				<value>com/greencloud/entity/PosSysReason.hbm.xml</value>
+				<value>com/greencloud/entity/PosPccode.hbm.xml</value>
+                <value>com/greencloud/entity/PosPccodeNote.hbm.xml</value>
+                <value>com/greencloud/entity/PosPccodeShift.hbm.xml</value>
+                <value>com/greencloud/entity/PosPccodeTable.hbm.xml</value>
+                <value>com/greencloud/entity/PosStation.hbm.xml</value>
+				<value>com/greencloud/entity/PosPay.hbm.xml</value>
+				<value>com/greencloud/entity/PosResOrder.hbm.xml</value>
+                <value>com/greencloud/entity/PosRes.hbm.xml</value>
+                <value>com/greencloud/entity/PosAccount.hbm.xml</value>
+                <value>com/greencloud/entity/PosAccountHistory.hbm.xml</value>
+				<value>com/greencloud/entity/PosMaster.hbm.xml</value>
+				<value>com/greencloud/entity/PosMasterHistory.hbm.xml</value>
+				<value>com/greencloud/entity/PosOrder.hbm.xml</value>
+				<value>com/greencloud/entity/PosDetail.hbm.xml</value>
+				<value>com/greencloud/entity/PosDetailHistory.hbm.xml</value>
+				<value>com/greencloud/entity/PosClose.hbm.xml</value>
+				<value>com/greencloud/entity/PosAccntSync.hbm.xml</value>
+				<value>com/greencloud/entity/PosIp.hbm.xml</value>
+				<value>com/greencloud/entity/PosTableSync.hbm.xml</value>
+				<value>com/greencloud/entity/UserPosAuth.hbm.xml</value>
+				<value>com/greencloud/entity/UserPosAuthUserAuth.hbm.xml</value>
+				<value>com/greencloud/entity/PosPrinter.hbm.xml</value>
+				<value>com/greencloud/entity/PosPrnscope.hbm.xml</value>
+				<value>com/greencloud/entity/PosDishcard.hbm.xml</value>
+				<value>com/greencloud/entity/PosPluPrinter.hbm.xml</value>
+				<value>com/greencloud/entity/PosWebInterfaceLog.hbm.xml</value>
+	            <value>com/greencloud/entity/PosPccodeAuditFlag.hbm.xml</value>
+				<!-- 酒水寄存 -->
+				<value>com/greencloud/entity/PosDrinksConsume.hbm.xml</value>
+				<value>com/greencloud/entity/PosDrinksDepositOrder.hbm.xml</value>
+				<value>com/greencloud/entity/PosPserver.hbm.xml</value>
+<!-- 				posStore -->
+				<value>com/greencloud/entity/PosStoreArticle.hbm.xml</value>
+				<value>com/greencloud/entity/PosStoreClass.hbm.xml</value>
+				<value>com/greencloud/entity/PosStoreSubclass.hbm.xml</value>
+				<value>com/greencloud/entity/PosStoreBar.hbm.xml</value>
+				<value>com/greencloud/entity/PosStoreDetail.hbm.xml</value>
+				<value>com/greencloud/entity/PosStoreMaster.hbm.xml</value>
+				<value>com/greencloud/entity/PosStoreUnit.hbm.xml</value>
+				<value>com/greencloud/entity/PosStorePluArticle.hbm.xml</value>
+				<!--跨酒店转账-->
+				<value>com/greencloud/entity/PosHotelTransfer.hbm.xml</value>
+			</list>
+		</property>
+		<property name="hibernateProperties">
+			<props>
+				<prop key="hibernate.dialect">${hibernate.dialect}</prop>
+				<prop key="hibernate.format_sql">${hibernate.format_sql}</prop>
+				<prop key="hibernate.show_sql">${hibernate.show_sql}</prop>
+				<prop key="hibernate.generate_statistics">${hibernate.generate_statistics}</prop>
+			</props>
+		</property>
+		<property name="eventListeners">
+			<map>
+				<entry key="merge">
+					<bean
+						class="org.springframework.orm.hibernate3.support.IdTransferringMergeEventListener" />
+				</entry>
+				
+				<!--  entry key="post-insert">
+					<bean class="com.greencloud.listener.PostInsertListener">
+
+					</bean>
+				</entry-->
+				<entry key="post-update">
+					<bean class="com.greencloud.listener.LogInfoPosListener">
+
+					</bean>
+				</entry>
+				<!-- entry key="post-delete">
+					<bean class="com.greencloud.listener.CodeDeleteListener" />
+				</entry-->
+				
+			</map>
+		</property>
+	</bean>
+</beans>
+
+

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="pos" basedir="." default="pos.war">
+	<target name="pos.war" >
+		<echo message="开始打包pos.war" />
+		<war destfile="pos.war" webxml="${basedir}/WebRoot/WEB-INF/web.xml">
+			<fileset dir="${basedir}/WebRoot" />
+		</war>
+		<echo message="结束打包pos.war" />
+	</target>
+</project>

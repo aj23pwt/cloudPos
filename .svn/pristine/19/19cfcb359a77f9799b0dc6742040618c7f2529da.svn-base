@@ -1,0 +1,258 @@
+package com.greencloud.dao.impl;
+import com.aua.util.SQLHelper;
+import com.aua.dao.impl.BaseDaoImpl;
+
+import static com.aua.util.StringHelper.*;
+
+import java.util.List;
+
+import com.greencloud.entity.PosPccode;
+import com.greencloud.dao.IPosPccodeDao;
+
+import org.springframework.dao.DataAccessException;
+
+   /**
+   * operate PosPccode into db
+   *@author 
+   *@version 1.0
+   *@date 2015-03-24 09:33
+   */
+  public class PosPccodeDaoImpl extends BaseDaoImpl implements IPosPccodeDao{
+
+  /**
+   *save posPccode object  method
+   *@param posPccode PosPccode 
+   *@throws DataAccessException 
+   *@author  
+   *@version 1.0
+   *@date 2015-03-24 09:33
+   */
+  public void save(PosPccode posPccode) throws DataAccessException {
+       super.save(posPccode);
+  }
+  
+  /**
+   *update posPccode method
+   *@param posPccode PosPccode
+   *@throws DataAccessException 
+   *@author 
+   *@version 1.0
+   *@date 2015-03-24 09:33
+   */
+  public void update(PosPccode posPccode) throws DataAccessException{
+     super.update(posPccode);
+  }
+  
+   /**
+   *save or update posPccode object method
+   *@param posPccode PosPccode
+   *@throws DataAccessException
+   *@author  
+   *@version 1.0
+   *@date 2015-03-24 09:33
+   */
+  public void saveOrUpdate(PosPccode posPccode) throws DataAccessException{
+     super.saveOrUpdate(posPccode);
+  }
+  
+   /**
+   *query posPccode collection method
+   *@param posPccode PosPccode send query vo 
+   *@param firstResult 
+   *@param maxResults 
+   *@throws DataAccessException 
+   *@author 
+   *@version 1.0
+   *@date 2015-03-24  09:33
+   */
+  public List<PosPccode> list(PosPccode posPccode,int firstResult ,int maxResults)throws DataAccessException{
+  	 SQLHelper sh = new SQLHelper("SELECT obj FROM PosPccode obj WHERE 1=1 ");
+  	 spellSQL(sh,posPccode);
+  	 sh.appendSql(" ORDER BY obj.id DESC");
+  	 sh.setFirstResult(firstResult);
+  	 sh.setMaxResults(maxResults);
+  	 return find(sh);
+  }
+  
+   /**
+   *query collection method  
+   *@param posPccode PosPccode send query vo 
+   *@throws DataAccessException
+   *@author 
+   *@version 1.0
+   *@date 2015-03-24 09:33
+   */
+  public List<PosPccode> list(PosPccode posPccode)throws DataAccessException{
+  	 SQLHelper sh = new SQLHelper("SELECT obj FROM PosPccode obj WHERE 1=1 ");
+  	 spellSQL(sh,posPccode);
+  	 sh.appendSql(" ORDER BY obj.id DESC");
+  	 return find(sh);
+  }
+  
+  /**
+   *count obj amount
+   *@param posPccode PosPccode query vo
+   *@throws DataAccessException
+   *@author 
+   *@date 2015-03-24 09:33
+   */
+  public int count(PosPccode posPccode)throws DataAccessException
+  {
+    SQLHelper sh = new SQLHelper("SELECT count(obj) FROM PosPccode obj WHERE 1=1 ");
+    spellSQL(sh,posPccode);
+    return count(sh);
+  }
+  
+   /**
+   *query a posPccode by id 
+   *@param id 
+   *@throws DataAccessException 
+   *@author 
+   *@date 2015-03-24 09:33
+   */
+  public PosPccode load(Long id)throws DataAccessException
+  {
+    return load(PosPccode.class ,id);
+  }
+  
+  /*
+   *basic spell SQL method 
+   *@param posPccode query vo
+   *@throws DataAccessException 
+   *@author weihuawon
+   *@date 2015-03-24 09:33
+   */
+  private void spellSQL(SQLHelper sh,PosPccode posPccode)
+  {
+    if(posPccode != null){
+    	if(posPccode.getId()!= null){
+            sh.appendSql(" AND obj.id = ? ");
+            sh.insertValue(posPccode.getId());
+         }
+         if(posPccode.getHotelGroupId()!= null){
+            sh.appendSql(" AND obj.hotelGroupId = ? ");
+            sh.insertValue(posPccode.getHotelGroupId());
+         }
+         if(posPccode.getHotelId()!= null){
+            sh.appendSql(" AND obj.hotelId = ? ");
+            sh.insertValue(posPccode.getHotelId());
+         }
+        if(isNotNull(posPccode.getCode())){
+           sh.appendSql(" AND obj.code = ? ");
+           sh.insertValue(posPccode.getCode().trim());
+        }
+        if(isNotNull(posPccode.getTaCode())){
+            sh.appendSql(" AND obj.taCode = ? ");
+            sh.insertValue(posPccode.getTaCode().trim());
+         }
+        if(isNotNull(posPccode.getDescript())){
+           sh.appendSql(" AND obj.descript = ? ");
+           sh.insertValue(posPccode.getDescript().trim());
+        }
+        if(isNotNull(posPccode.getDescriptEn())){
+           sh.appendSql(" AND obj.descriptEn = ? ");
+           sh.insertValue(posPccode.getDescriptEn().trim());
+        }
+        if(isNotNull(posPccode.getMenuType())){
+           sh.appendSql(" AND obj.menuType = ? ");
+           sh.insertValue(posPccode.getMenuType().trim());
+        }
+       if(posPccode.getDscRate()!= null){
+           sh.appendSql(" AND obj.dscRate = ? ");
+           sh.insertValue(posPccode.getDscRate());
+        }
+       if(posPccode.getServeRate()!= null){
+           sh.appendSql(" AND obj.serveRate = ? ");
+           sh.insertValue(posPccode.getServeRate());
+        }
+       if(posPccode.getTaxRate()!= null){
+           sh.appendSql(" AND obj.taxRate = ? ");
+           sh.insertValue(posPccode.getTaxRate());
+        }
+       if(posPccode.getDecLength()!= null){
+           sh.appendSql(" AND obj.decLength = ? ");
+           sh.insertValue(posPccode.getDecLength());
+        }
+        if(isNotNull(posPccode.getDecMode())){
+           sh.appendSql(" AND obj.decMode = ? ");
+           sh.insertValue(posPccode.getDecMode().trim());
+        }
+        if(isNotNull(posPccode.getGroundBmp())){
+           sh.appendSql(" AND obj.groundBmp = ? ");
+           sh.insertValue(posPccode.getGroundBmp().trim());
+        }
+       if(posPccode.getQuantity()!= null){
+           sh.appendSql(" AND obj.quantity = ? ");
+           sh.insertValue(posPccode.getQuantity());
+        }
+       if(posPccode.getOverquan()!= null){
+           sh.appendSql(" AND obj.overquan = ? ");
+           sh.insertValue(posPccode.getOverquan());
+        }
+        if(isNotNull(posPccode.getDeptno())){
+           sh.appendSql(" AND obj.deptno = ? ");
+           sh.insertValue(posPccode.getDeptno().trim());
+        }
+        if(isNotNull(posPccode.getLanguage())){
+           sh.appendSql(" AND obj.language = ? ");
+           sh.insertValue(posPccode.getLanguage().trim());
+        }
+        if(isNotNull(posPccode.getRemark())){
+           sh.appendSql(" AND obj.remark = ? ");
+           sh.insertValue(posPccode.getRemark().trim());
+        }
+        if(isNotNull(posPccode.getExp1())){
+           sh.appendSql(" AND obj.exp1 = ? ");
+           sh.insertValue(posPccode.getExp1().trim());
+        }
+        if(isNotNull(posPccode.getExp2())){
+           sh.appendSql(" AND obj.exp2 = ? ");
+           sh.insertValue(posPccode.getExp2().trim());
+        }
+        if(isNotNull(posPccode.getExp3())){
+           sh.appendSql(" AND obj.exp3 = ? ");
+           sh.insertValue(posPccode.getExp3().trim());
+        }
+        if(isNotNull(posPccode.getExp4())){
+           sh.appendSql(" AND obj.exp4 = ? ");
+           sh.insertValue(posPccode.getExp4().trim());
+        }
+        if(isNotNull(posPccode.getIsGroup())){
+           sh.appendSql(" AND obj.isGroup = ? ");
+           sh.insertValue(posPccode.getIsGroup().trim());
+        }
+        if(isNotNull(posPccode.getGroupCode())){
+           sh.appendSql(" AND obj.groupCode = ? ");
+           sh.insertValue(posPccode.getGroupCode().trim());
+        }
+        if(isNotNull(posPccode.getCodeType())){
+           sh.appendSql(" AND obj.codeType = ? ");
+           sh.insertValue(posPccode.getCodeType().trim());
+        }
+        if(isNotNull(posPccode.getIsHalt())){
+           sh.appendSql(" AND obj.isHalt = ? ");
+           sh.insertValue(posPccode.getIsHalt().trim());
+        }
+       if(posPccode.getListOrder()!= null){
+           sh.appendSql(" AND obj.listOrder = ? ");
+           sh.insertValue(posPccode.getListOrder());
+        }
+       if(isNotNull(posPccode.getCreateUser())){
+           sh.appendSql(" AND obj.createUser = ? ");
+           sh.insertValue(posPccode.getCreateUser().trim());
+        }
+       if(posPccode.getCreateDatetime()!= null){
+           sh.appendSql(" AND obj.createDatetime = ? ");
+           sh.insertValue(posPccode.getCreateDatetime());
+        }
+        if(isNotNull(posPccode.getModifyUser())){
+           sh.appendSql(" AND obj.modifyUser = ? ");
+           sh.insertValue(posPccode.getModifyUser().trim());
+        }
+       if(posPccode.getModifyDatetime()!= null){
+           sh.appendSql(" AND obj.modifyDatetime = ? ");
+           sh.insertValue(posPccode.getModifyDatetime());
+        }
+    }
+  }
+}

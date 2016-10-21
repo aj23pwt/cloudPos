@@ -1,0 +1,37 @@
+package com.greencloud.controller;
+/**
+ * 
+ * JSON模型
+ * 
+ * 后台向前台返回的JSON对象
+ * 
+ * @author AJ23PWT 
+ * 
+ */
+@SuppressWarnings("serial")
+public class ResponseWxJson implements java.io.Serializable {
+
+	private String stauts = "0";
+
+	private  Object data ;
+
+	public String getStauts() {
+		return stauts;
+	}
+
+	public void setStauts(String stauts) {
+		this.stauts = stauts;
+	}
+
+	public Object getData() {
+		return data;
+	}
+
+	public void setData(Object data) {
+		this.data = data;
+	}
+
+	
+
+
+}

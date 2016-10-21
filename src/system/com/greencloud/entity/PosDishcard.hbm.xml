@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping>
+    <class name="com.greencloud.entity.PosDishcard" table="pos_dishcard">
+        <id name="id" type="java.lang.Long">
+            <column name="id" />
+            <generator class="identity" />
+        </id>
+        <property name="hotelGroupId" type="java.lang.Long">
+            <column name="hotel_group_id" />
+        </property>
+        <property name="hotelId" type="java.lang.Long">
+            <column name="hotel_id" />
+        </property>
+        <property name="accnt" type="string">
+            <column name="accnt" length="15"/>
+        </property>
+        <property name="inumber" type="integer">
+            <column name="inumber" length="11"/>
+        </property>
+        <property name="tnumber" type="integer">
+            <column name="tnumber" length="11"/>
+        </property>
+        <property name="mnumber" type="integer">
+            <column name="mnumber" length="11"/>
+        </property>
+        <property name="bizDate" type="timestamp">
+            <column name="biz_date" />
+        </property>
+        <property name="pccode" type="string">
+            <column name="pccode" length="10"/>
+        </property>
+        <property name="pccodeName" type="string">
+            <column name="pccode_name" length="50"/>
+        </property>
+        <property name="tableCode" type="string">
+            <column name="table_code" length="10"/>
+        </property>
+        <property name="tableName" type="string">
+            <column name="table_name" length="50"/>
+        </property>
+        <property name="gsts" type="integer">
+            <column name="gsts" length="11"/>
+        </property>
+        <property name="printid" type="integer">
+            <column name="printid" length="11"/>
+        </property>
+        <property name="type" type="string">
+            <column name="type" length="1"/>
+        </property>
+        <property name="sta" type="string">
+            <column name="sta" length="1"/>
+        </property>
+        <property name="code" type="string">
+            <column name="code" length="10"/>
+        </property>
+        <property name="descript" type="string">
+            <column name="descript" length="80"/>
+        </property>
+        <property name="descriptEn" type="string">
+            <column name="descript_en" length="80"/>
+        </property>
+        <property name="unit" type="string">
+            <column name="unit" length="4"/>
+        </property>
+        <property name="price" type="big_decimal">
+            <column name="price" precision="12"/>
+        </property>
+        <property name="number" type="big_decimal">
+            <column name="number" precision="12"/>
+        </property>
+        <property name="amount" type="big_decimal">
+            <column name="amount" precision="12"/>
+        </property>
+        <property name="cookAll" type="string">
+            <column name="cook_all" length="50"/>
+        </property>
+        <property name="cook" type="string">
+            <column name="cook" length="200"/>
+        </property>
+        <property name="printer" type="string">
+            <column name="printer" length="10"/>
+        </property>
+        <property name="printer1" type="string">
+            <column name="printer1" length="10"/>
+        </property>
+        <property name="pnumber" type="integer">
+            <column name="p_number" length="11"/>
+        </property>
+        <property name="pnumber1" type="integer">
+            <column name="p_number1" length="11"/>
+        </property>
+        <property name="changed" type="string">
+            <column name="changed" length="1"/>
+        </property>
+        <property name="times" type="integer">
+            <column name="times" length="11"/>
+        </property>
+        <property name="isprint" type="string">
+            <column name="isprint" length="1"/>
+        </property>
+        <property name="station" type="string">
+            <column name="station" length="10"/>
+        </property>
+        <property name="class1" type="string">
+            <column name="class1" length="1"/>
+        </property>
+        <property name="psort" type="string">
+            <column name="p_sort" length="10"/>
+        </property>
+        <property name="foliono" type="string">
+            <column name="foliono" length="10"/>
+        </property>
+        <property name="siteno" type="string">
+            <column name="siteno" length="10"/>
+        </property>
+        <property name="createUser" type="string">
+            <column name="create_user" length="20" />
+        </property>
+        <property name="createDatetime" type="timestamp">
+            <column name="create_datetime" />
+        </property>
+        <property name="modifyUser" type="string">
+            <column name="modify_user" length="20" />
+        </property>
+        <property name="modifyDatetime" type="timestamp">
+            <column name="modify_datetime" />
+        </property>
+    </class>
+</hibernate-mapping>

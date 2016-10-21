@@ -1,0 +1,50 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+	<class name="com.greencloud.entity.PosSelectedObject" table="pos_selected_object">
+		<id name="id" type="java.lang.Long">
+			<column name="id" />
+			<generator class="identity" />
+		</id>
+		<property name="hotelGroupId" type="long">
+			<column name="hotel_group_id" />
+		</property>
+		<property name="hotelId" type="long">
+			<column name="hotel_id" />
+		</property>
+		<property name="stationCode" type="string">
+			<column name="station_code" length="32"/>
+		</property>
+		<property name="userCode" type="string">
+			<column name="user_code" length="20"/>
+		</property>
+		<property name="category" type="string">
+			<column name="category" length="10"/>
+		</property>
+		<property name="accntType" type="string">
+			<column name="accnt_type" length="32"/>
+		</property>
+		<property name="accnt" type="string">
+			<column name="accnt" length="20"/>
+		</property>
+		<property name="pcrec" type="string">
+			<column name="pcrec" length="20"/>
+		</property>
+		<property name="number" type="java.lang.Integer">
+			<column name="number" />
+		</property>
+		<property name="createUser" type="string">
+			<column name="create_user" length="20"/>
+		</property>
+		<property name="createDatetime" type="timestamp">
+			<column name="create_datetime" length="0"/>
+		</property>
+		<property name="modifyUser" type="string">
+			<column name="modify_user" length="20"/>
+		</property>
+		<property name="modifyDatetime" type="timestamp">
+			<column name="modify_datetime" length="0"/>
+		</property>
+	</class>
+</hibernate-mapping>

@@ -1,0 +1,249 @@
+package com.greencloud.facade;
+
+import java.lang.reflect.InvocationTargetException;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+
+import com.greencloud.entity.App;
+import com.greencloud.entity.CardLevel;
+import com.greencloud.entity.CodeArticle;
+import com.greencloud.entity.CodeBankcardLink;
+import com.greencloud.entity.CodeBase;
+import com.greencloud.entity.CodeCache;
+import com.greencloud.entity.CodeCountry;
+import com.greencloud.entity.CodeCurrency;
+import com.greencloud.entity.CodeReason;
+import com.greencloud.entity.CodeRentalShowPeriod;
+import com.greencloud.entity.CodeRound;
+import com.greencloud.entity.CodeTransaction;
+import com.greencloud.entity.DoorcardDevice;
+import com.greencloud.entity.PhoneCallno;
+import com.greencloud.entity.PhoneChargeCode;
+import com.greencloud.entity.PhoneExtno;
+import com.greencloud.entity.PhoneParams;
+import com.greencloud.entity.PhonePeriodDiscount;
+import com.greencloud.entity.PhoneServiceCode;
+import com.greencloud.entity.PosConddtl;
+import com.greencloud.entity.PosCondst;
+import com.greencloud.entity.PosIp;
+import com.greencloud.entity.PosPccodeNote;
+import com.greencloud.entity.PosPluAll;
+import com.greencloud.entity.PosSortAll;
+import com.greencloud.entity.SalesGroup;
+import com.greencloud.entity.SalesMan;
+import com.greencloud.entity.ShortcutKey;
+import com.greencloud.entity.SysConstraint;
+import com.greencloud.entity.SysConstraintRule;
+import com.greencloud.entity.SysHelp;
+import com.greencloud.entity.SysListMeta;
+import com.greencloud.entity.SysOption;
+import com.greencloud.entity.TabToolbar;
+import com.greencloud.entity.Toolbar;
+import com.greencloud.entity.UserPosAuth;
+import com.greencloud.entity.UserPosAuthUserAuth;
+import com.greencloud.entity.WorkBtn;
+import com.greencloud.entity.WorkSheet;
+import com.greencloud.entity.WorkSheetBtnCfg;
+import com.greencloud.entity.WorkSheetStatusCfg;
+import com.greencloud.entity.WorkStatus;
+
+public interface ICodeCacheFacadeService {
+   public List<PosSortAll> findPosSortAll(Date modifyDatetime);
+   
+   public List<PosIp> findPosIp(Date modifyDatetime);
+   
+   public List<PosPluAll> findPosPluAll(Date modifyDatetime);
+   
+   public List<PosCondst> findPosCondst(Date modifyDatetime);
+   public List<PosConddtl> findPosConddtl(Date modifyDatetime);
+   public List<PosPccodeNote> findPosPccodeNote(Date modifyDatetime);
+   public List<UserPosAuth> findUserPosAuth(Date modifyDatetime);
+   public List<UserPosAuthUserAuth> findUserPosAuthUserAuth(Date modifyDatetime);
+   
+   
+   
+   
+   /**
+	 * 查找所有代码缓存配置版本
+	 * @return 所有相关的代码缓存配置
+	 */
+  public List<CodeCache> findAllCodeCaches();
+  
+  public List<CodeBase> findCodeBase(Date modifyDatetime);
+  public List<TabToolbar> findTabToolBar(Date modifyDatetime);
+  public List<TabToolbar> findTabToolBarByCondition(String winName,String entityType,
+			String entityPeriod,String entityStatus,Long hotelGroupId,Long hotelId);
+  public List<TabToolbar> findLinkTabToolBarByCondition(String winName,String entityType,
+			String entityPeriod,String entityStatus,Long hotelGroupId,Long hotelId);
+  
+  public List<SysOption> findSysOption(Date modifyDatetime);
+  //陈诚已加了
+  public List<CodeTransaction> findCodeTransaction(Date modifyDatetime);
+  //陈诚已加了
+  public List<CodeArticle> findCodeArticle(Date modifyDatetime);
+  
+  
+  public List<CodeReason> findCodeReason(Date modifyDatetime);
+  
+  public List<CodeBankcardLink> findCodeBankcardLink(Date modifyDatetime);
+  
+  public List<App> findApp(Date modifyDatetime);
+  
+  /**
+   * 缓存工具条
+   * @param modifyDatetime 修改时间
+   * @return 缓存的工具条类
+   */
+  public List<Toolbar> findToolbar(Date modifyDatetime);
+  /**
+   * 查找系统帮助 
+   * @param modifyDatetime 修改时间
+   * @return 系统帮助列表
+   */
+  public List<SysHelp> findSysHelp(Date modifyDatetime);
+  /**
+   * 币种Code
+   * @param modifyDatetime 修改时间
+   * @return 币种列表
+   */
+  public List<CodeCurrency> findCodeCurrency(Date modifyDatetime);
+  /**
+   * 销售员分组
+   * @param modifyDatetime 修改时间
+   * @return 销售员组列表
+   */
+  public List<SalesGroup> findSalesGroup(Date modifyDatetime);
+  /**
+   * 销售员
+   * @param modifyDatetime 修改时间
+   * @return 销售员列表
+   */
+  public List<SalesMan> findSalesMan(Date modifyDatetime);
+  /**
+   * 租赁物品表
+   * @param modifyDatetime 修改时间
+   * @return 租赁物品列表
+   */
+  public List<CodeRentalShowPeriod> findCodeRentalShowPeriod(Date modifyDatetime);
+  
+	/**
+	 * 拨出电话号码
+	 * @param modifyDatetime 修改时间
+	 * @return 拨出电话号码表
+	 */
+	public List<PhoneCallno> findPhoneCallno(Date modifyDatetime);
+  
+	/**
+	 * 电话计费模式
+	 * @param modifyDatetime 修改时间
+	 * @return 电话计费模式
+	 */
+	public List<PhoneChargeCode> findPhoneChargeCode(Date modifyDatetime);
+
+	/**
+	 * 分机号码
+	 * @param modifyDatetime 修改时间
+	 * @return 分机号码
+	 */
+	public List<PhoneExtno> findPhoneExtno(Date modifyDatetime);
+
+	/**
+	 * 电话计费设置
+	 * @param modifyDatetime 修改时间
+	 * @return 电话计费设置
+	 */
+	public List<PhoneParams> findPhoneParams(Date modifyDatetime);
+
+	/**
+	 * 优惠时段描述
+	 * @param modifyDatetime 修改时间
+	 * @return 优惠时段描述
+	 */
+	public List<PhonePeriodDiscount> findPhonePeriodDiscount(Date modifyDatetime);
+
+	/**
+	 * 电话服务费率设置表
+	 * @param modifyDatetime 修改时间
+	 * @return 电话服务费率设置表
+	 */
+	public List<PhoneServiceCode> findPhoneServiceCode(Date modifyDatetime);
+
+	/**
+	 * 四舍五入设置表
+	 * @param modifyDatetime 修改时间
+	 * @return 四舍五入设置表
+	 */
+	public List<CodeRound> findCodeRound(Date modifyDatetime);     
+	/**
+	 * 国家代码表
+	 * @param modifyDatetime 修改时间
+	 * @return 国家代码表
+	 */
+	public List<CodeCountry> findCodeCountry(Date modifyDatetime);    
+	/**
+	 * 
+	 * @param modifyDatetime
+	 * @return
+	 */
+	public List<SysConstraint> findSysConstraint(Date modifyDatetime);
+	/**
+	 * 
+	 * @param modifyDatetime
+	 * @return
+	 */
+	public List<SysConstraintRule> findSysConstraintRule(Date modifyDatetime);
+	/**
+	 * 
+	 * @param modifyDatetime
+	 * @return
+	 */
+	public List<SysListMeta> findSysListMeta(Date modifyDatetime);
+	/**
+	 * 
+	 * @param modifyDatetime
+	 * @return
+	 */
+	public List<WorkSheet> findWorkSheet(Date modifyDatetime);
+	/**
+	 * 
+	 * @param modifyDatetime
+	 * @return
+	 */
+	public List<WorkStatus> findWorkStatus(Date modifyDatetime);
+	/**
+	 * 
+	 * @param modifyDatetime
+	 * @return
+	 */
+	public List<WorkBtn> findWorkBtn(Date modifyDatetime);
+	/**
+	 * 
+	 * @param modifyDatetime
+	 * @return
+	 */
+	public List<WorkSheetStatusCfg> findWorkSheetStatusCfg(Date modifyDatetime);
+	/**
+	 * 
+	 * @param modifyDatetime
+	 * @return
+	 */
+	public List<WorkSheetBtnCfg> findWorkSheetBtnCfg(Date modifyDatetime);
+	public List<DoorcardDevice> findDoorcardDevice(Date modifyDatetime) ;
+	/**
+	 * 同步快捷键
+	 * @param modifyDatetime
+	 * @return
+	 */
+	public List<ShortcutKey> findShortcutKey(Date modifyDatetime) ;
+	public byte[] findCompressedCache(Date modifyDatetime,String entityName) throws SecurityException, NoSuchMethodException, IllegalArgumentException, IllegalAccessException, InvocationTargetException;
+
+   /**
+    * @param hotelId
+    * @param modifyDatetime
+    * @return
+    */
+  public List<CodeTransaction> findCodeTransaction2(Long hotelId, Date modifyDatetime);
+
+  public List<CardLevel> findCardLevel(Date modifyDatetime);
+}

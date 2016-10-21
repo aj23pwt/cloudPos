@@ -1,0 +1,97 @@
+package com.greencloud.dao;
+import com.aua.dao.IBaseDao;
+
+import java.util.List;
+
+import com.greencloud.dto.PosTableMapDto;
+import com.greencloud.entity.PosRes;
+
+import org.springframework.dao.DataAccessException;
+ /**
+   * operate PosRes into db
+   *@author 
+   *@version 1.0
+   *@date 2015-03-30 17:30
+   */
+public interface IPosResDao extends IBaseDao
+{
+
+  /**
+   *save posRes object  method
+   *@param posRes PosRes 
+   *@throws DataAccessException 
+   *@author  
+   *@version 1.0
+   *@date 2015-03-30 17:30
+   */
+  public void save(PosRes posRes) throws DataAccessException;
+
+   /**
+   *update posRes method
+   *@param posRes PosRes
+   *@throws DataAccessException 
+   *@author 
+   *@version 1.0
+   *@date 2015-03-30 17:30
+   */
+  public void update(PosRes posRes) throws DataAccessException;
+ 
+   /**
+   *save or update posRes object method
+   *@param posRes PosRes
+   *@throws DataAccessException
+   *@author  
+   *@version 1.0
+   *@date 2015-03-30 17:30
+   */
+  public void saveOrUpdate(PosRes posRes) throws DataAccessException;
+  
+   /**
+   *query posRes collection method
+   *@param posRes PosRes send query vo 
+   *@param firstResult 
+   *@param maxResults 
+   *@throws DataAccessException 
+   *@author 
+   *@version 1.0
+   *@date 2015-03-30  17:30
+   */
+  public List<PosRes> list(PosRes posRes,int firstResult ,int maxResults)throws DataAccessException;
+  
+   /**
+   *query collection method  
+   *@param posRes PosRes send query vo 
+   *@throws DataAccessException
+   *@author 
+   *@version 1.0
+   *@date 2015-03-30 17:30
+   */
+  public List<PosRes> list(PosRes posRes)throws DataAccessException;
+ 
+  /**
+   *count obj amount
+   *@param posRes PosRes query vo
+   *@throws DataAccessException
+   *@author 
+   *@date 2015-03-30 17:30
+   */
+  public int count(PosRes posRes)throws DataAccessException;
+  
+   /**
+   *query a posRes by id 
+   *@param id 
+   *@throws DataAccessException 
+   *@author 
+   *@date 2015-03-30 17:30
+   */
+  public PosRes load(Long id)throws DataAccessException;
+  
+  public List<PosRes> getResList(String sql)throws DataAccessException;
+
+  public String findSysExtraIdByProc(String code, Long hotelGroupId, Long hotelId);
+  
+  public <T> List<T> getTableMap( String hotelGroupId, String hotelId,String date,String shift,String pccode,String status,String type,String flag);
+  public <T> List<T> getPosVipQuery(Long hotelGroupId, Long hotelId,  String searchText);
+  public List<PosTableMapDto> getTableMapDto( String hotelGroupId, String hotelId,String date,String shift,String pccode,String status,String type,String flag);
+  
+}

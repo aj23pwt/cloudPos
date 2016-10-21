@@ -1,0 +1,209 @@
+package com.greencloud.facade.impl;
+
+import java.util.Date;
+import java.util.List;
+
+import com.greencloud.dto.POSInterfaceArDto;
+import com.greencloud.dto.POSInterfaceCardDto;
+import com.greencloud.dto.POSInterfaceFoDto;
+import com.greencloud.dto.POSInterfaceGuestDto;
+import com.greencloud.dto.PosLinkDto;
+import com.greencloud.dto.PosMasterDto;
+import com.greencloud.entity.PosAccntSync;
+import com.greencloud.entity.PosDetail;
+import com.greencloud.entity.PosMaster;
+import com.greencloud.entity.PosRes;
+import com.greencloud.facade.IPosMasterFacade;
+import com.greencloud.service.IPosAccntSyncService;
+import com.greencloud.service.IPosDetailService;
+import com.greencloud.service.IPosMasterService;
+import com.greencloud.service.IPosResService;
+import com.greencloud.util.UserManager;
+
+public class PosMasterFacadeImpl implements IPosMasterFacade {
+
+	
+	private IPosMasterService posMasterService ;
+	private IPosResService posResService ;
+	private IPosDetailService posDetailService ;
+	private IPosAccntSyncService posAccntSyncService;
+	
+	public void setPosAccntSyncService(IPosAccntSyncService posAccntSyncService) {
+		this.posAccntSyncService = posAccntSyncService;
+	}
+	public IPosResService getPosResService() {
+		return posResService;
+	}
+	public void setPosResService(IPosResService posResService) {
+		this.posResService = posResService;
+	}
+	public IPosMasterService getPosMasterService() {
+		return posMasterService;
+	}
+	public void setPosMasterService(IPosMasterService posMasterService) {
+		this.posMasterService = posMasterService;
+	}
+	public void setPosDetailService(IPosDetailService posDetailService) {
+		this.posDetailService = posDetailService;
+	}
+	/** 
+	* @Title: 
+	* @Description: TODO(新开单) 
+	* @param @param posMaster
+	* @param @param pcid
+	* @param @return   accnt,+提示信息
+	* @return 
+	* @throws 
+	*/
+	@Override
+	public String savePosMaster(PosMaster posMaster,String pcid) {
+		return posMasterService.saveMaster(posMaster,pcid);
+	}
+	/** 
+	* @Title: 
+	* @Description: TODO(app2 预订转登记) 
+	* @param @param res
+	* @param @param posMaster
+	* @param @param pcid
+	* @param @return    设定文件 
+	* @return 
+	* @throws 
+	*/
+	@Override
+	public String updateResNewMaster(PosRes res, PosMaster posMaster,String pcid) {
+		return posMasterService.updateResNewMaster(res, posMaster, pcid);
+	}
+	
+	/** 
+	* @Title: 
+	* @Description: TODO(这里用一句话描述这个方法的作用) 
+	* @param @param accnt
+	* @param @return    设定文件 
+	* @return 
+	* @throws 
+	*/
+	@Override
+	public PosMasterDto getPosMasterDtoByAccnt(String accnt,String tableNo,String sta) {
+		return posMasterService.getPosMasterDtoByAccnt(UserManager.getHotelGroupId(), UserManager.getHotelId(), accnt,tableNo,sta);
+	}
+	@Override
+	public String updateTableNoByAccnt(String bizDate, String accnt,String shift, String oldTableNo, String newTableNo) {
+		return posMasterService.updateTableNoByAccnt(UserManager.getHotelGroupId(), UserManager.getHotelId(), bizDate, accnt, shift, oldTableNo, newTableNo, "0", UserManager.getUserCode());
+	}
+	/** 
+	* @Title: 
+	* @Description: TODO(联单&&撤联) 
+	* @param @param oldAccnt
+	* @param @param newAccnt
+	* @param @param flag flag = 1 表示 撤联操作 flag=2 表示 联单操作 ！！！与flex端 紧密相连
+	* @param @return    设定文件 
+	* @return 
+	* @throws 
+	*/
+	@Override
+	public String updateMasterPcrec(String oldAccnt, String newAccnt,String flag) {
+		return posMasterService.updateMasterPcrec(UserManager.getHotelGroupId(), UserManager.getHotelId(), oldAccnt, newAccnt, flag);
+	}
+	@Override
+	public PosMasterDto updateGetPosMasterDtoForCo(String accnt, String tableNo,Date bizDate) {
+		posMasterService.updateGetPosMasterDtoForCo1(UserManager.getHotelGroupId(), UserManager.getHotelId(),  accnt, tableNo, bizDate);
+		
+		PosMasterDto pmd=posMasterService.updateGetPosMasterDtoForCo2(UserManager.getHotelGroupId(), UserManager.getHotelId(),  accnt, tableNo, bizDate);
+		return pmd;
+	}
+	@Override
+	public String updateCheckoutRevoke(String bizDate, String billno, String shift,String flag, String user) {
+		
+		
+		return posMasterService.updateCheckoutRevoke(UserManager.getHotelGroupId(), UserManager.getHotelId(), bizDate, billno, shift, flag ,user);
+	}
+	
+	@Override
+	public List<POSInterfaceFoDto> getFoList(String key, String rsvClass) {
+		return posMasterService.getFoList(UserManager.getHotelGroupId(), UserManager.getHotelId(),  key, rsvClass);
+	}
+	@Override
+	public List<POSInterfaceArDto> getArList(String key) {
+		return posMasterService.getArList(UserManager.getHotelGroupId(), UserManager.getHotelId(), key);
+	}
+	@Override
+	public List<POSInterfaceCardDto> getCardList(String key) {
+		return posMasterService.getCardList(UserManager.getHotelGroupId(), UserManager.getHotelId(), key);
+	}
+	/** 
+	* @Title: 
+	* @Description: TODO(消单) 
+	* @param @param isSure
+	* @param @param accnt
+	* @param @param shift
+	* @param @param user
+	* @param @return    设定文件 
+	* @return 
+	* @throws 
+	*/
+	@Override
+	public String updateMasterRevoke(Boolean isSure, String accnt,
+			String shift, String user) {
+		if(!isSure){
+			PosDetail posDetail = new PosDetail();
+			posDetail.setHotelGroupId(UserManager.getHotelGroupId());
+			posDetail.setHotelId(UserManager.getHotelId());
+			posDetail.setAccnt(accnt);
+			posDetail.setSta("I");
+			return	String.valueOf(posDetailService.countPosDetail(posDetail));
+		}else{
+			return posMasterService.updateMasterRevoke(UserManager.getHotelGroupId(), UserManager.getHotelId(), accnt, shift, user);
+		}
+	}
+	@Override
+	public <T> List<T> getPosDetailModeView(String bizDate,String accnts,String flag) {
+		return posMasterService.getPosDetailModeView(UserManager.getHotelGroupId(), UserManager.getHotelId(), bizDate, accnts,flag);
+	}
+	@Override
+	public void updatePosDec(String accnts, String dec) {
+		posMasterService.updatePosDec(UserManager.getHotelGroupId(), UserManager.getHotelId(), accnts, dec);
+	}
+	/** 
+	* @Title: 
+	* @Description: TODO(并桌) 
+	* @param @param oldAccnt
+	* @param @param newAccnt
+	* @param @param oldTableno
+	* @param @param newTbleno
+	* @param @param flag
+	* @param @return    设定文件 
+	* @return 
+	* @throws 
+	*/
+	@Override
+	public String updateMasterMergerTable(String oldAccnt, String newAccnt, String oldTableno, String newTbleno, String flag) {
+		return posMasterService.updateMasterMergerTable(UserManager.getHotelGroupId(), UserManager.getHotelId(), oldAccnt, newAccnt, oldTableno, newTbleno, flag, UserManager.getUserCode());
+	}
+	@Override
+	public List<POSInterfaceGuestDto> getGuestList(String key) {
+		return posMasterService.getGuestList(UserManager.getHotelGroupId(), UserManager.getHotelId(), key);
+	}
+	@Override
+	public List<POSInterfaceGuestDto> getCompanyList(String key) {
+		return posMasterService.getCompanyList(UserManager.getHotelGroupId(), UserManager.getHotelId(),  key);
+	}
+	@Override
+	public List<PosAccntSync> getPosAccntSyncList() {
+		PosAccntSync posAccntSync = new PosAccntSync();
+		posAccntSync.setHotelGroupId(UserManager.getHotelGroupId());
+		posAccntSync.setHotelId(UserManager.getHotelId());
+		posAccntSync.setIsSync("F");
+		//获取本地需要同步的账务主单
+		return  posAccntSyncService.listPosAccntSync(posAccntSync);
+	}
+	@Override
+	public void updatePosMode(String accnts, String mode) {
+		posMasterService.updatePosMode(UserManager.getHotelGroupId(), UserManager.getHotelId(), accnts, mode);
+	}
+	@Override
+	public List<PosLinkDto> getPosLinkDtot(String accnt, String tableNo,Date bizDate) {
+		posMasterService.updateGetPosMasterDtoForCo1(UserManager.getHotelGroupId(), UserManager.getHotelId(),  accnt, tableNo, bizDate);
+		
+		return posMasterService.getPosLinkDtot(UserManager.getHotelGroupId(), UserManager.getHotelId(),  accnt, tableNo, bizDate);
+	}
+}

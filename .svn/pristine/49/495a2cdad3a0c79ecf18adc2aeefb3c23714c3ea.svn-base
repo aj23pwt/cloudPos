@@ -1,0 +1,125 @@
+package com.greencloud.dto;
+
+import java.math.BigDecimal;
+import java.util.Date;
+
+
+
+public class PosAuditBeginCheckDth implements java.io.Serializable{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -4061769776052081818L;
+	private long hotelGroupId;
+	private long hotelId;
+	private int id;
+	private Date biz_date;
+	private String type;
+	private String accnt;
+	private String code;
+	private String sta;
+	private String descript;
+	private BigDecimal charge;
+	private BigDecimal number1;
+	private BigDecimal credit;
+	private BigDecimal number2;
+	private BigDecimal balance;
+	private String flag;
+	
+
+	public long getHotelGroupId() {
+		return hotelGroupId;
+	}
+	public void setHotelGroupId(long hotelGroupId) {
+		this.hotelGroupId = hotelGroupId;
+	}
+	public long getHotelId() {
+		return hotelId;
+	}
+	public void setHotelId(long hotelId) {
+		this.hotelId = hotelId;
+	}
+	public int getId() {
+		return id;
+	}
+	public void setId(int id) {
+		this.id = id;
+	}
+
+	public static long getSerialversionuid() {
+		return serialVersionUID;
+	}
+	public Date getBiz_date() {
+		return biz_date;
+	}
+	public void setBiz_date(Date biz_date) {
+		this.biz_date = biz_date;
+	}
+	public String getType() {
+		return type;
+	}
+	public void setType(String type) {
+		this.type = type;
+	}
+	public String getAccnt() {
+		return accnt;
+	}
+	public void setAccnt(String accnt) {
+		this.accnt = accnt;
+	}
+	public String getCode() {
+		return code;
+	}
+	public void setCode(String code) {
+		this.code = code;
+	}
+	public String getSta() {
+		return sta;
+	}
+	public void setSta(String sta) {
+		this.sta = sta;
+	}
+	public String getDescript() {
+		return descript;
+	}
+	public void setDescript(String descript) {
+		this.descript = descript;
+	}
+	public BigDecimal getCharge() {
+		return charge;
+	}
+	public void setCharge(BigDecimal charge) {
+		this.charge = charge;
+	}
+	public BigDecimal getNumber1() {
+		return number1;
+	}
+	public void setNumber1(BigDecimal number1) {
+		this.number1 = number1;
+	}
+	public BigDecimal getCredit() {
+		return credit;
+	}
+	public void setCredit(BigDecimal credit) {
+		this.credit = credit;
+	}
+	public BigDecimal getNumber2() {
+		return number2;
+	}
+	public void setNumber2(BigDecimal number2) {
+		this.number2 = number2;
+	}
+	public BigDecimal getBalance() {
+		return balance;
+	}
+	public void setBalance(BigDecimal balance) {
+		this.balance = balance;
+	}
+	public String getFlag() {
+		return flag;
+	}
+	public void setFlag(String flag) {
+		this.flag = flag;
+	}
+	
+}

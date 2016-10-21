@@ -1,0 +1,120 @@
+package com.greencloud.dto;
+
+import java.util.List;
+
+public class PosResDto {
+    private String  hotelGroupId;
+    private String  hotelId;
+ 	private String resName;
+ 	private String pccode;
+ 	private String shift;
+	private String bizDate;
+ 	private String resDate;;
+ 	private String tableType;
+ 	private String tableno;
+ 	private String gsts;
+ 	private String haccnt;
+ 	private String name;
+ 	private String phone;
+ 	private String arrtime;
+ 	private String info;
+ 	private List<PosResOrderDto>  posResOrderDto;
+ 	
+ 	public String getResDate() {
+		return resDate;
+	}
+	public void setResDate(String resDate) {
+		this.resDate = resDate;
+	}
+	public String getHotelGroupId() {
+		return hotelGroupId;
+	}
+	public void setHotelGroupId(String hotelGroupId) {
+		this.hotelGroupId = hotelGroupId;
+	}
+	public String getHotelId() {
+		return hotelId;
+	}
+	public void setHotelId(String hotelId) {
+		this.hotelId = hotelId;
+	}
+	public String getResName() {
+		return resName;
+	}
+	public void setResName(String resName) {
+		this.resName = resName;
+	}
+	public String getPccode() {
+		return pccode;
+	}
+	public void setPccode(String pccode) {
+		this.pccode = pccode;
+	}
+	public String getShift() {
+		return shift;
+	}
+	public void setShift(String shift) {
+		this.shift = shift;
+	}
+	public String getBizDate() {
+		return bizDate;
+	}
+	public void setBizDate(String bizDate) {
+		this.bizDate = bizDate;
+	}
+	public String getTableType() {
+		return tableType;
+	}
+	public void setTableType(String tableType) {
+		this.tableType = tableType;
+	}
+	public String getTableno() {
+		return tableno;
+	}
+	public void setTableno(String tableno) {
+		this.tableno = tableno;
+	}
+	public String getGsts() {
+		return gsts;
+	}
+	public void setGsts(String gsts) {
+		this.gsts = gsts;
+	}
+	public String getHaccnt() {
+		return haccnt;
+	}
+	public void setHaccnt(String haccnt) {
+		this.haccnt = haccnt;
+	}
+	public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
+	}
+	public String getPhone() {
+		return phone;
+	}
+	public void setPhone(String phone) {
+		this.phone = phone;
+	}
+	public String getArrtime() {
+		return arrtime;
+	}
+	public void setArrtime(String arrtime) {
+		this.arrtime = arrtime;
+	}
+	public String getInfo() {
+		return info;
+	}
+	public void setInfo(String info) {
+		this.info = info;
+	}
+	public List<PosResOrderDto> getPosResOrderDto() {
+		return posResOrderDto;
+	}
+	public void setPosResOrderDto(List<PosResOrderDto> posResOrderDto) {
+		this.posResOrderDto = posResOrderDto;
+	}
+
+}

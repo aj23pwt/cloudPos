@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+    <class name="com.greencloud.entity.PosStoreUnit" table="pos_store_unit" >
+        <id name="id" type="java.lang.Long">
+            <column name="id" />
+            <generator class="identity" />
+        </id>
+        <property name="hotelGroupId" type="long">
+            <column name="hotel_group_id" not-null="true" />
+        </property>
+        <property name="hotelId" type="long">
+            <column name="hotel_id" not-null="true" />
+        </property>
+        <property name="code" type="string">
+            <column name="code" length="4" not-null="true" />
+        </property>
+        <property name="descript" type="string">
+            <column name="descript" length="4" not-null="true" />
+        </property>
+        <property name="descriptEn" type="string">
+            <column name="descript_en" length="20"  />
+        </property>
+       
+        <property name="createUser" type="string">
+            <column name="create_user" length="20" not-null="true" />
+        </property>
+        <property name="createDatetime" type="timestamp">
+            <column name="create_datetime" length="0" not-null="true" />
+        </property>
+        <property name="modifyUser" type="string">
+            <column name="modify_user" length="20" not-null="true" />
+        </property>
+        <property name="modifyDatetime" type="timestamp">
+            <column name="modify_datetime" length="0" not-null="true" />
+        </property>
+        
+    </class>
+</hibernate-mapping>

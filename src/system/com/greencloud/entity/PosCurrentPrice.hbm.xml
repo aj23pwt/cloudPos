@@ -1,0 +1,61 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+    <class name="com.greencloud.entity.PosCurrentPrice" table="pos_current_price">
+        <id name="id" type="java.lang.Long">
+            <column name="id" />
+            <generator class="identity" />
+        </id>
+        <property name="hotelGroupId" type="java.lang.Long">
+            <column name="hotel_group_id" />
+        </property>
+        <property name="hotelId" type="java.lang.Long">
+            <column name="hotel_id" />
+        </property>
+        <property name="bizDate" type="timestamp">
+            <column name="biz_date" length="0" />
+        </property>
+        <property name="pluCode"  type="string">
+            <column name="plu_code" length="10" />
+        </property>
+         <property name="pluUnit"  type="string">
+            <column name="plu_unit" length="10" />
+        </property>
+         <property name="price" type="big_decimal">
+            <column name="price" precision="12"/>
+        </property>
+        <property name="number" type="big_decimal">
+            <column name="number" precision="12"/>
+        </property>
+         <property name="codeType"  type="string">
+            <column name="code_type" length="30" />
+        </property>
+        <property name="groupCode"  type="string">
+            <column name="group_code" length="30" />
+        </property> 
+        <property name="isGroup"  type="string">
+        	<column name="is_group" length="2"></column>
+        </property>
+        <property name="isHalt"  type="string">
+            <column name="is_halt" length="2">
+            </column>
+        </property>
+        <property name="listOrder" type="java.lang.Integer">
+            <column name="list_order">
+            </column>
+        </property>
+        <property name="createUser"  type="string">
+            <column name="create_user" length="20" />
+        </property>
+        <property name="createDatetime" type="timestamp">
+            <column name="create_datetime" length="0" />
+        </property>
+        <property name="modifyUser"  type="string">
+            <column name="modify_user" length="20" />
+        </property>
+        <property name="modifyDatetime" type="timestamp">
+            <column name="modify_datetime" length="0" />
+        </property>
+    </class>
+</hibernate-mapping>

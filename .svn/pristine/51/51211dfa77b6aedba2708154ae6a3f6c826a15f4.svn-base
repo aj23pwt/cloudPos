@@ -1,0 +1,95 @@
+package com.greencloud.entity;
+
+public class PosPrinter extends OperationInfo {
+
+	/**
+	 * 
+	 */
+	private static final Long serialVersionUID = -561211288048577019L;
+
+	private String code;
+	private String descript;
+	private String descriptEn;
+	private String ipAddr;
+	private String printMode;
+	private String printerType;
+	private String printServer;
+	private String dishChk;
+	private String sta;
+	private String osta;
+	private String valueSta;
+	public String getCode() {
+		return code;
+	}
+	public void setCode(String code) {
+		this.code = code;
+	}
+	public String getDescript() {
+		return descript;
+	}
+	public void setDescript(String descript) {
+		this.descript = descript;
+	}
+	public String getDescriptEn() {
+		return descriptEn;
+	}
+	public void setDescriptEn(String descriptEn) {
+		this.descriptEn = descriptEn;
+	}
+	public String getIpAddr() {
+		return ipAddr;
+	}
+	public void setIpAddr(String ipAddr) {
+		this.ipAddr = ipAddr;
+	}
+	public String getPrintMode() {
+		return printMode;
+	}
+	public void setPrintMode(String printMode) {
+		this.printMode = printMode;
+	}
+	public String getPrinterType() {
+		return printerType;
+	}
+	public void setPrinterType(String printerType) {
+		this.printerType = printerType;
+	}
+	public String getPrintServer() {
+		return printServer;
+	}
+	public void setPrintServer(String printServer) {
+		this.printServer = printServer;
+	}
+	public String getDishChk() {
+		return dishChk;
+	}
+	public void setDishChk(String dishChk) {
+		this.dishChk = dishChk;
+	}
+	public String getSta() {
+		return sta;
+	}
+	public void setSta(String sta) {
+		this.sta = sta;
+	}
+	public String getOsta() {
+		return osta;
+	}
+	public void setOsta(String osta) {
+		this.osta = osta;
+	}
+	public String getValueSta() {
+		return valueSta;
+	}
+	public void setValueSta(String valueSta) {
+		this.valueSta = valueSta;
+	}
+	public String getPrinter1() {
+		return printer1;
+	}
+	public void setPrinter1(String printer1) {
+		this.printer1 = printer1;
+	}
+	private String printer1;
+	
+}

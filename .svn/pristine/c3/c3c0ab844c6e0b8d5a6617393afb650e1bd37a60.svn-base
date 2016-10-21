@@ -1,0 +1,176 @@
+package com.greencloud.facade.impl;
+
+import java.util.List;
+
+import com.greencloud.dto.PosStoreDto;
+import com.greencloud.dto.PosStoreEditDto;
+import com.greencloud.entity.PosStoreArticle;
+import com.greencloud.entity.PosStoreClass;
+import com.greencloud.entity.PosStoreSubclass;
+import com.greencloud.facade.IPosStoreFacade;
+import com.greencloud.service.IPosStoreArticleService;
+import com.greencloud.service.IPosStoreClassService;
+import com.greencloud.service.IPosStoreSubclassService;
+import com.greencloud.util.UserManager;
+
+public class PosStoreFacadeImpl implements IPosStoreFacade {
+	private IPosStoreArticleService posStoreArticleService;
+	private IPosStoreClassService posStoreClassService;
+	private IPosStoreSubclassService posStoreSubclassService;
+
+	public void setPosStoreArticleService(
+			IPosStoreArticleService posStoreArticleService) {
+		this.posStoreArticleService = posStoreArticleService;
+	}
+
+	public void setPosStoreClassService(
+			IPosStoreClassService posStoreClassService) {
+		this.posStoreClassService = posStoreClassService;
+	}
+
+	public void setPosStoreSubclassService(
+			IPosStoreSubclassService posStoreSubclassService) {
+		this.posStoreSubclassService = posStoreSubclassService;
+	}
+
+	@Override
+	public List<PosStoreDto> getStoreTree() {
+		return posStoreArticleService.getStoreTree(
+				UserManager.getHotelGroupId(), UserManager.getHotelId());
+	}
+
+	@Override
+	public List<PosStoreClass> getPosStoreClassById() {
+		return posStoreClassService.getPosStoreClassById(
+				UserManager.getHotelGroupId(), UserManager.getHotelId());
+	}
+
+	@Override
+	public List<PosStoreSubclass> getPosStoreSubClassBycode(String scode) {
+		return posStoreSubclassService.getPosStoreSubClassBycode(
+				UserManager.getHotelGroupId(), UserManager.getHotelId(), scode);
+	}
+
+	@Override
+	public List<PosStoreArticle> getPosStoreArticleBycode(String acode) {
+		return posStoreArticleService.getPosStoreArticleBycode(
+				UserManager.getHotelGroupId(), UserManager.getHotelId(), acode);
+	}
+
+	@Override
+	public void updatePosClassByDto(PosStoreEditDto posStoreEditDto) {
+		posStoreClassService.updatePosClassByDto(UserManager.getHotelGroupId(),
+				UserManager.getHotelId(), posStoreEditDto);
+	}
+
+	@Override
+	public void updatePosSubClassByDto(PosStoreEditDto posStoreEditDto) {
+		posStoreSubclassService.updatePosSubClassByDto(
+				UserManager.getHotelGroupId(), UserManager.getHotelId(),
+				posStoreEditDto);
+	}
+
+	@Override
+	public void updatePosArticleByDto(PosStoreEditDto posStoreEditDto) {
+		posStoreArticleService.updatePosArticleByDto(
+				UserManager.getHotelGroupId(), UserManager.getHotelId(),
+				posStoreEditDto);
+	}
+
+	@Override
+	public void saveGroupPosClass(PosStoreClass posStoreClass, String hotels) {
+		posStoreClassService.saveGroupPosClass(UserManager.getHotelGroupId(),
+				UserManager.getHotelId(), posStoreClass, hotels);
+	}
+
+	@Override
+	public void saveGroupPosSubClass(PosStoreSubclass posStoreSubclass,
+			String hotels) {
+		posStoreSubclassService.saveGroupPosSubClass(UserManager.getHotelGroupId(), UserManager.getHotelId(), posStoreSubclass, hotels);
+	}
+
+	@Override
+	public void saveGroupPosArticle(PosStoreArticle posStoreArticle,
+			String hotels) {
+		posStoreArticleService.saveGroupPosArticle(UserManager.getHotelGroupId(), UserManager.getHotelId(), posStoreArticle);
+	}
+
+	@Override
+	public void deleteGroupPosClass(long id) {
+		posStoreClassService.deleteGroupPosClass(UserManager.getHotelGroupId(), UserManager.getHotelId(), id);
+	}
+
+	@Override
+	public void deleteGroupPosSubClass(PosStoreSubclass posStoreSubclass) {
+		posStoreSubclassService.deleteGroupPosSubClass(UserManager.getHotelGroupId(), UserManager.getHotelId(), posStoreSubclass);
+	}
+
+	@Override
+	public void deleteGroupPosArticle(PosStoreArticle posStoreArticle) {
+		posStoreArticleService.deleteGroupPosArticle(UserManager.getHotelGroupId(), UserManager.getHotelId(), posStoreArticle);
+	}
+
+	@Override
+	public List<PosStoreSubclass> checkDataSubClass(String scode) {
+		return posStoreSubclassService.checkDataSubClass(UserManager.getHotelGroupId(), UserManager.getHotelId(), scode);
+	}
+
+	@Override
+	public List<PosStoreArticle> checkDataArticle(String scode) {
+		return posStoreArticleService.checkDataArticle(UserManager.getHotelGroupId(), UserManager.getHotelId(), scode);
+	}
+
+	@Override
+	public String posStoreMaxCode(String type, String pCode) {
+		return posStoreArticleService.posStoreMaxCode(UserManager.getHotelGroupId(), UserManager.getHotelId(), type, pCode);
+	}
+
+	@Override
+	public void getArticleMess(String acode, String code) {
+		posStoreArticleService.getArticleMess(UserManager.getHotelGroupId(), UserManager.getHotelId(), acode, code);
+
+	}
+
+	@Override
+	public PosStoreClass findPosStoreClassById(Long id) {
+		PosStoreClass posStoreClass = new PosStoreClass();
+		posStoreClass.setId(id);
+		posStoreClass.setHotelGroupId(UserManager.getHotelGroupId());
+		posStoreClass.setHotelId(UserManager.getHotelId());
+		List<PosStoreClass> list = posStoreClassService.listPosStoreClass(posStoreClass);
+		if(list != null && list.size() > 0)
+		{
+			return list.get(0);
+		}
+		return null;
+	}
+
+	@Override
+	public PosStoreSubclass findPosStoreSubClassById(Long id) {
+		PosStoreSubclass posStoreSubclass = new PosStoreSubclass();
+		posStoreSubclass.setId(id);
+		posStoreSubclass.setHotelGroupId(UserManager.getHotelGroupId());
+		posStoreSubclass.setHotelId(UserManager.getHotelId());
+		List<PosStoreSubclass> list = posStoreSubclassService.listPosStoreSubclass(posStoreSubclass);
+		if(list != null && list.size() > 0)
+		{
+			return list.get(0);
+		}
+		return null;
+	}
+
+	@Override
+	public PosStoreArticle findPosStoreArticleById(Long id) {
+		PosStoreArticle posStoreArticle = new PosStoreArticle();
+		posStoreArticle.setId(id);
+		posStoreArticle.setHotelGroupId(UserManager.getHotelGroupId());
+		posStoreArticle.setHotelId(UserManager.getHotelId());
+		List<PosStoreArticle> list = posStoreArticleService.listPosStoreArticle(posStoreArticle);
+		if(list != null && list.size() > 0)
+		{
+			return list.get(0);
+		}
+		return null;
+	}
+
+}

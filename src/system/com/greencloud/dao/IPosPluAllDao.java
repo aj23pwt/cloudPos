@@ -1,0 +1,106 @@
+package com.greencloud.dao;
+import com.aua.dao.IBaseDao;
+
+import java.util.Date;
+import java.util.List;
+
+import com.greencloud.dto.PosPluNoteDto;
+import com.greencloud.entity.PosPluAll;
+
+import org.springframework.dao.DataAccessException;
+ /**
+   * operate PosPluAll into db
+   *@author 
+   *@version 1.0
+   *@date 2015-03-23 16:31
+   */
+public interface IPosPluAllDao extends IBaseDao
+{
+
+  /**
+   *save posPluAll object  method
+   *@param posPluAll PosPluAll 
+   *@throws DataAccessException 
+   *@author  
+   *@version 1.0
+   *@date 2015-03-23 16:31
+   */
+  public void save(PosPluAll posPluAll) throws DataAccessException;
+
+   /**
+   *update posPluAll method
+   *@param posPluAll PosPluAll
+   *@throws DataAccessException 
+   *@author 
+   *@version 1.0
+   *@date 2015-03-23 16:31
+   */
+  public void update(PosPluAll posPluAll) throws DataAccessException;
+ 
+   /**
+   *save or update posPluAll object method
+   *@param posPluAll PosPluAll
+   *@throws DataAccessException
+   *@author  
+   *@version 1.0
+   *@date 2015-03-23 16:31
+   */
+  public void saveOrUpdate(PosPluAll posPluAll) throws DataAccessException;
+  
+   /**
+   *query posPluAll collection method
+   *@param posPluAll PosPluAll send query vo 
+   *@param firstResult 
+   *@param maxResults 
+   *@throws DataAccessException 
+   *@author 
+   *@version 1.0
+   *@date 2015-03-23  16:31
+   */
+  public List<PosPluAll> list(PosPluAll posPluAll,int firstResult ,int maxResults)throws DataAccessException;
+  
+   /**
+   *query collection method  
+   *@param posPluAll PosPluAll send query vo 
+   *@throws DataAccessException
+   *@author 
+   *@version 1.0
+   *@date 2015-03-23 16:31
+   */
+  public List<PosPluAll> list(PosPluAll posPluAll)throws DataAccessException;
+  
+  public List<PosPluAll> listById(PosPluAll posPluAll)throws DataAccessException;
+ 
+  /**
+   *count obj amount
+   *@param posPluAll PosPluAll query vo
+   *@throws DataAccessException
+   *@author 
+   *@date 2015-03-23 16:31
+   */
+  public int count(PosPluAll posPluAll)throws DataAccessException;
+  
+   /**
+   *query a posPluAll by id 
+   *@param id 
+   *@throws DataAccessException 
+   *@author 
+   *@date 2015-03-23 16:31
+   */
+  public PosPluAll load(Long id)throws DataAccessException;
+  
+  public void updateCode(Object object);
+  
+  
+  public List<PosPluAll> listPosPluAllBySort(long hotelGroupId, long hotelId,String sort) throws DataAccessException;
+  
+  public List<PosPluAll> findPosPluAll(Long hotelGroupId,Long hotelId,Date modifyDatetime);
+
+  public int getMaxPosPluId(String sortCode);
+
+  public void updatePosPluFlag(Long hotelGroupId, Long hotelId, String selSort,String strFlag, String num);
+  public List<PosPluAll> getPosPluByText(Long hotelGroupId, Long hotelId,String ctext);
+  public List<PosPluAll> getFlagByCode(Long hotelGroupId, Long hotelId, String pcode);  
+  public List<PosPluNoteDto> getPosWxPluNote(Long hotelGroupId,Long hotelId,String pccode);
+  public List<PosPluNoteDto> getPosWxPluNote(Long hotelGroupId,Long hotelId,String pccode,String sortCode);
+}

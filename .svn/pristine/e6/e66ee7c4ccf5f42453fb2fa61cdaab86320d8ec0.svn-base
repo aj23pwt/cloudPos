@@ -1,0 +1,370 @@
+package com.greencloud.service.impl;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+
+import com.aua.dao.IBaseDao;
+import com.aua.service.impl.BaseServiceImpl;
+import com.aua.util.SQLHelper;
+import com.greencloud.dao.ICateringDao;
+import com.greencloud.dao.ICommonDao;
+import com.greencloud.dao.IPosSubDao;
+import com.greencloud.dto.CateringDto;
+import com.greencloud.dto.CateringSearchDto;
+import com.greencloud.dto.PosCateringTimeItem;
+import com.greencloud.entity.Catering;
+import com.greencloud.entity.CateringPlace;
+import com.greencloud.entity.CodeBase;
+import com.greencloud.service.IPosCateringService;
+import com.greencloud.service.IPosSubService;
+import com.greencloud.util.DateUtil;
+import com.greencloud.util.StringUtil;
+
+/**
+ * 
+ * @author pwt
+ * @email pwt@ipms.cn
+ *
+ */
+public class PosCateringServiceImpl extends BaseServiceImpl implements IPosCateringService {
+
+	private ICateringDao cateringDao;
+	
+	protected IBaseDao getDao() {
+		return cateringDao;
+	}
+	private ICommonDao commonDao;
+	private IPosSubDao posSubDao ;
+	private IPosSubService posSubService;
+	
+	public void setPosSubService(IPosSubService posSubService)
+	{
+		this.posSubService = posSubService;
+	}
+
+	public void setPosSubDao(IPosSubDao posSubDao)
+	{
+		this.posSubDao = posSubDao;
+	}
+
+	public void setCommonDao(ICommonDao commonDao) {
+		this.commonDao = commonDao;
+	}
+	 /**
+	  * 根据开始时间和结束时间生成时段定义的code和descript
+	  * @param hotelGroupId
+	  * @param hotelId
+	  * @param dateBegin
+	  * @param dateEnd
+	  * 用
+	  * @return
+	  */
+	private Map<String,String[]> getTimeDefineMap(Long hotelGroupId,Long hotelId,Date dateBegin,Date dateEnd){
+		Integer interval = DateUtil.getDiffDays(dateBegin, dateEnd) + 1;
+		String[] codes = generateTimeDefine(hotelGroupId, hotelId,interval);
+		//{12345}
+		Map<String,String> timeCodeMap = new LinkedHashMap<String,String>();
+		   List<CodeBase> list =  posSubService.getCodeBaseByParentCode(hotelGroupId, hotelId, "pos_cashier");
+		   if( list!=null && list.size()>0){
+			   for(int i = 0 ; i < list.size() ; i++){
+				   timeCodeMap.put(list.get(i).getCode(),list.get(i).getDescript());
+			   }
+		   }
+		   else{
+		        timeCodeMap.put("3", "晚班");
+		        timeCodeMap.put("2", "中班");
+			    timeCodeMap.put("1", "早班");
+				
+		   }
+		String[] keys = new String[timeCodeMap.keySet().size()];
+		String[] values = new String[timeCodeMap.values().size()];
+		
+		timeCodeMap.keySet().toArray(keys);
+		timeCodeMap.values().toArray(values);
+		
+		Map<String,String[]> maps = new HashMap<String, String[]>();
+		
+		maps.put("keys", keys);
+		maps.put("values", values);
+		
+		return maps;
+	}
+
+
+	
+	/**
+	 * 这里默认CateringList里面场地都是一样的
+	 * @param hotelGroupId
+	 * @param hotelId
+	 * @param dateBegin
+	 * @param dateEnd
+	 * @param cateringList
+	 * 用
+	 * @return
+	 */
+	private Map<String,List<PosCateringTimeItem>> generateTimeItemsCollection(Long hotelGroupId,Long hotelId,Date dateBegin,Date dateEnd,List<Catering> cateringList,CateringPlace cp,String[] codeArray){
+		Map<String, List<PosCateringTimeItem>> result = new HashMap<String, List<PosCateringTimeItem>>();
+		Date begin = new Date(dateBegin.getTime());
+		Date end = new Date(dateEnd.getTime());
+		//时间区间迭代
+		while(!dateBegin.after(dateEnd)){
+			
+			String key = DateUtil.format(dateBegin, "MM-dd");
+			List<PosCateringTimeItem> value = new ArrayList<PosCateringTimeItem>();
+			//时间段遍历(班次信息)
+			for(String timePeriod : codeArray){
+				PosCateringTimeItem cti = new PosCateringTimeItem();
+				cti.setDate(dateBegin);
+				cti.setCateringPlace(cp.getCode());
+				cti.setCateringPlaceName(cp.getName());
+				cti.setTimePeriod(timePeriod);
+				//生成预订单--时间段map
+				for(Catering catering : cateringList){
+					// 先判断订单是否符合要求  日期相等、桌号、班次  (桌号本来查询的时候 就是带着条件的(主桌或者辅桌))
+					cti.setRsvSta("K");
+					cti.setCategory(catering.getCategory());
+					cti.setRsvName(catering.getRsvName());
+					cti.setCateringPlacePccode(catering.getExtraFlag());
+					cti.setCateringPlacePccodeName(catering.getBoard());
+					cti.setCateringShift(catering.getCategory());
+					if(catering.getCategory().equalsIgnoreCase(timePeriod) && DateUtil.getDiffDays(catering.getDateBegin(), dateBegin) == 0){
+						cti.setRsvSta(catering.getSta());
+						cti.setOccSta(1);
+						cti.setRsvId(catering.getRsvId().toString());
+						cti.setRsvAccnt(catering.getCatNo());
+					}else{
+						cti.setOccSta(0);
+					}
+				}
+				value.add(cti);
+			}
+			
+			result.put(key, value);
+			
+			dateBegin = DateUtil.addDays(dateBegin, 1);
+		}
+		return result;
+	}
+
+	/**
+	 * 这里默认CateringList里面场地不一样,放在内存里循环判断
+	 * @param hotelGroupId
+	 * @param hotelId
+	 * @param dateBegin
+	 * @param dateEnd
+	 * @param cateringList
+	 * @return
+	 */
+	private Map<String,List<PosCateringTimeItem>> generateTimeItemsCollectionNew(Long hotelGroupId,Long hotelId,Date dateBegin,Date dateEnd,List<Catering> cateringList,CateringPlace cp,String[] codeArray){
+		Map<String, List<PosCateringTimeItem>> result = new HashMap<String, List<PosCateringTimeItem>>();
+		Date begin = new Date(dateBegin.getTime());
+		Date end = new Date(dateEnd.getTime());
+		//1、日期区间迭代
+		while(!dateBegin.after(dateEnd)){
+			String key = DateUtil.format(dateBegin, "MM-dd");
+			List<PosCateringTimeItem> value = new ArrayList<PosCateringTimeItem>();
+			//2、时间段遍历(班次信息)
+			for(String timePeriod : codeArray){
+				PosCateringTimeItem cti = new PosCateringTimeItem();
+				//日期、桌号、桌号名称、班次、状态(空)、类别(班次)、营业点、营业点描叙
+				cti.setDate(dateBegin);
+				cti.setCateringPlace(cp.getCode());
+				cti.setCateringPlaceName(cp.getName());
+				cti.setTimePeriod(timePeriod);
+				cti.setRsvSta("K");
+				cti.setCategory(timePeriod);
+				cti.setCateringShift(timePeriod);
+				cti.setCateringPlacePccode(cp.getRemark());
+				cti.setCateringPlacePccodeName(cp.getName2());
+				cti.setCateringShift(timePeriod);
+				//未占用
+				cti.setOccSta(0);
+				//3、订单遍历 查找符合条件的订单
+				for(Catering catering : cateringList){
+					//4、判断订单是否使用桌号
+					if(StringUtil.isNotEmpty(catering.getCateringPlace()) || StringUtil.isNotEmpty(catering.getTheme())){
+						//5、判断订单(桌号)(辅桌号)是否使用本场地的
+						if((","+catering.getCateringPlace()+","+catering.getTheme()).indexOf(","+cp.getCode()+",")>=0){
+							cti.setRsvName(catering.getRsvName());
+							cti.setCateringPlacePccode(catering.getExtraFlag());
+							cti.setCateringPlacePccodeName(catering.getBoard());
+							// 判断订单是否符合要求  日期相等、桌号、班次  (桌号本来查询的时候 就是带着条件的(主桌或者辅桌))生成是否占用状态
+							if(catering.getCategory().equalsIgnoreCase(timePeriod) && DateUtil.getDiffDays(catering.getDateBegin(), dateBegin) == 0){
+								cti.setRsvSta(catering.getSta());
+								cti.setOccSta(1);
+								cti.setRsvId(catering.getRsvId().toString());
+								cti.setRsvAccnt(catering.getCatNo());
+							}
+						}
+					}
+				}
+				value.add(cti);
+			}
+			result.put(key, value);
+			dateBegin = DateUtil.addDays(dateBegin, 1);
+		}
+		return result;
+	}
+	
+	//用
+	@Override
+	public List<CateringPlace> listCateringPlace(Long hotelGroupId, Long hotelId,String... places){
+		String sqlFilter = "";
+		if(places != null && places.length > 0){
+			sqlFilter = "and code in (";
+			for(int i = 0 ; i < places.length ; i++){
+				sqlFilter += "'" + places[i] + "'";
+				if(i < places.length - 1){
+					sqlFilter += ",";
+				}
+			}
+			sqlFilter += ")";
+		}
+		List<CateringPlace> list = commonDao.listDataWithClazz(hotelGroupId,hotelId,CateringPlace.class, sqlFilter,null);
+		return list;
+	}
+
+	@Override
+	public List<CateringDto> listCateringDtoByIds(Long hotelGroupId, Long hotelId,List<String> ids) {
+		
+		List<Catering> clist = new ArrayList<Catering>();
+		SQLHelper sh = new SQLHelper(" SELECT hotel_group_id as hotelGroupId,hotel_id as hotelId, id as rsvId ,accnt as catNo,res_name as rsvName,type1 as rsvType,sta,biz_date as dateBegin,biz_date as dateEnd,tableno as cateringPlace,saleinfo as salesMan,phone,info as remark ,gsts as peopleNumber,shift as category ,pccode as extraFlag   FROM pos_res WHERE 1=1 ");
+		 sh.appendSql(" AND hotel_group_id = ? ");
+		 sh.insertValue(hotelGroupId);
+		 sh.appendSql(" AND hotel_id = ? ");
+		 sh.insertValue(hotelId);
+		 sh.appendSql(" AND id = ? ");
+		
+		for(String idstr : ids){
+			sh.insertValue(idstr);
+			List<Catering> cateirnglist = posSubDao.getDataBySql(Catering.class,sh);
+			clist.addAll(cateirnglist);
+		}
+		List<CateringDto> list = new ArrayList<CateringDto>();
+		for(Catering cat:clist){
+			CateringDto cateringDto = new CateringDto();
+			cateringDto.setCatering(cat);
+			cateringDto.setCateringPlaceDescript(cat.getCateringPlace());
+			cateringDto.setSalesmanDescript(cat.getSalesman());
+			list.add(cateringDto);
+		}
+		return list;
+	}
+
+	//生成班次信息-用
+	private String[] generateTimeDefine(Long hotelGroupId,Long hotelId,Integer dateInterval){
+	   String[] result = new String[5];
+	   List<CodeBase> list =	 posSubService.getCodeBaseByParentCode(hotelGroupId, hotelId, "pos_cashier");
+	   if( list!=null && list.size()>0){
+		   for(int i = 0 ; i < list.size() ; i++){
+			   result[i] = list.get(i).getCode();
+		   }
+	   }
+	   else{
+			for(int i = 0 ; i < 3 ; i++){
+				result[i] = i + 1 + "";
+			}
+	   }
+		return result;
+	}
+
+	
+
+
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@Override
+	public List listItemsBySearchDto(Long hotelGroupId, Long hotelId,CateringSearchDto csdto) {
+		List<CateringPlace> filterPlaces = null;
+		String[]  array = null;
+		Date dateBegin = csdto.getDateBegin();
+		Date dateEnd = csdto.getDateEnd();
+/*		List<PosPccodeTable> filterPlaces = null;
+		SQLHelper newsh = new SQLHelper("SELECT obj FROM PosPccodeTable obj WHERE 1=1 ");
+	    	  newsh.appendSql(" AND obj.hotelGroupId = ? ");
+	    	  newsh.insertValue(hotelGroupId);
+	    	  newsh.appendSql(" AND obj.hotelId = ? ");
+	    	  newsh.insertValue(hotelId);
+	      if(StringUtil.isNotEmpty(csdto.getCategory())){
+	    	  String[] pccodes = csdto.getCategory().split(",");
+	    	  newsh.appendInSql(" AND obj.pccode ", pccodes);
+	      }
+	      if(StringUtil.isNotEmpty(csdto.getCateringPlaces())){
+	    	  String[] codes = csdto.getCateringPlaces().split(",");
+	    	  newsh.appendInSql(" AND obj.code ", codes);
+	      }
+	      newsh.appendSql(" ORDER BY obj.pccode,obj.code");
+*/		
+			String sql = "  SELECT a.code,a.descript as name , b.descript as name2, b.code as remark FROM "
+					+ "     pos_pccode_table  a LEFT JOIN pos_pccode b ON a.hotel_group_id = b.hotel_group_id AND a.hotel_id = b.hotel_id AND a.pccode = b.code "
+					+ "    where a.hotel_group_id = "+hotelGroupId+" and a.hotel_id = "+hotelId ;
+			 if(StringUtil.isNotEmpty(csdto.getCategory())){
+				 sql += "  and INSTR(CONCAT(',','"+csdto.getCategory()+"',','),CONCAT(',',a.pccode,',')) > 0 " ;
+			 }
+			 if(StringUtil.isNotEmpty(csdto.getCateringPlaces())){
+				 sql += "  and INSTR(CONCAT(',','"+csdto.getCateringPlaces()+"',','),CONCAT(',',a.code,',')) > 0 " ;
+			 }
+			filterPlaces = posSubDao.getDataBySql(hotelGroupId, hotelId, CateringPlace.class, sql);
+		
+		Integer interval = DateUtil.getDiffDays(dateBegin, dateEnd) + 1;
+		//根据显示的天数计算应该使用哪些时间段代码
+		String[] codeArray =  generateTimeDefine(hotelGroupId, hotelId,interval);
+		LinkedList<Map> list = new LinkedList<Map>();
+		//避免多次查询订单,改为查询一次,修改组织方法 放在内存里循环
+		 SQLHelper sh = new SQLHelper(" SELECT a.hotel_group_id as hotelGroupId,a.hotel_id as hotelId, a.id as rsvId ,a.accnt as catNo,a.res_name as rsvName,a.type1 as rsvType,a.sta, a.biz_date as dateBegin, a.biz_date as dateEnd,a.tableno as cateringPlace, IFNULL(a.exttableno,'') as theme ,a.saleid as salesMan,a.phone,a.info as remark ,a.gsts as peopleNumber,a.shift as category , a.pccode as extraFlag ,b.descript as board "
+		+ " FROM pos_res a LEFT JOIN pos_pccode b ON a.hotel_group_id=b.hotel_group_id AND a.hotel_id=b.hotel_id AND a.pccode = b.code  WHERE 1=1 ");
+		 sh.appendSql(" AND a.hotel_group_id = ? ");
+		 sh.insertValue(hotelGroupId);
+		 sh.appendSql(" AND a.hotel_id = ? ");
+		 sh.insertValue(hotelId);
+		 sh.appendSql(" AND a.biz_date >= ? ");
+		 sh.insertValue(dateBegin);
+		 sh.appendSql(" AND a.biz_date <= ? ");
+		 sh.insertValue(dateEnd);
+		 List<Catering> cateirnglist = posSubDao.getDataBySql(Catering.class,sh);
+		//遍历每个桌号的订单区间信息
+		for(int i = 0 ; i < filterPlaces.size() ; i++){
+			CateringPlace cp = (CateringPlace) filterPlaces.get(i);
+			//如果没有状态条件，则默认显示需要显示的状态
+			if(StringUtil.isBlank(csdto.getStas()))
+				csdto.setStas(Catering.itemShowSta());
+			    csdto.setCateringPlaces(cp.getCode());
+			//查询出符合条件区间段的预订单信息
+			/* SQLHelper sh = new SQLHelper(" SELECT a.hotel_group_id as hotelGroupId,a.hotel_id as hotelId, a.id as rsvId ,a.accnt as catNo,a.res_name as rsvName,a.type1 as rsvType,a.sta, a.biz_date as dateBegin, a.biz_date as dateEnd,a.tableno as cateringPlace,a.saleid as salesMan,a.phone,a.info as remark ,a.gsts as peopleNumber,a.shift as category , a.pccode as extraFlag ,b.descript as board "
+			 		+ " FROM pos_res a LEFT JOIN pos_pccode b ON a.hotel_group_id=b.hotel_group_id AND a.hotel_id=b.hotel_id AND a.pccode = b.code  WHERE 1=1 ");
+			 sh.appendSql(" AND a.hotel_group_id = ? ");
+			 sh.insertValue(hotelGroupId);
+			 sh.appendSql(" AND a.hotel_id = ? ");
+			 sh.insertValue(hotelId);
+			 sh.appendSql(" AND a.biz_date >= ? ");
+			 sh.insertValue(dateBegin);
+			 sh.appendSql(" AND a.biz_date <= ? ");
+			 sh.insertValue(dateEnd);
+			 sh.appendSql(" AND (a.tableno = ? ");
+			 sh.insertValue(csdto.getCateringPlaces());
+			 sh.appendSql(" or INSTR(CONCAT(',',a.exttableno,','),CONCAT(',',?,',')) > 0 )");
+			 sh.insertValue(csdto.getCateringPlaces());
+			List<Catering> cateirnglist = posSubDao.getDataBySql(Catering.class,sh);
+			
+			//根据本场地的预订单列表进行组织数据
+			Map element = generateTimeItemsCollection(hotelGroupId,hotelId,dateBegin,dateEnd,cateirnglist,cp,codeArray);
+			*/
+			//根据本场地的预订单列表进行组织数据
+			Map element = generateTimeItemsCollectionNew(hotelGroupId,hotelId,dateBegin,dateEnd,cateirnglist,cp,codeArray);
+			element.put("place", cp.getCode());
+			element.put("placeDes", cp.getName());
+			element.put("dateBegin", dateBegin);
+			element.put("dateEnd", dateEnd);
+			list.add(element);
+		}
+		
+		Map<String,String[]> maps = getTimeDefineMap(hotelGroupId, hotelId, dateBegin,dateEnd);
+		list.addFirst(maps);
+		
+		return list;
+	}
+}
