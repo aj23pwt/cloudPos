@@ -3,9 +3,12 @@ import com.aua.util.Container;
 import com.aua.dao.IBaseDao;
 import com.aua.service.impl.BaseServiceImpl;
 
+import java.util.Iterator;
 import java.util.List;
 
+import com.greencloud.entity.PosMaster;
 import com.greencloud.entity.PosSelectedObject;
+import com.greencloud.dao.IPosMasterDao;
 import com.greencloud.dao.IPosSelectedObjectDao;
 import com.greencloud.service.IPosSelectedObjectService;
 
@@ -14,6 +17,7 @@ public class PosSelectedObjectServiceImpl extends BaseServiceImpl implements IPo
 {
    //dao 
    private IPosSelectedObjectDao posSelectedObjectDao;
+   private IPosMasterDao	posMasterDao;
    
   /**
    *save posSelectedObject object  method
@@ -196,11 +200,43 @@ public void savePosSelectedObject(long hotelGroupId, long hotelId,
 			
 			posSelectedObjectDao.save(pso);
 		}
+		
+//		PosMaster pm = new PosMaster();
+//		pm.setHotelGroupId(hotelGroupId);
+//		pm.setHotelId(hotelId);
+//		pm.setAccnt(accnt);		
+//		List<PosMaster> pmlist = posMasterDao.list(pm);
+//		if(pmlist != null && pmlist.size() > 0){
+//			if(pmlist.get(0).getPcrec() != null && !"".equalsIgnoreCase(pmlist.get(0).getPcrec())){
+//				PosMaster pmp = new PosMaster();
+//				pmp.setHotelGroupId(hotelGroupId);
+//				pmp.setHotelId(hotelId);
+//				pmp.setPcrec(pmlist.get(0).getPcrec());
+//				List<PosMaster> pmplist = posMasterDao.list(pmp);
+//				for(Iterator<PosMaster> i = pmplist.iterator();i.hasNext();){
+//					PosMaster pmpGet = i.next();
+//					if(pmpGet.getExtra() != null && !"".equalsIgnoreCase(pmpGet.getExtra())){
+//						pmpGet.setExtra(pmpGet.getExtra().substring(0, 0).concat("1").concat(pmpGet.getExtra().substring(2)));												
+//					}else{
+//						pmpGet.setExtra("0100000000");
+//					}
+//					posMasterDao.save(pmpGet);
+//				}
+//			}else{
+//				PosMaster pmGet = pmlist.get(0);
+//				if(pmGet.getExtra() != null && !"".equalsIgnoreCase(pmGet.getExtra())){
+//					pmGet.setExtra(pmGet.getExtra().substring(0,0).concat("1").concat(pmGet.getExtra().substring(2)));
+//				}else{
+//					pmGet.setExtra("0100000000");					
+//				}
+//				posMasterDao.save(pmGet);
+//			}
+//		}		
 	}
 
 @Override
 public void deletePosSelectedObject(long hotelId, long hotelGroupId,String stationCode) {
-	posSelectedObjectDao.deletePosSelectedObject(hotelId, hotelGroupId, stationCode);
+	posSelectedObjectDao.deletePosSelectedObject(hotelId, hotelGroupId, stationCode);	
 }
 
 @Override
@@ -216,5 +252,13 @@ public List<PosSelectedObject> getPosSelectedObjectByAccnt(long hotelGroupId,
 //	}
 //	return posSelectedObjectDao.list(pso);
 	return posSelectedObjectDao.getPosSelectedObjectByAccnt(hotelGroupId, hotelId, accnt, pcrec, stationCode);
+}
+
+public IPosMasterDao getPosMasterDao() {
+	return posMasterDao;
+}
+
+public void setPosMasterDao(IPosMasterDao posMasterDao) {
+	this.posMasterDao = posMasterDao;
 }
 }//end class PosSelectedObjectServiceImpl

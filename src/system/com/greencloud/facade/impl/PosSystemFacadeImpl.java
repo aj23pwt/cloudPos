@@ -18,6 +18,7 @@ import com.greencloud.facade.IPosSystemFacade;
 import com.greencloud.entity.PosSelectedObject;
 import com.greencloud.service.IHotelService;
 import com.greencloud.service.IPosConddtlService;
+import com.greencloud.service.IPosMasterService;
 import com.greencloud.service.IPosPccodeAuditFlagService;
 import com.greencloud.service.IPosSelectedObjectService;
 import com.greencloud.service.IPosStationService;
@@ -43,6 +44,7 @@ public class PosSystemFacadeImpl implements IPosSystemFacade {
 	private ISysOptionService sysOptionService;
 	private IPosPccodeAuditFlagService posPccodeAuditFlagService ;
 	private IPosSelectedObjectService posSelectedObjectService;
+	private IPosMasterService posMasterService;
 	
 	public void setPosPccodeAuditFlagService(
 			IPosPccodeAuditFlagService posPccodeAuditFlagService)
@@ -79,6 +81,12 @@ public class PosSystemFacadeImpl implements IPosSystemFacade {
 	
 	public void setPosSelectedObjectService(IPosSelectedObjectService posSelectedObjectService) {
 		this.posSelectedObjectService = posSelectedObjectService;
+	}
+	public IPosMasterService getPosMasterService() {
+		return posMasterService;
+	}
+	public void setPosMasterService(IPosMasterService posMasterService) {
+		this.posMasterService = posMasterService;
 	}
 	
 	@Override
@@ -299,4 +307,10 @@ public class PosSystemFacadeImpl implements IPosSystemFacade {
 			String pcrec) {
 		return posSelectedObjectService.getPosSelectedObjectByAccnt(UserManager.getHotelGroupId(), UserManager.getHotelId(), accnt, pcrec,UserManager.getWorkStationCode());
 	}
+	@Override
+	public String getPassWordCheck(String userId, String userCode,String passWord) {
+		return posMasterService.getPassWordCheck(UserManager.getHotelGroupId(), UserManager.getHotelId(), userId, userCode, passWord);
+	}
+
+	
 }

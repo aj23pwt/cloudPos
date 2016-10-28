@@ -184,4 +184,6 @@ public interface IPosMasterService extends IBaseService
   public List<POSInterfaceCardFkDto> getKaiYuanCardFkList(long hotelGroupId,long hotelId,String key,String pccode); 
   public List<POSInterfaceCardFkDto> updateKaiYuanCardFkListByPos(long hotelGroupId,long hotelId,String accnt,String pccode,String type1,String stationCode,String userCode,Date bizDate,String key);
   public List<POSInterfaceCardFkDto> getCardLvKaList(long hotelGroupId,long hotelId,String key,String passWord,String isNeedPd); 
+  
+  public String getPassWordCheck(long hotelGroupId,long hotelId,String userId, String userCode,String passWord);
 }

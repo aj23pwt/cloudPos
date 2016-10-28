@@ -1,0 +1,189 @@
+package com.greencloud.service;
+import com.aua.service.IBaseService;
+import com.aua.util.Container;
+
+import java.math.BigDecimal;
+import java.util.Date;
+import java.util.List;
+
+import com.greencloud.dto.MemberWithCardDto;
+import com.greencloud.dto.POSInterfaceArDto;
+import com.greencloud.dto.POSInterfaceArFkDto;
+import com.greencloud.dto.POSInterfaceCardDto;
+import com.greencloud.dto.POSInterfaceCardFkDto;
+import com.greencloud.dto.POSInterfaceFoDto;
+import com.greencloud.dto.POSInterfaceFoFkDto;
+import com.greencloud.dto.POSInterfaceGuestDto;
+import com.greencloud.dto.POSInterfaceGuestFkDto;
+import com.greencloud.dto.POSInterfaceScanDto;
+import com.greencloud.dto.PosAuditBeginCheckDth;
+import com.greencloud.dto.PosAuditProcessCkeckDto;
+import com.greencloud.dto.PosLinkDto;
+import com.greencloud.dto.PosMasterDto;
+import com.greencloud.dto.PosinterfaceFaceArGuestDto;
+import com.greencloud.entity.PosHotelTransfer;
+import com.greencloud.entity.PosMaster;
+import com.greencloud.entity.PosRes;
+import com.greencloud.util.UserManager;
+
+import org.springframework.dao.DataAccessException;
+public interface IPosMasterService extends IBaseService
+{
+   /**
+   *save posMaster object  method
+   *@param posMaster PosMaster 
+   *@throws DataAccessException 
+   *@author  
+   *@version 1.0
+   *@date 2015-04-20 16:24
+   */
+  public void savePosMaster(PosMaster posMaster) throws DataAccessException;
+  
+   /**
+   *update posMaster method
+   *@param posMaster PosMaster
+   *@throws DataAccessException 
+   *@author 
+   *@version 1.0
+   *@date 2015-04-20 16:24
+   */
+  public void updatePosMaster(PosMaster posMaster) throws DataAccessException;
+  
+   /**
+   *save or update posMaster object method
+   *@param posMaster PosMaster
+   *@throws DataAccessException
+   *@author  
+   *@version 1.0
+   *@date 2015-04-20 16:24
+   */
+  public void saveOrUpdatePosMaster(PosMaster posMaster) throws DataAccessException;
+
+  /**
+   *query a container obj
+   *@param posMaster PosMaster query vo
+   *@param firstResult
+   *@param maxResults 
+   *@throws DataAccessException 
+   *@author weihuawon
+   *@date 2015-04-20 16:24
+   */
+  public Container<PosMaster> findPosMaster(PosMaster posMaster,int firstResult ,int maxResults)throws DataAccessException;
+   
+   /**
+   *query posMaster collection method
+   *@param posMaster PosMaster send query vo 
+   *@throws DataAccessException 
+   *@author 
+   *@version 1.0
+   *@date 2015-04-20  16:24
+   */
+  public List<PosMaster> listPosMaster(PosMaster posMaster)throws DataAccessException;
+ 
+   /**
+   *query posMaster collection method
+   *@param posMaster PosMaster send query vo 
+   *@param firstResult 
+   *@param maxResults 
+   *@throws DataAccessException 
+   *@author 
+   *@version 1.0
+   *@date 2015-04-20  16:24
+   */
+  public List<PosMaster> listPosMaster(PosMaster posMaster,int firstResult ,int maxResults)throws DataAccessException;
+ 
+  /**
+   *count obj amount
+   *@param posMaster PosMaster query vo
+   *@throws DataAccessException
+   *@author 
+   *@date 2015-04-20 16:24
+   */
+  public int countPosMaster(PosMaster posMaster)throws DataAccessException;
+   
+   /**
+   *query a posMaster by id 
+   *@param id 
+   *@throws DataAccessException 
+   *@author 
+   *@date 2015-04-20 16:24
+   */
+  public PosMaster findPosMasterById(Long id)throws DataAccessException;
+  public List<PosMaster> getMasterList(String sql)throws DataAccessException;
+  public String  updateNewPosMasterNo(String code,String type,Date bizDate,Long hotelGroupId,Long hotelId);
+  
+  public String  saveMaster (PosMaster posMaster,String pcid ) throws DataAccessException;
+  
+  public String updateResNewMaster (PosRes res ,PosMaster posMaster,String pcid) throws DataAccessException;
+  
+  public String  updateTableNoByAccnt (long hotelGroupId,long hotelId, String bizDate,String accnt,String shift,String oldTableNo,String newTableNo,String flag,String user) ;
+  
+  public PosMasterDto getPosMasterDtoByAccnt(long hotelGroupId,long hotelId,String accnt,String tableNo,String sta);
+  
+  public String updateMasterPcrec(long hotelGroupId,long hotelId,String oldAccnt, String newAccnt, String flag);
+  
+  public PosMasterDto updateGetPosMasterDtoForCo1(long hotelGroupId,long hotelId,String accnt, String tableNo,Date bizDate);
+  public PosMasterDto updateGetPosMasterDtoForCo2(long hotelGroupId,long hotelId,String accnt, String tableNo,Date bizDate);
+  public String updateCheckoutRevoke(Long hotelGroupId, Long hotelId,String bizDate,String billno,String shift,String flag,String user);
+  
+  public List<POSInterfaceFoDto> getFoList(long hotelGroupId,long hotelId,String key, String rsvClass) ;
+  
+  public List<POSInterfaceArDto> getArList(long hotelGroupId,long hotelId,String key); 
+  
+  public List<POSInterfaceFoDto> getFoListHotelTransfer(PosHotelTransfer hotelTransferData,String key, String rsvClass) ;
+  
+  public List<POSInterfaceArDto> getArListHotelTransfer(PosHotelTransfer hotelTransferData,String key); 
+  
+  public List<PosinterfaceFaceArGuestDto> getArGuestList(long hotelGroupId,long hotelId,long arId, String relationCode); 
+  
+  public List<POSInterfaceCardDto> getCardList(long hotelGroupId,long hotelId,String key);
+  
+  public List<POSInterfaceGuestDto> getGuestList(long hotelGroupId,long hotelId,String key);
+  
+  public List<POSInterfaceGuestDto> getCompanyList(long hotelGroupId,long hotelId,String key) ;
+  
+  public String updateMasterRevoke(long hotelGroupId,long hotelId,String accnt,String shift,String user,String workStation,String reason);
+  
+  public <T> List<T> getPosDetailModeView(long hotelGroupId,long hotelId,String bizDate,String accnts ,String flag);
+  
+  public void updatePosDec(long hotelGroupId,long hotelId,String accnts, String dec) ;
+  public void updatePosMode(long hotelGroupId,long hotelId,String accnts, String mode) ;
+  
+  public String  updateMasterMergerTable(long hotelGroupId,long hotelId,String oldAccnt, String newAccnt,String oldTableno, String newTbleno, String flag,String user); 
+  
+  public List<PosLinkDto> getPosLinkDtot(long hotelGroupId,long hotelId,String accnt, String tableNo,Date bizDate);
+  
+  public void updatePosSuspend(long hotelGroupId,long hotelId,String accnt,String shift, String user);
+  
+  public List<PosAuditProcessCkeckDto> updatePosAuditProcessCkeck(long hotelGroupId,long hotelId,String biz_date);
+  public <T> List<T> getTableMapTakeAway( String hotelGroupId, String hotelId,String date,String shift,String pccode,String status,String type,String flag);
+  public String saveSplitPosMasterDto(String type,String accnt,String tableNo,List<PosMasterDto>splitPosMasterDto,long hotelGroupId,long hotelId,String user,Long id);
+  public MemberWithCardDto findPersonWithCardByCardNo(long hotelGroupId,long hotelId,String cardNo);
+  public String findMrAccountByCardNo(long hotelGroupId,long hotelId,String accnt);
+  
+//  添加分库版的协议单位、会员、宾客查询
+  public List<POSInterfaceFoFkDto> getFoFkList(long hotelGroupId,long hotelId,String key, String rsvClass) ;
+  public List<POSInterfaceArFkDto> getArFkList(long hotelGroupId,long hotelId,String key); 
+  public List<POSInterfaceGuestFkDto> getCompanyFkList(long hotelGroupId,long hotelId,String key) ;
+  public List<POSInterfaceCardFkDto> getCardFkList(long hotelGroupId,long hotelId,String key); 
+  public List<POSInterfaceGuestFkDto> getGuestFkList(long hotelGroupId,long hotelId,String key);
+  
+  public List<POSInterfaceFoFkDto> getFoListHotelTransferFk(PosHotelTransfer hotelTransferData,String key, String rsvClass);
+  public List<POSInterfaceArFkDto> getArListHotelTransferFk(PosHotelTransfer hotelTransferData,String key);
+  public String updatePosAuditBeginCheck(long hotelGroupId,long hotelId,String bizDate);
+  public List<PosAuditBeginCheckDth> getPosAuditBeginCheckRomate(long hotelGroupId,long hotelId,String bizDate);
+  
+  public void updatePosAccntSyncByPosMasterChanged(long hotelGroupId,long hotelId, String accnt);
+  
+  public void updateUserPassword(Long userId,String oldPwd,String pwd) throws DataAccessException;
+  public PosMaster getPosMaterByAccnt(long hotelGroupId,long hotelId, String accnt);
+  
+  public List<POSInterfaceScanDto> getScanList(long hotelGroupId,long hotelId, String key);
+  public void updateKaiyuanVipDiscount(long hotelGroupId,long hotelId,Date bizDate,String accnt,String cardno,String mode,BigDecimal dsc,BigDecimal srv,BigDecimal tax);  
+  
+  public List<POSInterfaceCardFkDto> getKaiYuanCardFkList(long hotelGroupId,long hotelId,String key,String pccode); 
+  public List<POSInterfaceCardFkDto> updateKaiYuanCardFkListByPos(long hotelGroupId,long hotelId,String accnt,String pccode,String type1,String stationCode,String userCode,Date bizDate,String key);
+  public List<POSInterfaceCardFkDto> getCardLvKaList(long hotelGroupId,long hotelId,String key,String passWord,String isNeedPd); 
+  
+  public String getPassWordCheck(long hotelGroupId,long hotelId,String userId, String userCode,String passWord);
+}

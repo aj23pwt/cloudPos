@@ -36,4 +36,5 @@ public interface IPosSystemFacade {
 	public void savePosSelectedObject(String accnt,String pcrec,String mode);
 	public void deletePosSelectedObject();
 	public List<PosSelectedObject> getPosSelectedObjectByAccnt(String accnt,String pcrec);
+	public String getPassWordCheck(String userId,String userCode,String passWord);
 }

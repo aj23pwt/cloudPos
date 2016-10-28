@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?> 
+<update xmlns="http://ns.adobe.com/air/framework/update/description/2.5"> 
+<versionNumber>2.2.0</versionNumber> 
+<versionLabel>V2.2.0(20161017)</versionLabel>
+<navigateurl>http://fir.im/iaux</navigateurl>
+<settingPassword>foxhis</settingPassword>
+<sendLogEnabled>T</sendLogEnabled>
+<airUrl>PosClient.air</airUrl>
+<airName>PosClient.air</airName>
+<description>
+V3.1.7
+
+</description>
+</update>
+

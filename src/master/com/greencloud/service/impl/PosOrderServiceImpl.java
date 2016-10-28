@@ -687,19 +687,26 @@ public void setPosPluAllDao(IPosPluAllDao posPluAllDao) {
 			}
 		}
 		
+		String orderCon = "F";
+		SysOption sysOption =  sysOptionService.findSysOptionByCatalogItem("pos", "station_control_order", hotelGroupId, hotelId);
+		if(sysOption != null && !"".equalsIgnoreCase(sysOption.getSetValue())){
+			orderCon = sysOption.getSetValue().toString();
+		}
+		
 		PosOrder posOrder = new PosOrder();
 		posOrder.setHotelGroupId(hotelGroupId);
 		posOrder.setHotelId(hotelId);
 		posOrder.setAccnt(posMaster.getAccnt());
 		posOrder.setTableno(tableNo);
-		//posOrder.setPcid(UserManager.getWorkStationId().toString());
+		if(!"T".equalsIgnoreCase(orderCon)){
+			posOrder.setPcid(UserManager.getWorkStationId().toString());
+		}		
 		List<PosOrder> list=posOrderDao.list(posOrder);
 		if(list != null && list.size()>0){
 			for(Iterator<PosOrder> i=list.iterator();i.hasNext();){
 				PosOrder posOrderGet = i.next();
 				long orgId=posOrderGet.getId();
-				
-				
+								
 				PosDetail posDetail = new PosDetail();
 				posDetail.setHotelGroupId(posOrderGet.getHotelGroupId());
 				posDetail.setHotelId(posOrderGet.getHotelId());
@@ -2166,9 +2173,9 @@ public void setPosPluAllDao(IPosPluAllDao posPluAllDao) {
 				}
 				
 		}
-			String inerfaceMode = "";
+//			String inerfaceMode = "";
 			String pmsPaycode = "";
-			SysOption sysOption =  sysOptionService.findSysOptionByCatalogItem("member", "interface_mod", hotelGroupId, hotelId);
+//			SysOption sysOption =  sysOptionService.findSysOptionByCatalogItem("member", "interface_mod", hotelGroupId, hotelId);
 			SysOption sysOptionpay =  sysOptionService.findSysOptionByCatalogItem("pos", "paycode_need_reation_pms", hotelGroupId, hotelId);
 //			if(sysOption != null && sysOption.getSetValue() != null){
 //				inerfaceMode = sysOption.getSetValue();

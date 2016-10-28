@@ -2241,5 +2241,18 @@ public String saveMaster(PosMaster posMaster,String pcid) {
 		}else{
 			 throw new BizException("远程服务地址配置有误，请检查！",BizExceptionConstant.INVALID_PARAM);
 		}			
+	}
+
+	@Override
+	public String getPassWordCheck(long hotelGroupId, long hotelId,String userId, String userCode, String passWord) {
+		String ret = "1";
+		User user = userService.findUserById(Long.valueOf(userId));
+		if(user != null){
+			String diPwd = MessageDigestUtil.digestPassword(passWord);
+			if(diPwd.equals(user.getPassword())){
+				ret = "0";
+			}
+		}
+		return ret;
 	}	
 }
